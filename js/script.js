@@ -26,14 +26,14 @@ class Note {
         this.ctx = ctx;
         this.no = no;
         this.falltime = falltime;
-        this.y = falltime + ((clock.getTime() - starttime) / 30); //canvasのhighist参照
+        this.y = falltime + ((clock.getTime() - starttime) / 12); //canvasのhighist参照
     }
 
     writenote() {
         //ノーツの色の設定
         this.ctx.fillStyle = '#DD7070';
 
-        this.y = this.falltime + ((clock.getTime() - starttime) / 30);
+        this.y = this.falltime + ((clock.getTime() - starttime) / 12);
         //ノーツの描画
         this.ctx.fillRect(this.no * 52, this.y, 52, 10);;
         console.log(this.y);
@@ -58,8 +58,21 @@ function frame() {
     ctx.fillStyle = 'rgb( 0, 0, 0)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     //譜面生成(要改善)
+    /*
     var R = Math.floor(Math.random() * 90);
-    if (R < 4 && notes.length < 10000) { notes.push(new Note(canvas, ctx, R, 30)); }
+    if (R < 4 && notes.length < 10000) { notes.push(new Note(canvas, ctx, R, 12)); }
+    */
+
+    notes.push(new Note(canvas, ctx, 0, 12));
+    notes.push(new Note(canvas, ctx, 1, 112));
+    notes.push(new Note(canvas, ctx, 2, 212));
+    notes.push(new Note(canvas, ctx, 0, 312));
+    notes.push(new Note(canvas, ctx, 3, 412));
+    notes.push(new Note(canvas, ctx, 0, 512));
+    notes.push(new Note(canvas, ctx, 3, 612));
+    notes.push(new Note(canvas, ctx, 0, 712));
+    notes.push(new Note(canvas, ctx, 3, 812));
+
     //存在するすべてのNoteオブジェクトの時を進める
     for (let i = 0; i < notes.length; i++) {
         notes[i].writenote();
