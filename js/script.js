@@ -2,6 +2,8 @@
 
 var __nativeST__ = window.setTimeout, __nativeSI__ = window.setInterval;
 
+document.addEventListener('keyPress', keypressed);
+
 window.setInterval = function (vCallback, nDelay /*, argumentToPass1, argumentToPass2, etc. */) {
     var oThis = this, aArgs = Array.prototype.slice.call(arguments, 2);
     return __nativeSI__(vCallback instanceof Function ? function () {
@@ -36,7 +38,7 @@ class Note {
         this.y = this.falltime + ((clock.getTime() - starttime) / 12);
         //ノーツの描画
         this.ctx.fillRect(this.no * 52, this.y, 52, 10);;
-        console.log(this.y);
+        //console.log(this.y);
     }
 }
 
@@ -77,5 +79,10 @@ function frame() {
     for (let i = 0; i < notes.length; i++) {
         notes[i].writenote();
     }
-    console.log((clock.getTime() - starttime) / 100);
+    //console.log((clock.getTime() - starttime) / 100);
+}
+
+function keypressed(e) {
+    console.log("a key is plassed");
+    return false;
 }
