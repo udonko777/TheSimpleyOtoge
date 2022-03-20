@@ -4,6 +4,7 @@ var __nativeST__ = window.setTimeout, __nativeSI__ = window.setInterval;
 
 document.addEventListener('keydown', keypressed);
 
+
 window.setInterval = function (vCallback, nDelay /*, argumentToPass1, argumentToPass2, etc. */) {
     var oThis = this, aArgs = Array.prototype.slice.call(arguments, 2);
     return __nativeSI__(vCallback instanceof Function ? function () {
@@ -116,6 +117,7 @@ class JudgeView {
                 this.ctx.fillText("GREAT", 10, 50);
                 break
         }
+
     }
 }
 
@@ -166,7 +168,6 @@ function frame() {
     for (let i = 0; i < notes.length; i++) {
         notes[i].writenote();
     }
-
     //console.log((clock.getTime() - starttime) / 100);
 }
 
