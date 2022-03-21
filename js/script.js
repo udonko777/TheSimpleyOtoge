@@ -4,7 +4,6 @@ var __nativeST__ = window.setTimeout, __nativeSI__ = window.setInterval;
 
 document.addEventListener('keydown', keypressed);
 
-
 window.setInterval = function (vCallback, nDelay /*, argumentToPass1, argumentToPass2, etc. */) {
     var oThis = this, aArgs = Array.prototype.slice.call(arguments, 2);
     return __nativeSI__(vCallback instanceof Function ? function () {
@@ -13,7 +12,7 @@ window.setInterval = function (vCallback, nDelay /*, argumentToPass1, argumentTo
 };
 
 //ここグローバルになってるので可能ならスコープを狭めたいっす。
-var IntervID;
+let IntervID;
 let notes = [];
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -77,7 +76,7 @@ class JudgeView {
     constructor(ctx) {
         //judge == {N/A,poor,poor,good,great,great}
         this.ctx = ctx;
-        var judgeName = "N/A";
+        let judgeName = "N/A";
     }
 
     set judge(judgeName) {
@@ -117,7 +116,6 @@ class JudgeView {
                 this.ctx.fillText("GREAT", 10, 50);
                 break
         }
-
     }
 }
 
@@ -168,6 +166,7 @@ function frame() {
     for (let i = 0; i < notes.length; i++) {
         notes[i].writenote();
     }
+
     //console.log((clock.getTime() - starttime) / 100);
 }
 
@@ -197,7 +196,7 @@ function judgeTiming(l) {
     //クッソ雑に全ノーツを判定します。todo。
 
     for (let i = 0; i < notes.length; i++) {
-
+        console.log(i);
         if (notes[i].no == l) {
 
             //bは短縮のためのインスタンスな変数です。
@@ -221,10 +220,9 @@ function judgeTiming(l) {
 
         } else { }
 
-        bomb[l].setbomblife(50);
-
-        return false;
     }
 
+    bomb[l].setbomblife(50);
 
+    return false;
 }
