@@ -45,6 +45,17 @@ class Note {
         this.ctx.fillRect(this.no * 52, this.y, 52, 10);;
         //console.log(this.y);
     }
+
+    isKPOOR() {
+        //無視された時の処理(KPOOR判定)
+
+        if (501 < this.falltime + (clock.getTime() - starttime)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 }
 
 class Bomb {
@@ -81,6 +92,9 @@ class JudgeView {
 
     set judge(judgeName) {
         switch (judgeName) {
+            case "KPOOR":
+                this.judgeName = "KPOOR";
+                break;
             case "POOR":
                 this.judgeName = "POOR";
                 break;
@@ -99,6 +113,11 @@ class JudgeView {
     writejudge() {
         switch (this.judgeName) {
             case "N/A":
+                break
+            case "KPOOR":
+                this.ctx.fillStyle = 'rgb( 255, 102, 102)';
+                this.ctx.font = "48px serif";
+                this.ctx.fillText("KPOOR", 10, 50);
                 break
             case "POOR":
                 this.ctx.fillStyle = 'rgb( 255, 102, 102)';
@@ -165,6 +184,10 @@ function frame() {
     //存在するすべてのNoteオブジェクトの時を進める
     for (let i = 0; i < notes.length; i++) {
         notes[i].writenote();
+        if (notes[i].isKPOOR()) {
+            judgeview.judge = "KPOOR";
+            notes.splice(i, 1);
+        };
     }
 
     //console.log((clock.getTime() - starttime) / 100);
