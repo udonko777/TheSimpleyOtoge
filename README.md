@@ -2,3 +2,5 @@
 webで利用可能で、軽量かつPC・スマートフォンで利用できる音楽ゲームを目指します。
 
 PIX.jsの機能はまったく使えていませんが、今後使用予定です
+
+## !this is NOT useing typescript NOW!
