@@ -21,6 +21,7 @@ let starttime = new Date().getTime();
 //bomの描画関連。雑な実装なのでどうにかしたい。
 var bomb = [];
 var judgeview;
+var comboview;
 
 class Note {
 
@@ -46,8 +47,8 @@ class Note {
         //console.log(this.y);
     }
 
-    isKPOOR() {
-        //無視された時の処理(KPOOR判定)
+    isOVER() {
+        //無視された時の処理(OVER判定)
 
         if (501 < this.falltime + (clock.getTime() - starttime)) {
             return true;
@@ -92,11 +93,14 @@ class JudgeView {
 
     set judge(judgeName) {
         switch (judgeName) {
-            case "KPOOR":
-                this.judgeName = "KPOOR";
+            case "OVER":
+                this.judgeName = "OVER";
                 break;
             case "POOR":
                 this.judgeName = "POOR";
+                break;
+            case "BAD":
+                this.judgeName = "BAD";
                 break;
             case "GOOD":
                 this.judgeName = "GOOD";
@@ -114,15 +118,20 @@ class JudgeView {
         switch (this.judgeName) {
             case "N/A":
                 break
-            case "KPOOR":
+            case "OVER":
                 this.ctx.fillStyle = 'rgb( 255, 102, 102)';
                 this.ctx.font = "48px serif";
-                this.ctx.fillText("KPOOR", 10, 50);
+                this.ctx.fillText("POOR", 10, 50);
                 break
             case "POOR":
                 this.ctx.fillStyle = 'rgb( 255, 102, 102)';
                 this.ctx.font = "48px serif";
                 this.ctx.fillText("POOR", 10, 50);
+                break
+            case "BAD":
+                this.ctx.fillStyle = 'rgb( 255, 102, 102)';
+                this.ctx.font = "48px serif";
+                this.ctx.fillText("BAD", 10, 50);
                 break
             case "GOOD":
                 this.ctx.fillStyle = 'rgb( 255, 128, 0)';
@@ -138,6 +147,32 @@ class JudgeView {
     }
 }
 
+class ComboView {
+
+    constructor(ctx) {
+        this.ctx = ctx;
+        this.combocount = 0;
+    }
+
+    addConboCount() {
+        this.combocount += 1;
+    }
+
+    resetConboCount() {
+        this.combocount = 0;
+    }
+
+    writeConboCount() {
+        if (this.combocount > 0) {
+            this.ctx.fillStyle = 'rgb( 255, 102, 102)';
+            this.ctx.font = "48px serif";
+            this.ctx.fillText(this.combocount, 10, 100);
+        } else {
+            console.log("comboocunt is zero");
+        }
+    }
+}
+
 //自分自身を一度呼び出す関数っす。
 (function () {
 
@@ -146,17 +181,19 @@ class JudgeView {
 //HTML側Bodyのonlordに書かれているので、この関数はBodyの読み込みが終わったら呼ばれるはず
 function startClock() {
 
-    notes.push(new Note(canvas, ctx, 0, -3000, 1));
-    notes.push(new Note(canvas, ctx, 1, -4000, 2));
-    notes.push(new Note(canvas, ctx, 2, -5000, 3));
-    notes.push(new Note(canvas, ctx, 3, -6000, 4));
-    notes.push(new Note(canvas, ctx, 0, -7000, 8));
+    for (i = 1; i < 70; i++) {
+        notes.push(new Note(canvas, ctx, (i + 1) % 4, -3000 - (1000 * i), i));
+        notes.push(new Note(canvas, ctx, (i + 2) % 4, -3000 - (1000 * i), i));
+        notes.push(new Note(canvas, ctx, (i + 3) % 4, -3000 - (1000 * i), i));
+    }
+
 
     for (let i = 0; i < 4; i++) {
         bomb.push(new Bomb(ctx, i, 0));
     }
 
     judgeview = new JudgeView(ctx);
+    comboview = new ComboView(ctx);
 
     IntervID = window.setInterval(frame, 4);
 }
@@ -171,7 +208,7 @@ function frame() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     //判定位置生成
     ctx.fillStyle = 'rgb( 0, 255, 0)';
-    ctx.fillRect(0, 500, canvas.width, 5);
+    ctx.fillRect(0, 502, canvas.width, 5);
 
     //ボム生成
     for (let i = 0; i < bomb.length; i++) {
@@ -180,12 +217,14 @@ function frame() {
 
     //判定表示
     judgeview.writejudge();
+    comboview.writeConboCount()
 
     //存在するすべてのNoteオブジェクトの時を進める
     for (let i = 0; i < notes.length; i++) {
         notes[i].writenote();
-        if (notes[i].isKPOOR()) {
-            judgeview.judge = "KPOOR";
+        if (notes[i].isOVER()) {
+            judgeview.judge = "OVER";
+            comboview.resetConboCount();
             notes.splice(i, 1);
         };
     }
@@ -231,14 +270,22 @@ function judgeTiming(l) {
             if (50 > b && -50 < b) {
                 console.log("GREAT");
                 judgeview.judge = "GREAT";
+                comboview.addConboCount();
                 notes.splice(i, 1);
             } else if (300 > b && -300 < b) {
                 console.log("good");
                 judgeview.judge = "GOOD";
+                comboview.addConboCount();
+                notes.splice(i, 1);
+            } else if (400 > b && -400 < b) {
+                console.log("bad");
+                judgeview.judge = "bad";
+                comboview.resetConboCount();
                 notes.splice(i, 1);
             } else if (500 > b && -500 < b) {
                 console.log("poor");
                 judgeview.judge = "POOR";
+                notes.splice(i, 1);
             }
 
         } else { }
