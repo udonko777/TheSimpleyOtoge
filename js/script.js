@@ -29,10 +29,10 @@ class Note {
         this.no = no;
         this.hispeed = hispeed;
         this.NOTE_WIDTH = NOTE_WIDTH;
-        this.falltime = falltime;
+        this.falltime = -falltime;
         //(落ちるまでの時間 + 現在の時間 - 開始時間) / ハイスピ + 判定位置
         //このタイミングで現在の時間と開始時間が等しいので0
-        this.y = ((falltime + 0) / hispeed) + 500;
+        this.y = ((this.falltime + 0) / hispeed) + 500;
     }
 
     begin(starttime) {
@@ -241,10 +241,10 @@ class Game {
 
         const NOTE_WIDTH = 80;
 
-        for (let i = 1; i < 70; i++) {
-            this.notes.push(new Note(ctx, (i + 1) % 4, -3000 - (1000 * i), i, NOTE_WIDTH));
-            this.notes.push(new Note(ctx, (i + 2) % 4, -3000 - (1000 * i), i, NOTE_WIDTH));
-            this.notes.push(new Note(ctx, (i + 3) % 4, -3000 - (1000 * i), i, NOTE_WIDTH));
+        for (let i = 0; i < 70; i++) {
+            this.notes.push(new Note(ctx, (i + 1) % 4, 4448 + (278 * i), 1, NOTE_WIDTH));
+            this.notes.push(new Note(ctx, (i + 2) % 4, 4448 + (278 * i), 1, NOTE_WIDTH));
+            this.notes.push(new Note(ctx, (i + 3) % 4, 4448 + (278 * i), 1, NOTE_WIDTH));
         }
 
         for (let i = 0; i < 4; i++) {
@@ -372,17 +372,17 @@ class Game {
                     judgeview.judge = "GREAT";
                     comboview.addConboCount();
                     this.notes.splice(i, 1);
-                } else if (300 > b && -300 < b) {
+                } else if (100 > b && -100 < b) {
                     console.log("good");
                     judgeview.judge = "GOOD";
                     comboview.addConboCount();
                     this.notes.splice(i, 1);
-                } else if (400 > b && -400 < b) {
+                } else if (200 > b && -200 < b) {
                     console.log("bad");
                     judgeview.judge = "bad";
                     comboview.resetConboCount();
                     this.notes.splice(i, 1);
-                } else if (500 > b && -500 < b) {
+                } else if (210 > b && -210 < b) {
                     console.log("poor");
                     judgeview.judge = "POOR";
                     this.notes.splice(i, 1);
