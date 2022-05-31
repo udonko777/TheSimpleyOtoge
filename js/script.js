@@ -187,8 +187,18 @@ class ComboView {
     }
 }
 
-class GrooveGauge {
+class Gauge {
 
+    constructor() {
+        this.groove = 0;
+    }
+
+    writeGauge() {
+    }
+
+    set groove(groove) {
+        this.groove = groove;
+    }
 }
 
 class MusicPlayer {
@@ -334,18 +344,17 @@ class Game {
     _keypressed(e) {
 
         console.log(e.key);
-        //console.log(e.key);
-        if (e.repeat == false) {
-            if (e.code == 'KeyD') {
+        if (e.repeat === false) {
+            if (e.code === 'KeyD') {
                 //console.log("d is plassed,");
                 this.judgeTiming(0);
-            } else if (e.code == 'KeyF') {
+            } else if (e.code === 'KeyF') {
                 //console.log("f is plassed,");
                 this.judgeTiming(1);
-            } else if (e.code == 'KeyJ') {
+            } else if (e.code === 'KeyJ') {
                 //console.log("j is plassed,");
                 this.judgeTiming(2);
-            } else if (e.code == 'KeyK') {
+            } else if (e.code === 'KeyK') {
                 //console.log("k is plassed,");
                 this.judgeTiming(3);
             }
