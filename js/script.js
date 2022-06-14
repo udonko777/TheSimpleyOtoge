@@ -187,17 +187,132 @@ class ComboView {
     }
 }
 
+//このまま使わない事(実装は子クラス)
 class Gauge {
 
-    constructor() {
-        this.groove = 0;
+    constructor(ctx) {
+
+        //描画関連のパラメータ
+
+        this.ctx = ctx;
+
+        //0 <= groove <= 65536
+        this.groove;
+        this.MAXGROOVE = 65536;
+
+        this.STATEX = 0;
+        this.STATEY = 0;
+
+        this.GAUGE_HEIGHT = 30;
+        this.GAUGE_WIDTH = 320;
+
+        this.GAUGE_VOID_WIDTH = 20;
+        this.GAUGE_BOX_NUMBER = 20;
+
+        //ゲージの計算関連
+        this.PGREAT;
+        this.GREAT;
+        this.GOOD;
+        this.BAD;
+        this.POOR;
+        this.OVER;
+        this.BREAK;
+        this.judge;
+
+        //grooveが0の時ゲームを終了させるか
+        this.IS_TOLERANT = false;
     }
 
     writeGauge() {
+
+        this.existarea = (this.GAUGE_WIDTH - this.GAUGE_VOID_WIDTH) / this.GAUGE_BOX_NUMBER;
+        this.voidarea = this.GAUGE_VOID_WIDTH / this.GAUGE_BOX_NUMBER;
+        this.usedarea = 0;
+        for (let i = 0; i < this.GAUGE_BOX_NUMBER; i++) {
+            this.writebox(this.boxcolor(i), this.usedarea + this.STATEX, this.STATEY, this.existarea, this.GAUGE_HEIGHT);
+            this.usedarea = this.usedarea + this.existarea + this.voidarea;
+        }
     }
 
-    set groove(groove) {
-        this.groove = groove;
+    //外部から呼び出せないようにすべき
+    writebox(color, x, y, boxwidth, boxheight) {
+        //ノーツの色の設定
+        this.ctx.fillStyle = color;
+        this.ctx.fillRect(x, y, boxwidth, boxheight);
+    }
+
+    boxcolor(no) {
+    }
+
+}
+
+class GrooveGauge extends Gauge {
+    constructor(ctx) {
+        super(ctx);
+
+        this.groove = 22220;
+        this.GAUGE_BOX_NUMBER = 24;
+
+        this.GAUGE_BOX_AS_GROOVE = this.MAXGROOVE / this.GAUGE_BOX_NUMBER;
+
+        this.GREAT = 1000;
+        this.GOOD = 100;
+        this.BAD = -1200;
+        this.OVER = -2000;
+    }
+
+    boxcolor(no) {
+        this.no = no;
+        this.enableboxnumber = Math.floor(this.groove / this.GAUGE_BOX_AS_GROOVE);
+        console.log(this.groove);
+
+        if (this.no < this.enableboxnumber) {
+            this.color = '#3ad132';
+        } else {
+            this.color = '#444444';
+        }
+        return this.color;
+    }
+
+
+
+    /**
+     * @param {String} judgeName
+     */
+    set judge(judgeName) {
+        switch (judgeName) {
+            case "PGREAT":
+                this.groove += this.PGREAT;
+                break;
+            case "GREAT":
+                this.groove += this.GREAT;
+                break;
+            case "GOOD":
+                this.groove += this.GOOD;
+                break;
+            case "BAD":
+                this.groove += this.BAD;
+                break;
+            case "POOR":
+                this.groove += this.POOR;
+                break;
+            case "OVER":
+                this.groove += this.OVER;
+                break;
+            case "BREAK":
+                this.groove += this.BREAK;
+                break;
+
+            default:
+                console.log("i dont know this judgeName");
+                break;
+        }
+        if (this.groove < 0) {
+            this.groove = 0;
+        }
+        if (this.groove > this.MAXGROOVE) {
+            this.groove = this.MAXGROOVE;
+        }
     }
 }
 
@@ -272,6 +387,13 @@ class Game {
     _startGame(e) {
         this.clock = new Date();
 
+        //TEST!!!!!!!!!!!TEST!!!!!!!!!!!!!!!!!!!TEST
+
+        this.GAUGE = new GrooveGauge(ctx);
+
+        //TEST!!!!!!!!!!!TEST!!!!!!!!!!!!!!!!!!!TEST
+
+
         //この関数へのアクセスを消す
         document.removeEventListener('keydown', this.startGame);
 
@@ -310,6 +432,11 @@ class Game {
         //背景生成
         this.writeBackGround();
 
+        //!!!!!!TEST
+        this.GAUGE.writeGauge();
+        //TEST
+
+
         //ボム生成
         for (let i = 0; i < bomb.length; i++) {
             bomb[i].writebomb();
@@ -324,6 +451,7 @@ class Game {
             this.notes[i].writenote(this.clock);
             if (this.notes[i].isOVER(this.clock)) {
                 judgeview.judge = "OVER";
+                this.GAUGE.judge = "OVER";
                 comboview.resetConboCount();
                 this.notes.splice(i, 1);
             };
@@ -379,16 +507,19 @@ class Game {
                     console.log(`${l}is GREAT!, i think it is${b}`);
                     console.log("GREAT");
                     judgeview.judge = "GREAT";
+                    this.GAUGE.judge = "GREAT";
                     comboview.addConboCount();
                     this.notes.splice(i, 1);
                 } else if (100 > b && -100 < b) {
                     console.log("good");
                     judgeview.judge = "GOOD";
+                    this.GAUGE.judge = "GOOD";
                     comboview.addConboCount();
                     this.notes.splice(i, 1);
                 } else if (200 > b && -200 < b) {
                     console.log("bad");
                     judgeview.judge = "bad";
+                    this.GAUGE.judge = "BAD";
                     comboview.resetConboCount();
                     this.notes.splice(i, 1);
                 } else if (210 > b && -210 < b) {
