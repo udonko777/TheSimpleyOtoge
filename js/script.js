@@ -19,39 +19,57 @@ var bomb = [];
 var judgeview;
 var comboview;
 
-class Note {
+class GameEvent {
+
+    constructor() { }
+
+    begin(starttime) {
+        this.START_TIME = starttime;
+    }
+
+    writing(clock) { }
+}
+
+class Note extends GameEvent {
 
     /** @param {Number} no 0 at left */
-    constructor(ctx, no, falltime, hispeed, NOTE_WIDTH) {
+    constructor(ctx, no, falltime, hispeed, NOTE_WIDTH, FIRST_BPM) {
 
+        super();
         //this.canvas = canvas;
         this.ctx = ctx;
         this.no = no;
         this.hispeed = hispeed;
         this.NOTE_WIDTH = NOTE_WIDTH;
-        this.falltime = falltime;
+        this.falltime = -falltime;
+        //BPMが途中で変化するタイプの曲において既に
+        this.beforeTime = 0;
+        //scrollspeed 1 : 120 bpm
+        this.scrollspeedforbpm = FIRST_BPM / 120;
         //(落ちるまでの時間 + 現在の時間 - 開始時間) / ハイスピ + 判定位置
         //このタイミングで現在の時間と開始時間が等しいので0
-        this.y = ((falltime + 0) / hispeed) + 500;
-    }
-
-    begin(starttime) {
-        this.START_TIME = starttime;
+        this.y = ((this.falltime + 0) / hispeed) + 500;
     }
 
     getSTART_TIME() {
         return this.START_TIME;
     }
 
-    writenote(clock) {
+    writing(clock) {
 
         //ノーツの色の設定
         this.ctx.fillStyle = '#DD7070';
 
-        this.y = ((this.falltime + clock.getTime() - this.START_TIME) / this.hispeed) + 500;
+        this.y = ((this.falltime + this.beforeTime + ((clock.getTime() - this.START_TIME) * this.scrollspeedforbpm)) / this.hispeed) + 500;
         //ノーツの描画
         this.ctx.fillRect(this.no * this.NOTE_WIDTH, this.y, this.NOTE_WIDTH, 10);
         //console.log(this.y);
+    }
+
+    changeBpm(clock, BPM) {
+        this.beforeTime = this.beforeTime + (clock.getTime() - this.START_TIME) * this.scrollspeedforbpm;
+        this.scrollspeedforbpm = BPM / 120;
+        console.log("はいは～い呼び出されたよぉ");
     }
 
 
@@ -64,6 +82,24 @@ class Note {
         else {
             return false;
         }
+    }
+}
+
+class BpmChanger extends GameEvent {
+
+    constructor(falltime, BPM, notes) {
+        super();
+
+        this.falltime = falltime;
+        this.BPM = BPM;
+        this.notes = notes;
+    }
+
+    writing(clock) {
+        if (this.falltime === clock.getTime() - this.START_TIME) {
+            return (true, this.BPM);
+        }
+        return (false, this.BPM);
     }
 }
 
@@ -187,8 +223,132 @@ class ComboView {
     }
 }
 
-class GrooveGauge {
+//このまま使わない事(実装は子クラス)
+class Gauge {
 
+    constructor(ctx) {
+
+        //描画関連のパラメータ
+
+        this.ctx = ctx;
+
+        //0 <= groove <= 65536
+        this.groove;
+        this.MAXGROOVE = 65536;
+
+        this.STATEX = 0;
+        this.STATEY = 0;
+
+        this.GAUGE_HEIGHT = 30;
+        this.GAUGE_WIDTH = 320;
+
+        this.GAUGE_VOID_WIDTH = 20;
+        this.GAUGE_BOX_NUMBER = 20;
+
+        //ゲージの計算関連
+        this.PGREAT;
+        this.GREAT;
+        this.GOOD;
+        this.BAD;
+        this.POOR;
+        this.OVER;
+        this.BREAK;
+        this.judge;
+
+        //grooveが0の時ゲームを終了させるか
+        this.IS_TOLERANT = false;
+    }
+
+    writeGauge() {
+
+        this.existarea = (this.GAUGE_WIDTH - this.GAUGE_VOID_WIDTH) / this.GAUGE_BOX_NUMBER;
+        this.voidarea = this.GAUGE_VOID_WIDTH / this.GAUGE_BOX_NUMBER;
+        this.usedarea = 0;
+        for (let i = 0; i < this.GAUGE_BOX_NUMBER; i++) {
+            this.writebox(this.boxcolor(i), this.usedarea + this.STATEX, this.STATEY, this.existarea, this.GAUGE_HEIGHT);
+            this.usedarea = this.usedarea + this.existarea + this.voidarea;
+        }
+    }
+
+    //外部から呼び出せないようにすべき
+    writebox(color, x, y, boxwidth, boxheight) {
+        //ノーツの色の設定
+        this.ctx.fillStyle = color;
+        this.ctx.fillRect(x, y, boxwidth, boxheight);
+    }
+
+    boxcolor(no) {
+    }
+
+}
+
+class GrooveGauge extends Gauge {
+    constructor(ctx) {
+        super(ctx);
+
+        this.groove = 22220;
+        this.GAUGE_BOX_NUMBER = 24;
+
+        this.GAUGE_BOX_AS_GROOVE = this.MAXGROOVE / this.GAUGE_BOX_NUMBER;
+
+        this.GREAT = 1000;
+        this.GOOD = 100;
+        this.BAD = -1200;
+        this.OVER = -2000;
+    }
+
+    boxcolor(no) {
+        this.no = no;
+        this.enableboxnumber = Math.floor(this.groove / this.GAUGE_BOX_AS_GROOVE);
+
+        if (this.no < this.enableboxnumber) {
+            this.color = '#3ad132';
+        } else {
+            this.color = '#444444';
+        }
+        return this.color;
+    }
+
+
+
+    /**
+     * @param {String} judgeName
+     */
+    set judge(judgeName) {
+        switch (judgeName) {
+            case "PGREAT":
+                this.groove += this.PGREAT;
+                break;
+            case "GREAT":
+                this.groove += this.GREAT;
+                break;
+            case "GOOD":
+                this.groove += this.GOOD;
+                break;
+            case "BAD":
+                this.groove += this.BAD;
+                break;
+            case "POOR":
+                this.groove += this.POOR;
+                break;
+            case "OVER":
+                this.groove += this.OVER;
+                break;
+            case "BREAK":
+                this.groove += this.BREAK;
+                break;
+
+            default:
+                console.log("i dont know this judgeName");
+                break;
+        }
+        if (this.groove < 0) {
+            this.groove = 0;
+        }
+        if (this.groove > this.MAXGROOVE) {
+            this.groove = this.MAXGROOVE;
+        }
+    }
 }
 
 class MusicPlayer {
@@ -241,11 +401,13 @@ class Game {
 
         const NOTE_WIDTH = 80;
 
-        for (let i = 1; i < 70; i++) {
-            this.notes.push(new Note(ctx, (i + 1) % 4, -3000 - (1000 * i), i, NOTE_WIDTH));
-            this.notes.push(new Note(ctx, (i + 2) % 4, -3000 - (1000 * i), i, NOTE_WIDTH));
-            this.notes.push(new Note(ctx, (i + 3) % 4, -3000 - (1000 * i), i, NOTE_WIDTH));
+        for (let i = 0; i < 7000; i++) {
+            this.notes.push(new Note(ctx, (i + 1) % 4, 4448 + (278 * i), 1, NOTE_WIDTH, 120));
+            this.notes.push(new Note(ctx, (i + 2) % 4, 4448 + (278 * i), 1, NOTE_WIDTH, 120));
+            this.notes.push(new Note(ctx, (i + 3) % 4, 4448 + (278 * i), 1, NOTE_WIDTH, 120));
         }
+
+        //this.bpmchanger = new BpmChanger(3000, 60, this.notes);
 
         for (let i = 0; i < 4; i++) {
             bomb.push(new Bomb(ctx, i, 0, NOTE_WIDTH));
@@ -262,12 +424,24 @@ class Game {
     _startGame(e) {
         this.clock = new Date();
 
+        //TEST!!!!!!!!!!!TEST!!!!!!!!!!!!!!!!!!!TEST
+
+        this.GAUGE = new GrooveGauge(ctx);
+
+        //TEST!!!!!!!!!!!TEST!!!!!!!!!!!!!!!!!!!TEST
+
+
         //この関数へのアクセスを消す
         document.removeEventListener('keydown', this.startGame);
 
+
+        //ここnoteの数が増えてくるとどんどんずれる原因になるかも要検証
         for (let i = 0; i < this.notes.length; i++) {
             this.notes[i].begin(this.clock.getTime());
         }
+
+        //????
+        //this.bpmchanger.begin(this.clock.getTime());
 
         this.keypressed = (e) => { this._keypressed(e) };
         document.addEventListener('keydown', this.keypressed);
@@ -300,6 +474,11 @@ class Game {
         //背景生成
         this.writeBackGround();
 
+        //!!!!!!TEST
+        this.GAUGE.writeGauge();
+        //TEST
+
+
         //ボム生成
         for (let i = 0; i < bomb.length; i++) {
             bomb[i].writebomb();
@@ -311,9 +490,10 @@ class Game {
 
         //存在するすべてのNoteオブジェクトの時を進める
         for (let i = 0; i < this.notes.length; i++) {
-            this.notes[i].writenote(this.clock);
+            this.notes[i].writing(this.clock);
             if (this.notes[i].isOVER(this.clock)) {
                 judgeview.judge = "OVER";
+                this.GAUGE.judge = "OVER";
                 comboview.resetConboCount();
                 this.notes.splice(i, 1);
             };
@@ -334,18 +514,17 @@ class Game {
     _keypressed(e) {
 
         console.log(e.key);
-        //console.log(e.key);
-        if (e.repeat == false) {
-            if (e.code == 'KeyD') {
+        if (e.repeat === false) {
+            if (e.code === 'KeyD') {
                 //console.log("d is plassed,");
                 this.judgeTiming(0);
-            } else if (e.code == 'KeyF') {
+            } else if (e.code === 'KeyF') {
                 //console.log("f is plassed,");
                 this.judgeTiming(1);
-            } else if (e.code == 'KeyJ') {
+            } else if (e.code === 'KeyJ') {
                 //console.log("j is plassed,");
                 this.judgeTiming(2);
-            } else if (e.code == 'KeyK') {
+            } else if (e.code === 'KeyK') {
                 //console.log("k is plassed,");
                 this.judgeTiming(3);
             }
@@ -370,19 +549,22 @@ class Game {
                     console.log(`${l}is GREAT!, i think it is${b}`);
                     console.log("GREAT");
                     judgeview.judge = "GREAT";
+                    this.GAUGE.judge = "GREAT";
                     comboview.addConboCount();
                     this.notes.splice(i, 1);
-                } else if (300 > b && -300 < b) {
+                } else if (100 > b && -100 < b) {
                     console.log("good");
                     judgeview.judge = "GOOD";
+                    this.GAUGE.judge = "GOOD";
                     comboview.addConboCount();
                     this.notes.splice(i, 1);
-                } else if (400 > b && -400 < b) {
+                } else if (200 > b && -200 < b) {
                     console.log("bad");
                     judgeview.judge = "bad";
+                    this.GAUGE.judge = "BAD";
                     comboview.resetConboCount();
                     this.notes.splice(i, 1);
-                } else if (500 > b && -500 < b) {
+                } else if (210 > b && -210 < b) {
                     console.log("poor");
                     judgeview.judge = "POOR";
                     this.notes.splice(i, 1);
