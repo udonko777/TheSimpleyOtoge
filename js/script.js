@@ -12,7 +12,6 @@ window.setInterval = function (vCallback, nDelay /*, argumentToPass1, argumentTo
 };
 
 //ここグローバルになってるので可能ならスコープを狭めたいっす。
-let IntervID;
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
@@ -34,7 +33,14 @@ class GameEvent {
 
 class Note extends GameEvent {
 
-    /** @param {Number} no 0 at left */
+    /**
+     * @param {CanvasRenderingContext2D?} ctx
+     * @param {number}no - note index,0 is left side
+     * @param {number}falltime - 落ちるまでの猶予時間
+     * @param {number}hispeed
+     * @param {number}NOTE_WIDTH
+     * @param {number}FIRST_BPM - BPM
+     * */
     constructor(ctx, no, falltime, hispeed, NOTE_WIDTH, FIRST_BPM) {
 
         super();
@@ -44,7 +50,6 @@ class Note extends GameEvent {
         this.hispeed = hispeed;
         this.NOTE_WIDTH = NOTE_WIDTH;
         this.falltime = -falltime;
-        //BPMが途中で変化するタイプの曲において既に
         this.beforeTime = 0;
         //scrollspeed 1 : 120 bpm
         this.scrollspeedforbpm = FIRST_BPM / 120;
@@ -57,6 +62,9 @@ class Note extends GameEvent {
         return this.START_TIME;
     }
 
+    /** このnoteを描画する。
+     * @param {Data} clock 
+     */
     writing(clock) {
 
         //ノーツの色の設定
@@ -68,70 +76,61 @@ class Note extends GameEvent {
         //console.log(this.y);
     }
 
-    changeBpm(clock, BPM) {
-        this.beforeTime = this.beforeTime + (clock.getTime() - this.START_TIME) * this.scrollspeedforbpm;
-        this.scrollspeedforbpm = BPM / 120;
-        console.log("はいは～い呼び出されたよぉ");
-    }
-
-
+    /**
+     * @param {Data} clock 
+     * @returns {boolean}
+     */
     isOVER(clock) {
         //無視された時の処理(OVER判定)
 
         if (501 < this.falltime + (clock.getTime() - this.START_TIME)) {
             return true;
         }
-        else {
-            return false;
-        }
-    }
-}
-
-class BpmChanger extends GameEvent {
-
-    constructor(falltime, BPM, notes) {
-        super();
-
-        this.falltime = falltime;
-        this.BPM = BPM;
-        this.notes = notes;
-    }
-
-    writing(clock) {
-        if (this.falltime === clock.getTime() - this.START_TIME) {
-            return (true, this.BPM);
-        }
-        return (false, this.BPM);
+        return false;
     }
 }
 
 class Bomb {
-
+    /**
+     * @param {CanvasRenderingContext2D} ctx 
+     * @param {number} no 
+     * @param {number} bomblife 
+     * @param {number} NOTE_WIDTH 
+     */
     constructor(ctx, no, bomblife, NOTE_WIDTH) {
         this.bomblife = bomblife;
         this.ctx = ctx;
         this.no = no;
         this.NOTE_WIDTH = NOTE_WIDTH;
     }
-
+    /** なぜfalseを返す必要があるのか？なぜnoteのメソッド名に習ってwriting()ではないのか？何もわからない
+     * @returns {boolean}
+     */
     writebomb() {
         if (this.bomblife > 0) {
             this.ctx.fillStyle = `rgba( 100, 105, 200,${this.bomblife / 50})`;
             this.ctx.fillRect(this.no * this.NOTE_WIDTH, 480 + (this.bomblife / 4), this.NOTE_WIDTH, 5);
             this.bomblife -= 1;
-        } else {
-
         }
         return false;
     }
 
+    /**
+     * これただのセッターじゃねーか！！！！！！なんなんだ
+     * @param {number} bomblife 
+     */
     setbomblife(bomblife) {
         this.bomblife = bomblife;
     }
 }
 
+/** Judgeを実際に表示させるUI。実際にはcomboViewと組み合わせてつかうゾ
+ */
 class JudgeView {
 
+    /**
+     * @param {CanvasRenderingContext2D} ctx 
+     */
     constructor(ctx) {
         //judge == {N/A,poor,poor,good,great,great}
         this.ctx = ctx;
@@ -141,7 +140,7 @@ class JudgeView {
     }
 
     /**
-     * @param {String} judgeName
+     * @param {string} judgeName
      */
     set judge(judgeName) {
         switch (judgeName) {
@@ -198,7 +197,9 @@ class JudgeView {
         }
     }
 }
-
+/** 
+ * 現在のコンボ数を表示するView、実際にはJudgeViewと組み合わせて使うゾ
+*/
 class ComboView {
 
     constructor(ctx) {
@@ -225,9 +226,12 @@ class ComboView {
     }
 }
 
-//このまま使わない事(実装は子クラス)
 class Gauge {
 
+    /**
+     * @abstract
+     * @param {CanvasRenderingContext2D} ctx 
+     */
     constructor(ctx) {
 
         //描画関連のパラメータ
@@ -273,6 +277,13 @@ class Gauge {
     }
 
     //外部から呼び出せないようにすべき
+    /**
+     * @param {string | CanvasGradient | CanvasPattern} color
+     * @param {number} x
+     * @param {number} y
+     * @param {number} boxwidth
+     * @param {number} boxheight
+     */
     writebox(color, x, y, boxwidth, boxheight) {
         //ノーツの色の設定
         this.ctx.fillStyle = color;
@@ -284,6 +295,9 @@ class Gauge {
 
 }
 
+/** TODO: ゲージのUIの実装とゲージの計算を同じ場所で行っている激ヤバClass、早く何とかする。
+ * 
+ */
 class GrooveGauge extends Gauge {
     constructor(ctx) {
         super(ctx);
@@ -313,7 +327,7 @@ class GrooveGauge extends Gauge {
 
 
 
-    /**
+    /** ジャッジの名前からゲージの増減を計算する。ジャッジをオブジェクトにすればこんなことしなくていいと思う。
      * @param {String} judgeName
      */
     set judge(judgeName) {
@@ -353,6 +367,9 @@ class GrooveGauge extends Gauge {
     }
 }
 
+/**
+ * ただ音楽を流すだけのClass。
+ */
 class MusicPlayer {
 
     constructor() {
@@ -377,7 +394,7 @@ class MusicPlayer {
 
 }
 
-//自分自身を一度呼び出す関数っす。
+//自分自身を一度呼び出す関数。これいる？
 (function () {
 
 }());
@@ -450,8 +467,6 @@ class Game {
 
         let musicplayer = new MusicPlayer();
         musicplayer.play();
-
-        //let START_TIME = this.clock.getTime();
 
         this.IntervID = window.setInterval(this.frame.bind(this), 4);
 
@@ -550,30 +565,26 @@ class Game {
 
                 if (50 > b && -50 < b) {
                     console.log(`${l}is GREAT!, i think it is${b}`);
-                    console.log("GREAT");
                     judgeview.judge = "GREAT";
                     this.GAUGE.judge = "GREAT";
                     comboview.addConboCount();
                     this.notes.splice(i, 1);
                 } else if (100 > b && -100 < b) {
-                    console.log("good");
                     judgeview.judge = "GOOD";
                     this.GAUGE.judge = "GOOD";
                     comboview.addConboCount();
                     this.notes.splice(i, 1);
                 } else if (200 > b && -200 < b) {
-                    console.log("bad");
                     judgeview.judge = "bad";
                     this.GAUGE.judge = "BAD";
                     comboview.resetConboCount();
                     this.notes.splice(i, 1);
                 } else if (210 > b && -210 < b) {
-                    console.log("poor");
                     judgeview.judge = "POOR";
                     this.notes.splice(i, 1);
                 }
 
-            } else { }
+            }
 
         }
 
