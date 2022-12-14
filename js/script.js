@@ -1,3 +1,5 @@
+'use strict';
+
 // Enable the passage of the 'this' object through the JavaScript timers
 
 var __nativeST__ = window.setTimeout, __nativeSI__ = window.setInterval;
@@ -436,12 +438,12 @@ class Game {
 
 
         //ここnoteの数が増えてくるとどんどんずれる原因になるかも要検証
-        for (let i = 0; i < this.notes.length; i++) {
+
+        const NOTES_LENGTH = this.notes.length;
+
+        for (let i = 0; i < NOTES_LENGTH; i++) {
             this.notes[i].begin(this.clock.getTime());
         }
-
-        //????
-        //this.bpmchanger.begin(this.clock.getTime());
 
         this.keypressed = (e) => { this._keypressed(e) };
         document.addEventListener('keydown', this.keypressed);
@@ -489,6 +491,7 @@ class Game {
         comboview.writeConboCount();
 
         //存在するすべてのNoteオブジェクトの時を進める
+
         for (let i = 0; i < this.notes.length; i++) {
             this.notes[i].writing(this.clock);
             if (this.notes[i].isOVER(this.clock)) {
@@ -536,7 +539,7 @@ class Game {
     /** @param {Number} l */
     judgeTiming(l) {
 
-        //クッソ雑に全ノーツを判定します。todo。
+        //TODO クッソ雑に全ノーツを判定します。
 
         for (let i = 0; i < this.notes.length; i++) {
             if (this.notes[i].no == l) {
