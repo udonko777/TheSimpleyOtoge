@@ -160,7 +160,7 @@ class JudgeView {
                 this.judgeName = "GREAT";
                 break;
             default:
-                console.log("i dont know this judgeName");
+                console.warn("i dont know this judgeName");
                 break;
         }
     }
@@ -497,7 +497,8 @@ class Game {
 
 
         //ボム生成
-        for (let i = 0; i < bomb.length; i++) {
+        const BOMB_LENGTH = bomb.length;
+        for (let i = 0; i < BOMB_LENGTH; i++) {
             bomb[i].writebomb();
         }
 
