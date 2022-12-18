@@ -16,7 +16,6 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
 //FIX ME bomの描画関連。雑な実装なのでどうにかしたい。
-var comboview;
 
 class GameEvent {
 
@@ -196,7 +195,8 @@ class JudgeView {
     }
 }
 /** 
- * 現在のコンボ数を表示するView、実際にはJudgeViewと組み合わせて使うゾ
+ * 現在のコンボ数を表示するView、実際にはJudgeViewと組み合わせて使う。
+ * 現状conbo数のカウントとコンボ数の表示の両方をこのClassで行ってしまっているので、別々にしたい。
 */
 class ComboView {
 
@@ -318,11 +318,10 @@ class GrooveGauge extends Gauge {
         this.enableboxnumber = Math.floor(this.groove / this.GAUGE_BOX_AS_GROOVE);
 
         if (this.no < this.enableboxnumber) {
-            this.color = '#3ad132';
+            return '#3ad132';
         } else {
-            this.color = '#444444';
+            return '#444444';
         }
-        return this.color;
     }
 
     /** ジャッジの名前からゲージの増減を計算する。ジャッジをオブジェクトにすればこんなことしなくていいと思う。
@@ -409,7 +408,7 @@ class Game {
         this.keypresscount = 0;
 
         this.judgeview = new JudgeView(ctx);
-        comboview = new ComboView(ctx);
+        this.conboView = new ComboView(ctx);
 
         this.notes = [];
 
@@ -503,7 +502,7 @@ class Game {
 
         //判定表示
         this.judgeview.writejudge();
-        comboview.writeConboCount();
+        this.conboView.writeConboCount();
 
         //存在するすべてのNoteオブジェクトの時を進める
 
@@ -512,7 +511,7 @@ class Game {
             if (this.notes[i].isOVER(this.clock)) {
                 this.judgeview.judge = "OVER";
                 this.GAUGE.judge = "OVER";
-                comboview.resetConboCount();
+                this.conboView.resetConboCount();
                 this.notes.splice(i, 1);
             };
         }
@@ -563,17 +562,17 @@ class Game {
                     console.log(`${l}is GREAT!, i think it is${b}`);
                     this.judgeview.judge = "GREAT";
                     this.GAUGE.judge = "GREAT";
-                    comboview.addConboCount();
+                    this.conboView.addConboCount();
                     this.notes.splice(i, 1);
                 } else if (100 > b && -100 < b) {
                     this.judgeview.judge = "GOOD";
                     this.GAUGE.judge = "GOOD";
-                    comboview.addConboCount();
+                    this.conboView.addConboCount();
                     this.notes.splice(i, 1);
                 } else if (200 > b && -200 < b) {
                     this.judgeview.judge = "bad";
                     this.GAUGE.judge = "BAD";
-                    comboview.resetConboCount();
+                    this.conboView.resetConboCount();
                     this.notes.splice(i, 1);
                 } else if (210 > b && -210 < b) {
                     this.judgeview.judge = "POOR";
