@@ -15,9 +15,7 @@ window.setInterval = function (vCallback, nDelay /*, argumentToPass1, argumentTo
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
-//bomの描画関連。雑な実装なのでどうにかしたい。
-var bomb = [];
-var judgeview;
+//FIX ME bomの描画関連。雑な実装なのでどうにかしたい。
 var comboview;
 
 class GameEvent {
@@ -112,7 +110,7 @@ class Bomb {
             this.ctx.fillRect(this.no * this.NOTE_WIDTH, 480 + (this.bomblife / 4), this.NOTE_WIDTH, 5);
             this.bomblife -= 1;
         }
-        return false;
+        return;
     }
 
     /**
@@ -207,6 +205,7 @@ class ComboView {
         this.combocount = 0;
     }
 
+    //FIXME ViewなのにConboCountの論理的実装が行われている
     addConboCount() {
         this.combocount += 1;
     }
@@ -277,7 +276,8 @@ class Gauge {
     }
 
     //外部から呼び出せないようにすべき
-    /**
+    /** 
+     * @private
      * @param {string | CanvasGradient | CanvasPattern} color
      * @param {number} x
      * @param {number} y
@@ -325,8 +325,6 @@ class GrooveGauge extends Gauge {
         return this.color;
     }
 
-
-
     /** ジャッジの名前からゲージの増減を計算する。ジャッジをオブジェクトにすればこんなことしなくていいと思う。
      * @param {String} judgeName
      */
@@ -358,12 +356,11 @@ class GrooveGauge extends Gauge {
                 console.log("i dont know this judgeName");
                 break;
         }
-        if (this.groove < 0) {
-            this.groove = 0;
-        }
-        if (this.groove > this.MAXGROOVE) {
-            this.groove = this.MAXGROOVE;
-        }
+
+        //this.grooveを0 ~ MAXGROOVEに成型する
+        this.groove = Math.max(this.groove, 0);
+
+        this.groove = Math.min(this.groove, this.MAXGROOVE);
     }
 }
 
@@ -411,7 +408,7 @@ class Game {
 
         this.keypresscount = 0;
 
-        judgeview = new JudgeView(ctx);
+        this.judgeview = new JudgeView(ctx);
         comboview = new ComboView(ctx);
 
         this.notes = [];
@@ -427,9 +424,12 @@ class Game {
         }
 
         //this.bpmchanger = new BpmChanger(3000, 60, this.notes);
+        /** @type {Array.<Bomb>}
+         */
+        this.bombs = [];
 
         for (let i = 0; i < 4; i++) {
-            bomb.push(new Bomb(ctx, i, 0, NOTE_WIDTH));
+            this.bombs.push(new Bomb(ctx, i, 0, NOTE_WIDTH));
         }
 
         this.startGame = (e) => { this._startGame(e) };
@@ -495,15 +495,14 @@ class Game {
         this.GAUGE.writeGauge();
         //TEST
 
-
         //ボム生成
-        const BOMB_LENGTH = bomb.length;
+        const BOMB_LENGTH = this.bombs.length;
         for (let i = 0; i < BOMB_LENGTH; i++) {
-            bomb[i].writebomb();
+            this.bombs[i].writebomb();
         }
 
         //判定表示
-        judgeview.writejudge();
+        this.judgeview.writejudge();
         comboview.writeConboCount();
 
         //存在するすべてのNoteオブジェクトの時を進める
@@ -511,7 +510,7 @@ class Game {
         for (let i = 0; i < this.notes.length; i++) {
             this.notes[i].writing(this.clock);
             if (this.notes[i].isOVER(this.clock)) {
-                judgeview.judge = "OVER";
+                this.judgeview.judge = "OVER";
                 this.GAUGE.judge = "OVER";
                 comboview.resetConboCount();
                 this.notes.splice(i, 1);
@@ -535,16 +534,12 @@ class Game {
         console.log(e.key);
         if (e.repeat === false) {
             if (e.code === 'KeyD') {
-                //console.log("d is plassed,");
                 this.judgeTiming(0);
             } else if (e.code === 'KeyF') {
-                //console.log("f is plassed,");
                 this.judgeTiming(1);
             } else if (e.code === 'KeyJ') {
-                //console.log("j is plassed,");
                 this.judgeTiming(2);
             } else if (e.code === 'KeyK') {
-                //console.log("k is plassed,");
                 this.judgeTiming(3);
             }
         }
@@ -558,30 +553,30 @@ class Game {
         //TODO クッソ雑に全ノーツを判定します。
 
         for (let i = 0; i < this.notes.length; i++) {
-            if (this.notes[i].no == l) {
+            if (this.notes[i].no === l) {
 
                 //bは短縮のためのインスタンスな変数です。
 
-                const b = (this.notes[i].falltime + (this.clock.getTime() - this.notes[i].getSTART_TIME()))
+                const b = this.notes[i].falltime + (this.clock.getTime() - this.notes[i].getSTART_TIME())
 
                 if (50 > b && -50 < b) {
                     console.log(`${l}is GREAT!, i think it is${b}`);
-                    judgeview.judge = "GREAT";
+                    this.judgeview.judge = "GREAT";
                     this.GAUGE.judge = "GREAT";
                     comboview.addConboCount();
                     this.notes.splice(i, 1);
                 } else if (100 > b && -100 < b) {
-                    judgeview.judge = "GOOD";
+                    this.judgeview.judge = "GOOD";
                     this.GAUGE.judge = "GOOD";
                     comboview.addConboCount();
                     this.notes.splice(i, 1);
                 } else if (200 > b && -200 < b) {
-                    judgeview.judge = "bad";
+                    this.judgeview.judge = "bad";
                     this.GAUGE.judge = "BAD";
                     comboview.resetConboCount();
                     this.notes.splice(i, 1);
                 } else if (210 > b && -210 < b) {
-                    judgeview.judge = "POOR";
+                    this.judgeview.judge = "POOR";
                     this.notes.splice(i, 1);
                 }
 
@@ -589,9 +584,9 @@ class Game {
 
         }
 
-        bomb[l].setbomblife(50);
+        this.bombs[l].setbomblife(50);
 
-        return false;
+        return;
     }
 
 }
