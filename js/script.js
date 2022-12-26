@@ -1,17 +1,5 @@
 'use strict';
 
-/* 多分どっかでコピペしてきた謎のコード。おそらく後方互換性を持たせるものか？
-
-var __nativeST__ = window.setTimeout, __nativeSI__ = window.setInterval;
-
-window.setInterval = function (vCallback, nDelay ) {
-    var oThis = this, aArgs = Array.prototype.slice.call(arguments, 2);
-    return __nativeSI__(vCallback instanceof Function ? function () {
-        vCallback.apply(oThis, aArgs);
-    } : vCallback, nDelay);
-};
-*/
-
 //ここグローバルになってるので可能ならスコープを狭めたいっす。
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
