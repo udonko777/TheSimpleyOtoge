@@ -1,21 +1,20 @@
 'use strict';
 
-// Enable the passage of the 'this' object through the JavaScript timers
+/* 多分どっかでコピペしてきた謎のコード。おそらく後方互換性を持たせるものか？
 
 var __nativeST__ = window.setTimeout, __nativeSI__ = window.setInterval;
 
-window.setInterval = function (vCallback, nDelay /*, argumentToPass1, argumentToPass2, etc. */) {
+window.setInterval = function (vCallback, nDelay ) {
     var oThis = this, aArgs = Array.prototype.slice.call(arguments, 2);
     return __nativeSI__(vCallback instanceof Function ? function () {
         vCallback.apply(oThis, aArgs);
     } : vCallback, nDelay);
 };
+*/
 
 //ここグローバルになってるので可能ならスコープを狭めたいっす。
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
-
-//FIX ME bomの描画関連。雑な実装なのでどうにかしたい。
 
 class GameEvent {
 
@@ -46,7 +45,7 @@ class Note extends GameEvent {
         this.no = no;
         this.hispeed = hispeed;
         this.NOTE_WIDTH = NOTE_WIDTH;
-        this.falltime = -falltime;
+        this.falltime = 0 - falltime;
         this.beforeTime = 0;
         //scrollspeed 1 : 120 bpm
         this.scrollspeedforbpm = FIRST_BPM / 120;
@@ -70,7 +69,6 @@ class Note extends GameEvent {
         this.y = ((this.falltime + this.beforeTime + ((clock.getTime() - this.START_TIME) * this.scrollspeedforbpm)) / this.hispeed) + 500;
         //ノーツの描画
         this.ctx.fillRect(this.no * this.NOTE_WIDTH, this.y, this.NOTE_WIDTH, 10);
-        //console.log(this.y);
     }
 
     /**
@@ -95,20 +93,20 @@ class Bomb {
      * @param {number} NOTE_WIDTH 
      */
     constructor(ctx, no, bomblife, NOTE_WIDTH) {
-        this.bomblife = bomblife;
         this.ctx = ctx;
         this.no = no;
+        this.bomblife = bomblife;
         this.NOTE_WIDTH = NOTE_WIDTH;
     }
-    /** なぜfalseを返す必要があるのか？なぜnoteのメソッド名に習ってwriting()ではないのか？何もわからない
-     * @returns {boolean}
-     */
+
     writebomb() {
+
         if (this.bomblife > 0) {
             this.ctx.fillStyle = `rgba( 100, 105, 200,${this.bomblife / 50})`;
             this.ctx.fillRect(this.no * this.NOTE_WIDTH, 480 + (this.bomblife / 4), this.NOTE_WIDTH, 5);
             this.bomblife -= 1;
         }
+
         return;
     }
 
@@ -266,13 +264,15 @@ class Gauge {
 
     writeGauge() {
 
-        this.existarea = (this.GAUGE_WIDTH - this.GAUGE_VOID_WIDTH) / this.GAUGE_BOX_NUMBER;
-        this.voidarea = this.GAUGE_VOID_WIDTH / this.GAUGE_BOX_NUMBER;
-        this.usedarea = 0;
+        const existarea = (this.GAUGE_WIDTH - this.GAUGE_VOID_WIDTH) / this.GAUGE_BOX_NUMBER;
+        const voidarea = this.GAUGE_VOID_WIDTH / this.GAUGE_BOX_NUMBER;
+        let usedarea = 0;
+
         for (let i = 0; i < this.GAUGE_BOX_NUMBER; i++) {
-            this.writebox(this.boxcolor(i), this.usedarea + this.STATEX, this.STATEY, this.existarea, this.GAUGE_HEIGHT);
-            this.usedarea = this.usedarea + this.existarea + this.voidarea;
+            this.writebox(this.boxcolor(i), usedarea + this.STATEX, this.STATEY, existarea, this.GAUGE_HEIGHT);
+            usedarea = usedarea + existarea + voidarea;
         }
+
     }
 
     //外部から呼び出せないようにすべき
@@ -299,6 +299,7 @@ class Gauge {
  * 
  */
 class GrooveGauge extends Gauge {
+
     constructor(ctx) {
         super(ctx);
 
@@ -314,10 +315,9 @@ class GrooveGauge extends Gauge {
     }
 
     boxcolor(no) {
-        this.no = no;
-        this.enableboxnumber = Math.floor(this.groove / this.GAUGE_BOX_AS_GROOVE);
+        const enableBoxNumber = Math.floor(this.groove / this.GAUGE_BOX_AS_GROOVE);
 
-        if (this.no < this.enableboxnumber) {
+        if (no < enableBoxNumber) {
             return '#3ad132';
         } else {
             return '#444444';
@@ -416,15 +416,13 @@ class Game {
 
         const NOTE_WIDTH = 80;
 
-        for (let i = 0; i < 7000; i++) {
+        for (let i = 0; i < 4000; i++) {
             this.notes.push(new Note(ctx, (i + 1) % 4, 4448 + (278 * i), 1, NOTE_WIDTH, 120));
             this.notes.push(new Note(ctx, (i + 2) % 4, 4448 + (278 * i), 1, NOTE_WIDTH, 120));
             this.notes.push(new Note(ctx, (i + 3) % 4, 4448 + (278 * i), 1, NOTE_WIDTH, 120));
         }
 
-        //this.bpmchanger = new BpmChanger(3000, 60, this.notes);
-        /** @type {Array.<Bomb>}
-         */
+        /** @type {Array.<Bomb>} */
         this.bombs = [];
 
         for (let i = 0; i < 4; i++) {
