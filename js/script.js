@@ -4,18 +4,7 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
-class GameEvent {
-
-    constructor() { }
-
-    begin(starttime) {
-        this.START_TIME = starttime;
-    }
-
-    writing(clock) { }
-}
-
-class Note extends GameEvent {
+class Note {
 
     /**
      * @param {CanvasRenderingContext2D?} ctx
@@ -27,7 +16,6 @@ class Note extends GameEvent {
      * */
     constructor(ctx, no, falltime, hispeed, NOTE_WIDTH, FIRST_BPM) {
 
-        super();
         //this.canvas = canvas;
         this.ctx = ctx;
         this.no = no;
@@ -40,6 +28,10 @@ class Note extends GameEvent {
         //(落ちるまでの時間 + 現在の時間 - 開始時間) / ハイスピ + 判定位置
         //このタイミングで現在の時間と開始時間が等しいので0
         this.y = ((this.falltime + 0) / hispeed) + 500;
+    }
+
+    begin(starttime) {
+        this.START_TIME = starttime;
     }
 
     getSTART_TIME() {
@@ -64,8 +56,6 @@ class Note extends GameEvent {
      * @returns {boolean}
      */
     isOVER(clock) {
-        //無視された時の処理(OVER判定)
-
         if (501 < this.falltime + (clock.getTime() - this.START_TIME)) {
             return true;
         }
@@ -428,12 +418,8 @@ class Game {
     _startGame(e) {
         this.clock = new Date();
 
-        //TEST!!!!!!!!!!!TEST!!!!!!!!!!!!!!!!!!!TEST
-
-        this.GAUGE = new GrooveGauge(ctx);
-
-        //TEST!!!!!!!!!!!TEST!!!!!!!!!!!!!!!!!!!TEST
-
+        //TEST!!
+        this.GAUGE = new GrooveGauge(ctx)
 
         //この関数へのアクセスを消す
         document.removeEventListener('keydown', this.startGame);
@@ -450,7 +436,7 @@ class Game {
         this.keypressed = (e) => { this._keypressed(e) };
         document.addEventListener('keydown', this.keypressed);
 
-        let musicplayer = new MusicPlayer();
+        const musicplayer = new MusicPlayer();
         musicplayer.play();
 
         this.IntervID = window.setInterval(this.frame.bind(this), 4);
