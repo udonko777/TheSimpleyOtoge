@@ -1,13 +1,14 @@
 'use strict';
 
 //ここグローバルになってるので可能ならスコープを狭めたいっす。
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
+//TSの'as HTMLCanvasElement'と同じ意味。
+const canvas = /** @type HTMLCanvasElement */ (document.getElementById('canvas'));
+const ctx = canvas?.getContext('2d');
 
 class Note {
 
     /**
-     * @param {CanvasRenderingContext2D?} ctx
+     * @param {CanvasRenderingContext2D} ctx
      * @param {number}no - note index,0 is left side
      * @param {number}falltime - 落ちるまでの猶予時間
      * @param {number}hispeed
@@ -39,7 +40,7 @@ class Note {
     }
 
     /** このnoteを描画する。
-     * @param {Data} clock 
+     * @param {Date} clock 
      */
     writing(clock) {
 
@@ -52,7 +53,7 @@ class Note {
     }
 
     /**
-     * @param {Data} clock 
+     * @param {Date} clock 
      * @returns {boolean}
      */
     isOVER(clock) {
@@ -214,7 +215,8 @@ class Gauge {
         this.ctx = ctx;
 
         //0 <= groove <= 65536
-        this.groove;
+        
+        this.groove = 0;
         this.MAXGROOVE = 65536;
 
         this.STATEX = 0;
@@ -227,14 +229,14 @@ class Gauge {
         this.GAUGE_BOX_NUMBER = 20;
 
         //ゲージの計算関連
-        this.PGREAT;
-        this.GREAT;
-        this.GOOD;
-        this.BAD;
-        this.POOR;
-        this.OVER;
-        this.BREAK;
-        this.judge;
+        this.PGREAT = 0;
+        this.GREAT = 0;
+        this.GOOD = 0;
+        this.BAD = 0;
+        this.POOR = 0;
+        this.OVER = 0;
+        this.BREAK = 0;
+        //this.judge = ;
 
         //grooveが0の時ゲームを終了させるか
         this.IS_TOLERANT = false;
@@ -268,6 +270,10 @@ class Gauge {
         this.ctx.fillRect(x, y, boxwidth, boxheight);
     }
 
+    /**
+     * @abstract
+     * @param {number} no
+     */
     boxcolor(no) {
     }
 
@@ -303,7 +309,7 @@ class GrooveGauge extends Gauge {
     }
 
     /** ジャッジの名前からゲージの増減を計算する。ジャッジをオブジェクトにすればこんなことしなくていいと思う。
-     * @param {String} judgeName
+     * @param {string} judgeName
      */
     set judge(judgeName) {
         switch (judgeName) {
