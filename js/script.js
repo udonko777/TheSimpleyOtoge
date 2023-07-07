@@ -374,11 +374,6 @@ class MusicPlayer {
 
 }
 
-//自分自身を一度呼び出す関数。これいる？
-(function () {
-
-}());
-
 //HTML側Bodyのonlordに書かれているので、この関数はBodyの読み込みが終わったら呼ばれるはず
 function startClock() {
     const game = new Game();
@@ -445,11 +440,11 @@ class Game {
         const musicplayer = new MusicPlayer();
         musicplayer.play();
 
-        this.IntervID = window.setInterval(this.frame.bind(this), 4);
+        this.frame();
 
     }
 
-    //gameが実際に始まる前までに表示し続ける表示を用意します
+    //gameが実際に始まる前までに表示し続ける表示
     inputWaitingscreen() {
 
         this.writeBackGround();
@@ -461,7 +456,10 @@ class Game {
     }
 
     //ここに、一フレームにつき行う動作を描く
-    frame() {
+    frame = () => {
+
+        this.exitMain = window.requestAnimationFrame(this.frame);
+
         this.clock = new Date();
         //画面のリフレッシュ
         ctx.clearRect(0, 0, 3000, 3000);
@@ -494,7 +492,6 @@ class Game {
             };
         }
 
-        //console.log((clock.getTime() - starttime) / 100);
     }
 
     writeBackGround() {
