@@ -3,7 +3,7 @@
 //ここグローバルになってるので可能ならスコープを狭めたいっす。
 //TSの'as HTMLCanvasElement'と同じ意味。
 const canvas = /** @type HTMLCanvasElement */ (document.getElementById('canvas'));
-const ctx = canvas?.getContext('2d');
+//const ctx = canvas?.getContext('2d');
 
 class Note {
 
@@ -376,18 +376,24 @@ class MusicPlayer {
 
 //HTML側Bodyのonlordに書かれているので、この関数はBodyの読み込みが終わったら呼ばれるはず
 function startClock() {
-    const game = new Game();
+    const ctx = canvas?.getContext('2d');
+    const game = new Game(ctx);
 }
 
 class Game {
 
-    //Game開始のための準備、いろいろ読み込んでstartGameを可能にする。
-    constructor() {
+    /** Game開始のための準備、いろいろ読み込んでstartGameを可能にする。
+     * @param {CanvasRenderingContext2D} ctx
+     */
+    constructor(ctx) {
+
+        /** @readonly */
+        this.CTX = ctx
 
         this.keypresscount = 0;
 
-        this.judgeview = new JudgeView(ctx);
-        this.conboView = new ComboView(ctx);
+        this.judgeview = new JudgeView(this.CTX);
+        this.conboView = new ComboView(this.CTX);
 
         this.notes = [];
 
@@ -396,16 +402,16 @@ class Game {
         const NOTE_WIDTH = 80;
 
         for (let i = 0; i < 4000; i++) {
-            this.notes.push(new Note(ctx, (i + 1) % 4, 4448 + (278 * i), 1, NOTE_WIDTH, 120));
-            this.notes.push(new Note(ctx, (i + 2) % 4, 4448 + (278 * i), 1, NOTE_WIDTH, 120));
-            this.notes.push(new Note(ctx, (i + 3) % 4, 4448 + (278 * i), 1, NOTE_WIDTH, 120));
+            this.notes.push(new Note(this.CTX, (i + 1) % 4, 4448 + (278 * i), 1, NOTE_WIDTH, 120));
+            this.notes.push(new Note(this.CTX, (i + 2) % 4, 4448 + (278 * i), 1, NOTE_WIDTH, 120));
+            this.notes.push(new Note(this.CTX, (i + 3) % 4, 4448 + (278 * i), 1, NOTE_WIDTH, 120));
         }
 
         /** @type {Array.<Bomb>} */
         this.bombs = [];
 
         for (let i = 0; i < 4; i++) {
-            this.bombs.push(new Bomb(ctx, i, 0, NOTE_WIDTH));
+            this.bombs.push(new Bomb(this.CTX, i, 0, NOTE_WIDTH));
         }
 
         this.startGame = (e) => { this._startGame(e) };
@@ -417,16 +423,16 @@ class Game {
 
     //実際にゲームが始まるタイミングで呼ばれる
     _startGame(e) {
+
+        //TODO paformance.now()使ったほうが高精度。でも変更の範囲が広いから覚悟して編集すること。
         this.clock = new Date();
 
-        //TEST!!
-        this.GAUGE = new GrooveGauge(ctx)
+        this.GAUGE = new GrooveGauge(this.CTX);
 
         //この関数へのアクセスを消す
         document.removeEventListener('keydown', this.startGame);
 
-
-        //ここnoteの数が増えてくるとどんどんずれる原因になるかも要検証
+        //FIX noteの数が増えてくるとどんどんずれる原因になる・・・かも。
 
         const NOTES_LENGTH = this.notes.length;
 
@@ -449,34 +455,34 @@ class Game {
 
         this.writeBackGround();
 
-        ctx.fillStyle = 'rgb( 255, 102, 102)';
-        ctx.font = "18px serif";
-        ctx.fillText("キーボード押すと音が鳴るよ", 50, 100);
-        ctx.fillText("爆音なので注意", 50, 120);
+        this.CTX.fillStyle = 'rgb( 255, 102, 102)';
+        this.CTX.font = "18px serif";
+        this.CTX.fillText("キーボード押すと音が鳴るよ", 50, 100);
+        this.CTX.fillText("爆音なので注意", 50, 120);
     }
 
-    //ここに、一フレームにつき行う動作を描く
+    //再帰的なメインループ
     frame = () => {
 
+        //window.cancelAnimationFrame(this.exitMain)でメインループを抜けられる
         this.exitMain = window.requestAnimationFrame(this.frame);
 
         this.clock = new Date();
+
         //画面のリフレッシュ
-        ctx.clearRect(0, 0, 3000, 3000);
+        this.CTX.clearRect(0, 0, 3000, 3000);
+
         //背景生成
         this.writeBackGround();
 
-        //!!!!!!TEST
         this.GAUGE.writeGauge();
-        //TEST
 
-        //ボム生成
         const BOMB_LENGTH = this.bombs.length;
+        
         for (let i = 0; i < BOMB_LENGTH; i++) {
             this.bombs[i].writebomb();
         }
 
-        //判定表示
         this.judgeview.writejudge();
         this.conboView.writeConboCount();
 
@@ -495,11 +501,11 @@ class Game {
     }
 
     writeBackGround() {
-        ctx.fillStyle = 'rgb( 0, 0, 0)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        this.CTX.fillStyle = 'rgb( 0, 0, 0)';
+        this.CTX.fillRect(0, 0, canvas.width, canvas.height);
         //判定位置生成
-        ctx.fillStyle = 'rgb( 0, 255, 0)';
-        ctx.fillRect(0, 502, canvas.width, 5);
+        this.CTX.fillStyle = 'rgb( 0, 255, 0)';
+        this.CTX.fillRect(0, 502, canvas.width, 5);
     }
 
     //何らかのキーが押されている時呼ばれます
