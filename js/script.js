@@ -1,5 +1,7 @@
 'use strict';
 
+import { Bomb } from "./Bomb.mjs";
+
 class Note {
 
     /**
@@ -56,40 +58,6 @@ class Note {
             return true;
         }
         return false;
-    }
-}
-
-class Bomb {
-    /**
-     * @param {CanvasRenderingContext2D} ctx 
-     * @param {number} no 
-     * @param {number} bomblife 
-     * @param {number} NOTE_WIDTH 
-     */
-    constructor(ctx, no, bomblife, NOTE_WIDTH) {
-        this.ctx = ctx;
-        this.no = no;
-        this.bomblife = bomblife;
-        this.NOTE_WIDTH = NOTE_WIDTH;
-    }
-
-    writebomb() {
-
-        if (this.bomblife > 0) {
-            this.ctx.fillStyle = `rgba( 100, 105, 200,${this.bomblife / 50})`;
-            this.ctx.fillRect(this.no * this.NOTE_WIDTH, 480 + (this.bomblife / 4), this.NOTE_WIDTH, 5);
-            this.bomblife -= 1;
-        }
-
-        return;
-    }
-
-    /**
-     * これただのセッターじゃねーか！！！！！！なんなんだ
-     * @param {number} bomblife 
-     */
-    setbomblife(bomblife) {
-        this.bomblife = bomblife;
     }
 }
 
@@ -368,7 +336,7 @@ class MusicPlayer {
 }
 
 //HTML側Bodyのonlordに書かれているので、この関数はBodyの読み込みが終わったら呼ばれるはず
-function startClock() {
+globalThis.startClock = () => {
     const canvas = /** @type HTMLCanvasElement */ (document.getElementById('canvas'));
     const game = new Game(canvas);
 }
@@ -456,6 +424,7 @@ class Game {
 
         this.CTX.fillStyle = 'rgb( 255, 102, 102)';
         this.CTX.font = "18px serif";
+        
         this.CTX.fillText("キーボード押すと音が鳴るよ", 50, 100);
         this.CTX.fillText("爆音なので注意", 50, 120);
     }
