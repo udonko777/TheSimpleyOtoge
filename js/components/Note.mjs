@@ -36,7 +36,7 @@ export class Note {
     /** このnoteを描画する。
      * @param {Date} clock
      */
-    writing(clock) {
+    draw(clock) {
 
         //ノーツの色の設定
         this.ctx.fillStyle = '#DD7070';
