@@ -83,7 +83,7 @@ class Game {
 
         const NOTES_LENGTH = this.notes.length;
 
-        this.notes[i].forEach(note=>note.begin(this.clock.getTime()));
+        this.notes.forEach(note=>note.begin(globalThis.Date.now()));
 
         this.keypressed = (e) => { this._keypressed(e) };
         document.addEventListener('keydown', this.keypressed);
