@@ -70,7 +70,6 @@ class Game {
     _startGame(e) {
 
         //TODO paformance.now()使ったほうが高精度。でも変更の範囲が広いから覚悟して編集すること。
-        this.clock = new Date();
 
         /** @type {Object.<Judge>} */
         // JUDGES
@@ -79,9 +78,10 @@ class Game {
 
         document.removeEventListener('keydown', this.startGame);
 
-        //FIX noteの数が増えてくるとどんどんずれる原因になる・・・かも。
         //ノーツの開始地点を記録
-        this.notes.forEach(note=>note.begin(globalThis.Date.now()));
+        //TODO performance.nowが使えなければDate.nowを取得
+        const NOW = performance.now();
+        this.notes.forEach(note=>note.begin(NOW));
 
         this.keypressed = (e) => { this._keypressed(e) };
         document.addEventListener('keydown', this.keypressed);
@@ -111,7 +111,7 @@ class Game {
         //window.cancelAnimationFrame(this.exitMain)でメインループを抜けられる
         this.exitMain = window.requestAnimationFrame(this.frame);
 
-        this.clock = new Date();
+        const NOW = performance.now();
 
         //画面のリフレッシュ
         this.CTX.clearRect(0, 0, 3000, 3000);
@@ -128,8 +128,8 @@ class Game {
         //存在するすべてのNoteオブジェクトの時を進める
 
         for (let i = 0; i < this.notes.length; i++) {
-            this.notes[i].draw(this.clock);
-            if (this.notes[i].isOVER(this.clock)) {
+            this.notes[i].draw(NOW);
+            if (this.notes[i].isOVER(NOW)) {
                 this.judgeview.judge = "OVER";
                 this.GAUGE.judge = "OVER";
                 this.conboView.resetConboCount();
@@ -176,7 +176,7 @@ class Game {
 
                 //bは短縮のためのインスタンスな変数です。
 
-                const b = this.notes[i].falltime + (this.clock.getTime() - this.notes[i].getSTART_TIME())
+                const b = this.notes[i].falltime + (globalThis.performance.now() - this.notes[i].getSTART_TIME())
 
                 if (50 > b && -50 < b) {
                     console.log(`${l}is GREAT!, i think it is${b}`);
