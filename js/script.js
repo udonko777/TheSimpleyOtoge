@@ -10,6 +10,7 @@ import { MusicPlayer } from "./MusicPlayer.mjs";
 
 import { GrooveGauge } from "./Gauges/GrooveGauge.mjs";
 
+//import {JUDGES} from '/jsons/judge.json' 
 
 //HTML側Bodyのonlordに書かれているので、この関数はBodyの読み込みが終わったら呼ばれるはず
 globalThis.startClock = () => {
@@ -70,6 +71,9 @@ class Game {
 
         //TODO paformance.now()使ったほうが高精度。でも変更の範囲が広いから覚悟して編集すること。
         this.clock = new Date();
+
+        /** @type {Object.<Judge>} */
+        //JUDGES
 
         this.GAUGE = new GrooveGauge(this.CTX);
 

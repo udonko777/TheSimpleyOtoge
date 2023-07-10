@@ -2,5 +2,5 @@ type Judge = {
     name:string;
     score:number;
     damage:number;
-    isCuttingcombo:boolean;
+    isCuttingCombo:boolean;
 }
