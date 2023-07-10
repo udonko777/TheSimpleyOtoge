@@ -80,9 +80,6 @@ class Game {
         document.removeEventListener('keydown', this.startGame);
 
         //FIX noteの数が増えてくるとどんどんずれる原因になる・・・かも。
-
-        const NOTES_LENGTH = this.notes.length;
-
         //ノーツの開始地点を記録
         this.notes.forEach(note=>note.begin(globalThis.Date.now()));
 
