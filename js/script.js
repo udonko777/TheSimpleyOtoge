@@ -87,7 +87,7 @@ globalThis.startClock = () => {
 class Game {
 
     /** Game開始のための準備、いろいろ読み込んでstartGameを可能にする。
-     * @param {CanvasRenderingContext2D?} ctx
+     * @param {CanvasRenderingContext2D?} canvas
      */
     constructor(canvas) {
 
