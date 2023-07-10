@@ -11,18 +11,19 @@ export class Note {
      * */
     constructor(ctx, no, falltime, hispeed, NOTE_WIDTH, FIRST_BPM) {
 
-        //this.canvas = canvas;
         this.ctx = ctx;
         this.no = no;
         this.hispeed = hispeed;
         this.NOTE_WIDTH = NOTE_WIDTH;
         this.falltime = 0 - falltime;
         this.beforeTime = 0;
+        
         //scrollspeed 1 : 120 bpm
         this.scrollspeedforbpm = FIRST_BPM / 120;
+
         //(落ちるまでの時間 + 現在の時間 - 開始時間) / ハイスピ + 判定位置
         //このタイミングで現在の時間と開始時間が等しいので0
-        this.y = ((this.falltime + 0) / hispeed) + 500;
+        this.y = ((this.falltime + 0) / this.hispeed) + 500;
     }
 
     begin(starttime) {

@@ -3,8 +3,11 @@
 import { ComboView } from "./components/ComboView.mjs";
 import { Note } from "./components/Note.mjs";
 import { JudgeView } from "./components/JudgeView.mjs";
+
 import { Bomb } from "./UI/Bomb.mjs";
+
 import { Gauge } from "./Gauge.mjs";
+import { MusicPlayer } from "./MusicPlayer";
 
 
 /** TODO: ゲージのUIの実装とゲージの計算を同じ場所で行っている激ヤバClass、早く何とかする。
@@ -73,33 +76,6 @@ class GrooveGauge extends Gauge {
 
         this.groove = Math.min(this.groove, this.MAXGROOVE);
     }
-}
-
-/**
- * ただ音楽を流すだけのClass。
- */
-class MusicPlayer {
-
-    constructor() {
-        //れとろなぶらうざ用
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-
-        this.audioContext = new AudioContext();
-
-        this.audioElement = document.querySelector('audio');
-        this.music = this.audioContext.createMediaElementSource(this.audioElement);
-
-        this.music.connect(this.audioContext.destination);
-    }
-
-    play() {
-        if (this.audioContext.state === 'suspended') {
-            this.audioContext.resume();
-        } else {
-            this.audioElement.play();
-        }
-    }
-
 }
 
 //HTML側Bodyのonlordに書かれているので、この関数はBodyの読み込みが終わったら呼ばれるはず
