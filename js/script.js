@@ -6,9 +6,9 @@ import { JudgeView } from "./components/JudgeView.mjs";
 
 import { Bomb } from "./UI/Bomb.mjs";
 
-import { MusicPlayer } from "./MusicPlayer";
+import { MusicPlayer } from "./MusicPlayer.mjs";
 
-import { GrooveGauge } from "./Gauges/GrooveGauge";
+import { GrooveGauge } from "./Gauges/GrooveGauge.mjs";
 
 
 //HTML側Bodyのonlordに書かれているので、この関数はBodyの読み込みが終わったら呼ばれるはず
