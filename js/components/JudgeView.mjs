@@ -40,7 +40,7 @@ export class JudgeView {
         }
     }
 
-    writejudge() {
+    draw() {
         switch (this.judgeName) {
             case "N/A":
                 break;

@@ -19,7 +19,7 @@ export class ComboView {
         this.combocount = 0;
     }
 
-    writeConboCount() {
+    draw() {
         if (this.combocount > 0) {
             this.ctx.fillStyle = 'rgb( 255, 102, 102)';
             this.ctx.font = "48px serif";
