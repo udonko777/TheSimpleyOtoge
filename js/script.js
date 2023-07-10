@@ -83,6 +83,7 @@ class Game {
 
         const NOTES_LENGTH = this.notes.length;
 
+        //ノーツの開始地点を記録
         this.notes.forEach(note=>note.begin(globalThis.Date.now()));
 
         this.keypressed = (e) => { this._keypressed(e) };
