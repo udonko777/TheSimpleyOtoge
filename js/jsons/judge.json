@@ -1,5 +1,5 @@
 {
-    "name":"GrooveGauge",
+    "name": "GrooveGauge",
     "score": {
         "PGREAT": 0,
         "GREAT": 0,
@@ -18,5 +18,5 @@
         "OVER": 0,
         "BREAK": 0
     },
-    "isCuttingCombo":{}
+    "isCuttingCombo": {}
 }
