@@ -73,7 +73,7 @@ class Game {
         this.clock = new Date();
 
         /** @type {Object.<Judge>} */
-        //JUDGES
+        // JUDGES
 
         this.GAUGE = new GrooveGauge(this.CTX);
 
@@ -83,9 +83,7 @@ class Game {
 
         const NOTES_LENGTH = this.notes.length;
 
-        for (let i = 0; i < NOTES_LENGTH; i++) {
-            this.notes[i].begin(this.clock.getTime());
-        }
+        this.notes[i].forEach(note=>note.begin(this.clock.getTime()));
 
         this.keypressed = (e) => { this._keypressed(e) };
         document.addEventListener('keydown', this.keypressed);
