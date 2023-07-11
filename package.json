@@ -2,7 +2,8 @@
   "name": "otoge",
   "version": "1.0.0",
   "description": "to do",
-  "main": "pixi.min.js",
+  "type": "module",
+  "main": "src/js/script.js",
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
