@@ -69,8 +69,6 @@ class Game {
     //実際にゲームが始まるタイミングで呼ばれる
     _startGame(e) {
 
-        //TODO paformance.now()使ったほうが高精度。でも変更の範囲が広いから覚悟して編集すること。
-
         /** @type {Object.<Judge>} */
         // JUDGES
 
