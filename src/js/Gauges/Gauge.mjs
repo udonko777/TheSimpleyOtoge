@@ -48,7 +48,6 @@ export class Gauge {
 
     }
 
-    //外部から呼び出せないようにすべき
     /**
      * @private
      * @param {string | CanvasGradient | CanvasPattern} color

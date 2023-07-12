@@ -35,24 +35,24 @@ export class Note {
     }
 
     /** このnoteを描画する。
-     * @param {Date} clock
+     * @param {DOMHighResTimeStamp|Date} clock
      */
-    draw(clock) {
+    draw(now) {
 
         //ノーツの色の設定
         this.ctx.fillStyle = '#DD7070';
 
-        this.y = ((this.falltime + this.beforeTime + ((clock.getTime() - this.START_TIME) * this.scrollspeedforbpm)) / this.hispeed) + 500;
+        this.y = ((this.falltime + this.beforeTime + ((now - this.START_TIME) * this.scrollspeedforbpm)) / this.hispeed) + 500;
         //ノーツの描画
         this.ctx.fillRect(this.no * this.NOTE_WIDTH, this.y, this.NOTE_WIDTH, 10);
     }
 
     /**
-     * @param {Date} clock
+     * @param {DOMHighResTimeStamp|Date} clock
      * @returns {boolean}
      */
-    isOVER(clock) {
-        if (501 < this.falltime + (clock.getTime() - this.START_TIME)) {
+    isOVER(now) {
+        if (501 < this.falltime + (now - this.START_TIME)) {
             return true;
         }
         return false;

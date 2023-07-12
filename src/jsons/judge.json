@@ -1,0 +1,22 @@
+{
+    "name": "GrooveGauge",
+    "score": {
+        "PGREAT": 0,
+        "GREAT": 0,
+        "GOOD": 0,
+        "BAD": 0,
+        "POOR": 0,
+        "OVER": 0,
+        "BREAK": 0
+    },
+    "damage": {
+        "PGREAT": 0,
+        "GREAT": 0,
+        "GOOD": 0,
+        "BAD": 0,
+        "POOR": 0,
+        "OVER": 0,
+        "BREAK": 0
+    },
+    "isCuttingCombo": {}
+}
