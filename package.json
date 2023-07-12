@@ -1,23 +1,31 @@
 {
-  "name": "otoge",
+  "name": "my-webpack-project",
   "version": "1.0.0",
-  "description": "yahooo miteruu bokudayoo (cv akane chan)",
+  "description": "AYAYA AYAYA",
   "type": "module",
   "main": "src/js/script.js",
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack --mode development",
-    "prd": "webpack --mode production"
+    "prd": "webpack --mode production",
+    "build": "webpack --mode=production --node-env=production",
+    "build:dev": "webpack --mode=development",
+    "build:prod": "webpack --mode=production --node-env=production",
+    "watch": "webpack --watch"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "typescript": "^4.9.5",
-    "webpack": "^5.88.1"
+    "typescript": "^4.9.5"
   },
   "devDependencies": {
+    "@webpack-cli/generators": "^3.0.7",
+    "css-loader": "^6.8.1",
     "html-webpack-plugin": "^5.5.3",
+    "prettier": "^3.0.0",
+    "style-loader": "^3.3.3",
+    "webpack": "^5.88.1",
     "webpack-cli": "^5.1.4"
   }
 }
