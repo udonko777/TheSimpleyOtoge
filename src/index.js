@@ -1,14 +1,14 @@
 'use strict';
 
-import { ComboView } from "./components/ComboView.mjs";
-import { Note } from "./components/Note.mjs";
-import { JudgeView } from "./components/JudgeView.mjs";
+import { ComboView } from "./js/components/ComboView.mjs";
+import { Note } from "./js/components/Note.mjs";
+import { JudgeView } from "./js/components/JudgeView.mjs";
 
-import { Bomb } from "./UI/Bomb.mjs";
+import { Bomb } from "./js/UI/Bomb.mjs";
 
-import { MusicPlayer } from "./MusicPlayer.mjs";
+import { MusicPlayer } from "./js/MusicPlayer.mjs";
 
-import { GrooveGauge } from "./Gauges/GrooveGauge.mjs";
+import { GrooveGauge } from "./js/Gauges/GrooveGauge.mjs";
 
 //import {JUDGES} from '/jsons/judge.json' 
 

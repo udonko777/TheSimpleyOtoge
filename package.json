@@ -1,17 +1,23 @@
 {
   "name": "otoge",
   "version": "1.0.0",
-  "description": "to do",
+  "description": "yahooo miteruu bokudayoo (cv akane chan)",
   "type": "module",
   "main": "src/js/script.js",
   "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "webpack --mode development",
+    "prd": "webpack --mode production"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "typescript": "^4.6.2",
-    "webpack": "^5.70.0"
+    "typescript": "^4.9.5",
+    "webpack": "^5.88.1"
+  },
+  "devDependencies": {
+    "html-webpack-plugin": "^5.5.3",
+    "webpack-cli": "^5.1.4"
   }
 }
