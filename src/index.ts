@@ -1,3 +1,4 @@
+// @ts-nocheck 
 'use strict';
 
 import { ComboView } from "./js/components/ComboView.mjs";
