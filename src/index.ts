@@ -1,11 +1,8 @@
-'use strict';
-
-import type {} from "./@types/index";
 
 //@ts-expect-error
 import { ComboView } from "./js/components/ComboView.mjs";
-//@ts-expect-error
-import { Note } from "./js/components/Note.mjs";
+
+import { Note } from "./js/components/Note.js";
 //@ts-expect-error
 import { JudgeView } from "./js/components/JudgeView.mjs";
 //@ts-expect-error
@@ -16,10 +13,12 @@ import { MusicPlayer } from "./js/MusicPlayer.mjs";
 //@ts-expect-error
 import { GrooveGauge } from "./js/Gauges/GrooveGauge.mjs";
 
+import bmeFile from "./resource/demo/darksamba/_dark_sambaland_a.bme";
+
 //import {JUDGES} from '/jsons/judge.json' 
 
 //HTML側Bodyのonlordに書かれているので、この関数はBodyの読み込みが終わったら呼ばれるはず
-globalThis.startClock = () => {
+window.startClock = () => {
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;
     const game = new Game(canvas);
 }
@@ -65,7 +64,7 @@ class Game {
         this.notes = [];
 
         // 譜面をもとに、ノーツを配置する
-        
+
         // まずChartPurserとTextSplitterを実体化する
         // TextSplitterにimportしたファイルを渡して、帰ってきたものをChartPurserに渡す
         // Notesが帰ってくる。NotesはNoteの集合を表現するクラス。

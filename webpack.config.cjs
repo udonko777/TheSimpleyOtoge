@@ -26,14 +26,14 @@ const config = {
                 use: [stylesHandler,'css-loader'],
             },
             {
-                test: /\.(text|txt|bms)$/i,
-                assetModuleFilename: 'assets/[hash][ext][query]',
-                type: 'asset/resource/charts'
-            },
-            {
                 "test": /\.ts$/,
                 "use": "ts-loader",
                 "exclude": /node_modules/
+            },
+            {
+                test: /\.(text|txt|bms|bme)$/i,
+                assetModuleFilename: 'assets/[hash][ext][query]',
+                type: 'asset/resource'
             }
 
             // Add your rules for custom modules here

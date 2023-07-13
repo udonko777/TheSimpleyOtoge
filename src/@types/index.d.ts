@@ -1,5 +1,3 @@
-export = {}
-
 type Judge = {
     name:string;
     score:number;
@@ -7,6 +5,14 @@ type Judge = {
     isCuttingCombo:boolean;
 }
 
-declare global {
-    var startClock:any;
+declare var startClock: any;
+
+declare module '*.text' {
+    const src: string;
+    export default src;
+}
+
+declare module '*.bme' {
+    const src: string;
+    export default src;
 }
