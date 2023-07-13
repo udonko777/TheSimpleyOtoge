@@ -64,7 +64,11 @@ class Game {
 
         this.notes = [];
 
-        //譜面をもとに、ノーツを配置する
+        // 譜面をもとに、ノーツを配置する
+        
+        // まずChartPurserとTextSplitterを実体化する
+        // TextSplitterにimportしたファイルを渡して、帰ってきたものをChartPurserに渡す
+        // Notesが帰ってくる。NotesはNoteの集合を表現するクラス。
 
         const NOTE_WIDTH = 80;
 
