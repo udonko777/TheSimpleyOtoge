@@ -4,3 +4,9 @@ type Judge = {
     damage:number;
     isCuttingCombo:boolean;
 }
+
+declare global {
+    var startClock:any;
+}
+
+export {}

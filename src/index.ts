@@ -1,36 +1,57 @@
-// @ts-nocheck 
 'use strict';
 
+import type {} from "./@types/index";
+
+//@ts-expect-error
 import { ComboView } from "./js/components/ComboView.mjs";
+//@ts-expect-error
 import { Note } from "./js/components/Note.mjs";
+//@ts-expect-error
 import { JudgeView } from "./js/components/JudgeView.mjs";
-
+//@ts-expect-error
 import { Bomb } from "./js/UI/Bomb.mjs";
-
+//@ts-expect-error
 import { MusicPlayer } from "./js/MusicPlayer.mjs";
 
+//@ts-expect-error
 import { GrooveGauge } from "./js/Gauges/GrooveGauge.mjs";
 
 //import {JUDGES} from '/jsons/judge.json' 
 
 //HTML側Bodyのonlordに書かれているので、この関数はBodyの読み込みが終わったら呼ばれるはず
 globalThis.startClock = () => {
-    const canvas = /** @type HTMLCanvasElement */ (document.getElementById('canvas'));
+    const canvas = document.getElementById('canvas') as HTMLCanvasElement;
     const game = new Game(canvas);
 }
 
 class Game {
 
-    /** Game開始のための準備、いろいろ読み込んでstartGameを可能にする。
-     * @param {CanvasRenderingContext2D?} canvas
-     */
-    constructor(canvas) {
+    CANVAS: HTMLCanvasElement;
+    CTX: CanvasRenderingContext2D;
+
+    keypresscount: number;
+
+    judgeview: JudgeView;
+    conboView: ComboView;
+
+    notes: Note[];
+    bombs: Bomb[];
+
+    startGame: (e: KeyboardEvent) => void;
+    GAUGE: GrooveGauge;
+
+    keypressed!: (e: KeyboardEvent) => void;
+
+    exitMain: any;
+
+    /** Game開始のための準備、いろいろ読み込んでstartGameを可能にする。*/
+    constructor(canvas : HTMLCanvasElement) {
 
         /** @readonly */
         this.CANVAS = canvas;
 
         /** @readonly */
-        this.CTX = canvas?.getContext('2d');
+        this.CTX = this.CANVAS.getContext('2d') as CanvasRenderingContext2D;
 
         if(!this.CTX){
             throw new Error('canvas?');
@@ -68,7 +89,7 @@ class Game {
     }
 
     //実際にゲームが始まるタイミングで呼ばれる
-    _startGame(e) {
+    _startGame(e : KeyboardEvent) {
 
         /** @type {Object.<Judge>} */
         // JUDGES
@@ -147,7 +168,7 @@ class Game {
     }
 
     //何らかのキーが押されている時呼ばれます
-    _keypressed(e) {
+    _keypressed(e : KeyboardEvent) {
 
         console.log(e.key);
         if (e.repeat === false) {
@@ -165,8 +186,7 @@ class Game {
         return false;
     }
 
-    /** @param {Number} l */
-    judgeTiming(l) {
+    judgeTiming(l : number) {
 
         //TODO クッソ雑に全ノーツを判定します。
 
