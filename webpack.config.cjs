@@ -26,8 +26,9 @@ const config = {
                 use: [stylesHandler,'css-loader'],
             },
             {
-                test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
-                type: 'asset',
+                test: /\.(text|txt|bms)$/i,
+                assetModuleFilename: 'assets/[hash][ext][query]',
+                type: 'asset/resource/charts'
             },
             {
                 "test": /\.ts$/,
