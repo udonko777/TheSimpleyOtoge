@@ -1,12 +1,16 @@
-'use strict';
-/** Judgeを実際に表示させるUI。実際にはcomboViewと組み合わせてつかうゾ
- */
-export class JudgeView {
+import {GraphicComponent} from './Component'
 
-    /**
-     * @param {CanvasRenderingContext2D} ctx
+export class JudgeView implements GraphicComponent {
+
+    ctx: CanvasRenderingContext2D;
+    judgeName: string;
+    x: number;
+    y: number;
+
+    /** Judgeを実際に表示させるUI。実際にはcomboViewと組み合わせてつかうゾ
+     * @param ctx
      */
-    constructor(ctx) {
+    constructor(ctx:CanvasRenderingContext2D) {
         //judge == {N/A,poor,poor,good,great,great}
         this.ctx = ctx;
         this.judgeName = "N/A";
@@ -14,10 +18,7 @@ export class JudgeView {
         this.y = 370;
     }
 
-    /**
-     * @param {string} judgeName
-     */
-    set judge(judgeName) {
+    set judge(judgeName : string) {
         switch (judgeName) {
             case "OVER":
                 this.judgeName = "OVER";

@@ -1,11 +1,14 @@
-'use strict';
+import {GraphicComponent} from './Component';
 /**
  * 現在のコンボ数を表示するView、実際にはJudgeViewと組み合わせて使う。
  * 現状conbo数のカウントとコンボ数の表示の両方をこのClassで行ってしまっているので、別々にしたい。
 */
-export class ComboView {
+export class ComboView implements GraphicComponent {
 
-    constructor(ctx) {
+    ctx: CanvasRenderingContext2D;
+    combocount: number;
+
+    constructor(ctx : CanvasRenderingContext2D) {
         this.ctx = ctx;
         this.combocount = 0;
     }
@@ -23,7 +26,7 @@ export class ComboView {
         if (this.combocount > 0) {
             this.ctx.fillStyle = 'rgb( 255, 102, 102)';
             this.ctx.font = "48px serif";
-            this.ctx.fillText(this.combocount, 10, 100);
+            this.ctx.fillText(String(this.combocount), 10, 100);
         } else {
             console.log("comboocunt is zero");
         }

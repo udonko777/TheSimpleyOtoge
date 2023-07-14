@@ -1,6 +1,6 @@
-'use strict';
+import {GraphicComponent} from './Component';
 
-export class Note {
+export class Note implements GraphicComponent {
 
     ctx: CanvasRenderingContext2D;
     no: number;
