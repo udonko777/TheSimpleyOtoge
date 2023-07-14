@@ -1,10 +1,10 @@
 
-//@ts-expect-error
-import { ComboView } from "./js/components/ComboView.mjs";
 
-import { Note } from "./js/components/Note.js";
-//@ts-expect-error
-import { JudgeView } from "./js/components/JudgeView.mjs";
+import { ComboView } from "./js/components/ComboView";
+
+import { Note } from "./js/components/Note";
+
+import { JudgeView } from "./js/components/JudgeView";
 //@ts-expect-error
 import { Bomb } from "./js/UI/Bomb.mjs";
 //@ts-expect-error
