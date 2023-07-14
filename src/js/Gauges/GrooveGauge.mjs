@@ -1,11 +1,11 @@
 'use strict';
 import { Gauge } from "./Gauge.mjs";
 
-/** TODO: ゲージのUIの実装とゲージの計算を同じ場所で行っている激ヤバClass、早く何とかする。
- *
- */
 export class GrooveGauge extends Gauge {
 
+    /** ゲージのUIの実装とゲージの計算
+     * @param {CanvasRenderingContext2D} ctx
+     */
     constructor(ctx) {
         super(ctx);
 

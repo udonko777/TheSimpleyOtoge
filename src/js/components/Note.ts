@@ -1,15 +1,26 @@
 'use strict';
+
 export class Note {
 
+    ctx: CanvasRenderingContext2D;
+    no: number;
+    hispeed: number;
+    NOTE_WIDTH: number;
+    falltime: number;
+    beforeTime: number;
+    scrollspeedforbpm: number;
+    y: number;
+    START_TIME: any;
+
     /**
-     * @param {CanvasRenderingContext2D} ctx
-     * @param {number}no - note index,0 is left side
-     * @param {number}falltime - 落ちるまでの猶予時間
-     * @param {number}hispeed
-     * @param {number}NOTE_WIDTH
-     * @param {number}FIRST_BPM - BPM
+     * @param ctx
+     * @param no - note index,0 is left side
+     * @param falltime - 落ちるまでの猶予時間
+     * @param hispeed
+     * @param NOTE_WIDTH
+     * @param FIRST_BPM - BPM
      * */
-    constructor(ctx, no, falltime, hispeed, NOTE_WIDTH, FIRST_BPM) {
+    constructor(ctx: CanvasRenderingContext2D, no: number, falltime: number, hispeed: number, NOTE_WIDTH: number, FIRST_BPM: number) {
 
         this.ctx = ctx;
         this.no = no;
@@ -26,20 +37,16 @@ export class Note {
         this.y = ((this.falltime + 0) / this.hispeed) + 500;
     }
 
-    begin(starttime) {
+    begin(starttime : number) {
         this.START_TIME = starttime;
     }
 
-    getSTART_TIME() {
+    getSTART_TIME() : number {
         return this.START_TIME;
     }
 
-    /** このnoteを描画する。
-     * @param {DOMHighResTimeStamp|Date} clock
-     */
-    draw(now) {
+    draw(now:DOMHighResTimeStamp) {
 
-        //ノーツの色の設定
         this.ctx.fillStyle = '#DD7070';
 
         this.y = ((this.falltime + this.beforeTime + ((now - this.START_TIME) * this.scrollspeedforbpm)) / this.hispeed) + 500;
@@ -47,11 +54,7 @@ export class Note {
         this.ctx.fillRect(this.no * this.NOTE_WIDTH, this.y, this.NOTE_WIDTH, 10);
     }
 
-    /**
-     * @param {DOMHighResTimeStamp|Date} clock
-     * @returns {boolean}
-     */
-    isOVER(now) {
+    isOVER(now : DOMHighResTimeStamp): boolean {
         if (501 < this.falltime + (now - this.START_TIME)) {
             return true;
         }
