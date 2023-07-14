@@ -1,4 +1,4 @@
-import type {} from "TextSplitter";
+import type {} from "./TextSplitter";
 
 export class ChartPurser {
 
