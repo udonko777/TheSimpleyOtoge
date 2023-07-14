@@ -2,7 +2,7 @@ import {GraphicComponent} from './Component'
 
 export class JudgeView implements GraphicComponent {
 
-    ctx: CanvasRenderingContext2D;
+    readonly ctx: CanvasRenderingContext2D;
     judgeName: string;
     x: number;
     y: number;
