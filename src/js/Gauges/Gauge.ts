@@ -1,11 +1,37 @@
 'use strict';
-export class Gauge {
+
+type RGB = `rgb(${number}, ${number}, ${number})`;
+type RGBA = `rgba(${number}, ${number}, ${number}, ${number})`;
+type HEX = `#${string}`;
+
+type Color = RGB | RGBA | HEX;
+
+export abstract class Gauge {
+
+    ctx: CanvasRenderingContext2D;
+
+    groove: number;
+    MAXGROOVE: number;
+    STATEX: number;
+    STATEY: number;
+    GAUGE_HEIGHT: number;
+    GAUGE_WIDTH: number;
+    GAUGE_VOID_WIDTH: number;
+    GAUGE_BOX_NUMBER: number;
+    PGREAT: number;
+    GREAT: number;
+    GOOD: number;
+    BAD: number;
+    POOR: number;
+    OVER: number;
+    BREAK: number;
+    IS_TOLERANT: boolean;
 
     /**
      * @abstract
      * @param {CanvasRenderingContext2D} ctx
      */
-    constructor(ctx) {
+    constructor(ctx: CanvasRenderingContext2D) {
 
         this.ctx = ctx;
 
@@ -35,7 +61,7 @@ export class Gauge {
         this.IS_TOLERANT = false;
     }
 
-    draw() {
+    public draw() {
 
         const existarea = (this.GAUGE_WIDTH - this.GAUGE_VOID_WIDTH) / this.GAUGE_BOX_NUMBER;
         const voidarea = this.GAUGE_VOID_WIDTH / this.GAUGE_BOX_NUMBER;
@@ -50,23 +76,19 @@ export class Gauge {
 
     /**
      * @private
-     * @param {string | CanvasGradient | CanvasPattern} color
-     * @param {number} x
-     * @param {number} y
-     * @param {number} boxwidth
-     * @param {number} boxheight
+     * @param color
+     * @param x
+     * @param y
+     * @param boxwidth
+     * @param boxheight
      */
-    writebox(color, x, y, boxwidth, boxheight) {
+    protected writebox(color: string | CanvasGradient | CanvasPattern, x: number, y: number, boxwidth: number, boxheight: number) {
         //ノーツの色の設定
         this.ctx.fillStyle = color;
         this.ctx.fillRect(x, y, boxwidth, boxheight);
     }
 
-    /**
-     * @abstract
-     * @param {number} no
-     */
-    boxcolor(no) {
-    }
+    /** FIX せっかく実装を強制している割には外からアクセスできないのは悲しい。*/
+    protected abstract boxcolor(no: number): Color
 
 }

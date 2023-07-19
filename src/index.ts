@@ -10,8 +10,7 @@ import { Bomb } from "./js/UI/Bomb.mjs";
 //@ts-expect-error
 import { MusicPlayer } from "./js/MusicPlayer.mjs";
 
-//@ts-expect-error
-import { GrooveGauge } from "./js/Gauges/GrooveGauge.mjs";
+import { GrooveGauge } from "./js/Gauges/GrooveGauge";
 
 import bmeFile from "./resource/demo/darksamba/_dark_sambaland_a.bme";
 
@@ -37,14 +36,14 @@ class Game {
     bombs: Bomb[];
 
     startGame: (e: KeyboardEvent) => void;
-    GAUGE: GrooveGauge;
+    GAUGE: any;
 
     keypressed!: (e: KeyboardEvent) => void;
 
     exitMain: any;
 
     /** Game開始のための準備、いろいろ読み込んでstartGameを可能にする。*/
-    constructor(canvas : HTMLCanvasElement) {
+    constructor(canvas: HTMLCanvasElement) {
 
         /** @readonly */
         this.CANVAS = canvas;
@@ -52,7 +51,7 @@ class Game {
         /** @readonly */
         this.CTX = this.CANVAS.getContext('2d') as CanvasRenderingContext2D;
 
-        if(!this.CTX){
+        if (!this.CTX) {
             throw new Error('canvas?');
         }
 
@@ -92,7 +91,7 @@ class Game {
     }
 
     //実際にゲームが始まるタイミングで呼ばれる
-    _startGame(e : KeyboardEvent) {
+    _startGame(e: KeyboardEvent) {
 
         /** @type {Object.<Judge>} */
         // JUDGES
@@ -104,7 +103,7 @@ class Game {
         //ノーツの開始地点を記録
         //TODO performance.nowが使えなければDate.nowを取得
         const NOW = performance.now();
-        this.notes.forEach(note=>note.begin(NOW));
+        this.notes.forEach(note => note.begin(NOW));
 
         this.keypressed = (e) => { this._keypressed(e) };
         document.addEventListener('keydown', this.keypressed);
@@ -123,7 +122,7 @@ class Game {
 
         this.CTX.fillStyle = 'rgb( 255, 102, 102)';
         this.CTX.font = "18px serif";
-        
+
         this.CTX.fillText("キーボード押すと音が鳴るよ", 50, 100);
         this.CTX.fillText("爆音なので注意", 50, 120);
     }
@@ -171,7 +170,7 @@ class Game {
     }
 
     //何らかのキーが押されている時呼ばれます
-    _keypressed(e : KeyboardEvent) {
+    _keypressed(e: KeyboardEvent) {
 
         console.log(e.key);
         if (e.repeat === false) {
@@ -189,7 +188,7 @@ class Game {
         return false;
     }
 
-    judgeTiming(l : number) {
+    judgeTiming(l: number) {
 
         //TODO クッソ雑に全ノーツを判定します。
 

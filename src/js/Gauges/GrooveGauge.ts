@@ -1,12 +1,14 @@
 'use strict';
-import { Gauge } from "./Gauge.mjs";
+import { Gauge } from "./Gauge";
 
 export class GrooveGauge extends Gauge {
 
+    GAUGE_BOX_AS_GROOVE: number;
+
     /** ゲージのUIの実装とゲージの計算
-     * @param {CanvasRenderingContext2D} ctx
+     * @param ctx
      */
-    constructor(ctx) {
+    constructor(ctx: CanvasRenderingContext2D) {
         super(ctx);
 
         this.groove = 22220;
@@ -20,7 +22,7 @@ export class GrooveGauge extends Gauge {
         this.OVER = -2000;
     }
 
-    boxcolor(no) {
+    override boxcolor(no: number) {
         const enableBoxNumber = Math.floor(this.groove / this.GAUGE_BOX_AS_GROOVE);
 
         if (no < enableBoxNumber) {
@@ -31,9 +33,9 @@ export class GrooveGauge extends Gauge {
     }
 
     /** ジャッジの名前からゲージの増減を計算する。ジャッジをオブジェクトにすればこんなことしなくていいと思う。
-     * @param {string} judgeName
+     * @param judgeName
      */
-    set judge(judgeName) {
+    set judge(judgeName: string) {
         switch (judgeName) {
             case "PGREAT":
                 this.groove += this.PGREAT;
@@ -67,4 +69,5 @@ export class GrooveGauge extends Gauge {
 
         this.groove = Math.min(this.groove, this.MAXGROOVE);
     }
+
 }
