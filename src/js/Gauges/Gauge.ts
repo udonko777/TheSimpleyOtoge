@@ -74,7 +74,7 @@ export abstract class Gauge {
      */
     protected writebox(color: Color, x: number, y: number, boxwidth: number, boxheight: number) {
         //ノーツの色の設定
-        this.render.drawBox(x,y,boxwidth,boxheight,String(color));
+        this.render.drawBox(x, y, boxwidth, boxheight, String(color));
     }
 
     /** FIX せっかく実装を強制している割には外からアクセスできないのは悲しい。*/
