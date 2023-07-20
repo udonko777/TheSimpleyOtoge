@@ -10,18 +10,20 @@ export type Color = RGB | RGBA | HEX;
  */
 export class TomoyoRender {
 
-    ctx: CanvasRenderingContext2D;
+    private ctx: CanvasRenderingContext2D;
 
     constructor(ctx: CanvasRenderingContext2D) {
         this.ctx = ctx;
     }
 
-    drawBox(x: number, y: number, width: number, height: number, style: string) {
+    /** `ctx.fillRect`の代わりに用意された描画メソッド */
+    public drawBox(x: number, y: number, width: number, height: number, style: string) {
         this.ctx.fillStyle = style;
-        this.ctx.fillRect(x,y,width,height);
+        this.ctx.fillRect(x, y, width, height);
     }
 
-    drawText(text: string, x: number, y: number, font: string, style: string) {
+    /** `ctx.fillText`の代わりに用意された描画メソッド */
+    public drawText(text: string, x: number, y: number, font: string, style: string) {
         this.ctx.fillStyle = style;
         this.ctx.font = font;
         this.ctx.fillText(text, x, y);

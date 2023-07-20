@@ -1,5 +1,3 @@
-'use strict';
-
 import { TomoyoRender, Color } from "TomoyoRender";
 
 export abstract class Gauge {
@@ -55,13 +53,13 @@ export abstract class Gauge {
 
     public draw() {
 
-        const existarea = (this.GAUGE_WIDTH - this.GAUGE_VOID_WIDTH) / this.GAUGE_BOX_NUMBER;
-        const voidarea = this.GAUGE_VOID_WIDTH / this.GAUGE_BOX_NUMBER;
+        const VISIBLE_AREA = (this.GAUGE_WIDTH - this.GAUGE_VOID_WIDTH) / this.GAUGE_BOX_NUMBER;
+        const INVISIBLE_AREA = this.GAUGE_VOID_WIDTH / this.GAUGE_BOX_NUMBER;
         let usedarea = 0;
 
         for (let i = 0; i < this.GAUGE_BOX_NUMBER; i++) {
-            this.writebox(this.boxcolor(i), usedarea + this.STATEX, this.STATEY, existarea, this.GAUGE_HEIGHT);
-            usedarea = usedarea + existarea + voidarea;
+            this.writebox(this.boxcolor(i), usedarea + this.STATEX, this.STATEY, VISIBLE_AREA, this.GAUGE_HEIGHT);
+            usedarea = usedarea + VISIBLE_AREA + INVISIBLE_AREA;
         }
 
     }
@@ -74,7 +72,7 @@ export abstract class Gauge {
      * @param boxwidth
      * @param boxheight
      */
-    protected writebox(color: string | CanvasGradient | CanvasPattern, x: number, y: number, boxwidth: number, boxheight: number) {
+    protected writebox(color: Color, x: number, y: number, boxwidth: number, boxheight: number) {
         //ノーツの色の設定
         this.render.drawBox(x,y,boxwidth,boxheight,String(color));
     }

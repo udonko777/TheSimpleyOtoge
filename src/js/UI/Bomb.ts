@@ -27,18 +27,15 @@ export class Bomb {
             const x = this.no * this.NOTE_WIDTH
             const y = 480 + (this.bomblife / 4)
 
-            this.render.drawBox(x, y, this.NOTE_WIDTH, 5, `rgba( 100, 105, 200,${this.bomblife / 50})`);
+            this.render.drawBox(x, y, this.NOTE_WIDTH, 5, `rgba( 100, 105, 200, ${this.bomblife / 50})`);
             this.bomblife -= 1;
         }
 
         return;
     }
 
-    /**
-     * これただのセッターじゃねーか！！！！！！なんなんだ
-     * @param {number} bomblife
-     */
     setbomblife(bomblife: number) {
         this.bomblife = bomblife;
     }
+
 }
