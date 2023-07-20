@@ -12,6 +12,7 @@ const stylesHandler = 'style-loader';
 const config = {
     entry: './src/index.ts',
     output: {
+        assetModuleFilename: 'assets/[hash][ext][query]',
         path: path.resolve(__dirname, 'dist'),
     },
     plugins: [
@@ -31,8 +32,11 @@ const config = {
                 "exclude": /node_modules/
             },
             {
-                test: /\.(text|txt|bms|bme)$/i,
-                assetModuleFilename: 'assets/[hash][ext][query]',
+                test: /\.html$/i,
+                loader: "html-loader",
+            },
+            {
+                test: /\.(mp3|text|txt|bms|bme)$/i,
                 type: 'asset/resource'
             }
 

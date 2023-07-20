@@ -1,8 +1,10 @@
-import {GraphicComponent} from './Component';
+import { TomoyoRender } from 'TomoyoRender';
+import { GraphicComponent } from './Component';
 
 export class Note implements GraphicComponent {
 
-    ctx: CanvasRenderingContext2D;
+    render: TomoyoRender;
+
     no: number;
     hispeed: number;
     NOTE_WIDTH: number;
@@ -13,22 +15,23 @@ export class Note implements GraphicComponent {
     START_TIME: any;
 
     /**
-     * @param ctx
+     * @param render
      * @param no - note index,0 is left side
      * @param falltime - 落ちるまでの猶予時間
      * @param hispeed
      * @param NOTE_WIDTH
      * @param FIRST_BPM - BPM
      * */
-    constructor(ctx: CanvasRenderingContext2D, no: number, falltime: number, hispeed: number, NOTE_WIDTH: number, FIRST_BPM: number) {
+    constructor(render: TomoyoRender, no: number, falltime: number, hispeed: number, NOTE_WIDTH: number, FIRST_BPM: number) {
 
-        this.ctx = ctx;
+        this.render = render;
+
         this.no = no;
         this.hispeed = hispeed;
         this.NOTE_WIDTH = NOTE_WIDTH;
         this.falltime = 0 - falltime;
         this.beforeTime = 0;
-        
+
         //scrollspeed 1 : 120 bpm
         this.scrollspeedforbpm = FIRST_BPM / 120;
 
@@ -37,24 +40,23 @@ export class Note implements GraphicComponent {
         this.y = ((this.falltime + 0) / this.hispeed) + 500;
     }
 
-    begin(starttime : number) {
+    begin(starttime: number) {
         this.START_TIME = starttime;
     }
 
-    getSTART_TIME() : number {
+    getSTART_TIME(): number {
         return this.START_TIME;
     }
 
-    draw(now:DOMHighResTimeStamp) {
-
-        this.ctx.fillStyle = '#DD7070';
+    draw(now: DOMHighResTimeStamp) {
 
         this.y = ((this.falltime + this.beforeTime + ((now - this.START_TIME) * this.scrollspeedforbpm)) / this.hispeed) + 500;
-        //ノーツの描画
-        this.ctx.fillRect(this.no * this.NOTE_WIDTH, this.y, this.NOTE_WIDTH, 10);
+
+        const x: number = this.no * this.NOTE_WIDTH;
+        this.render.drawBox(x, this.y, this.NOTE_WIDTH, 10, '#DD7070');
     }
 
-    isOVER(now : DOMHighResTimeStamp): boolean {
+    isOVER(now: DOMHighResTimeStamp): boolean {
         if (501 < this.falltime + (now - this.START_TIME)) {
             return true;
         }
