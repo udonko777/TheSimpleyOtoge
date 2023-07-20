@@ -1,24 +1,24 @@
-import {GraphicComponent} from './Component'
+import { TomoyoRender } from 'TomoyoRender';
+import { GraphicComponent } from './Component'
 
 export class JudgeView implements GraphicComponent {
 
-    readonly ctx: CanvasRenderingContext2D;
+    readonly render: TomoyoRender;
     judgeName: string;
     x: number;
     y: number;
 
     /** Judgeを実際に表示させるUI。実際にはcomboViewと組み合わせてつかうゾ
-     * @param ctx
      */
-    constructor(ctx:CanvasRenderingContext2D) {
+    constructor(render: TomoyoRender) {
         //judge == {N/A,poor,poor,good,great,great}
-        this.ctx = ctx;
+        this.render = render;
         this.judgeName = "N/A";
         this.x = 70;
         this.y = 370;
     }
 
-    set judge(judgeName : string) {
+    set judge(judgeName: string) {
         switch (judgeName) {
             case "OVER":
                 this.judgeName = "OVER";
@@ -46,29 +46,19 @@ export class JudgeView implements GraphicComponent {
             case "N/A":
                 break;
             case "OVER":
-                this.ctx.fillStyle = 'rgb( 255, 102, 102)';
-                this.ctx.font = "48px serif";
-                this.ctx.fillText("POOR", this.x, this.y);
+                this.render.drawText("POOR", this.x, this.y, "48px serif", 'rgb( 255, 102, 102)');
                 break;
             case "POOR":
-                this.ctx.fillStyle = 'rgb( 255, 102, 102)';
-                this.ctx.font = "48px serif";
-                this.ctx.fillText("POOR", this.x, this.y);
+                this.render.drawText("POOR", this.x, this.y, "48px serif", 'rgb( 255, 102, 102)');
                 break;
             case "BAD":
-                this.ctx.fillStyle = 'rgb( 255, 102, 102)';
-                this.ctx.font = "48px serif";
-                this.ctx.fillText("BAD", this.x, this.y);
+                this.render.drawText("BAD", this.x, this.y, "48px serif", 'rgb( 255, 102, 102)');
                 break;
             case "GOOD":
-                this.ctx.fillStyle = 'rgb( 255, 128, 0)';
-                this.ctx.font = "48px serif";
-                this.ctx.fillText("GOOD", this.x, this.y);
+                this.render.drawText("GOOD", this.x, this.y, "48px serif", 'rgb( 255, 102, 102)');
                 break;
             case "GREAT":
-                this.ctx.fillStyle = 'rgb( 0, 128, 255)';
-                this.ctx.font = "48px serif";
-                this.ctx.fillText("GREAT", this.x, this.y);
+                this.render.drawText("GREAT", this.x, this.y, "48px serif", 'rgb( 255, 102, 102)');
                 break;
         }
     }

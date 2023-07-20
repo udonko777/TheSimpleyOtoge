@@ -1,6 +1,8 @@
+import { TomoyoRender } from "TomoyoRender";
+
 export class Bomb {
 
-    ctx: CanvasRenderingContext2D;
+    render: TomoyoRender;
     no: number;
     bomblife: number;
     NOTE_WIDTH: number;
@@ -11,8 +13,8 @@ export class Bomb {
      * @param bomblife
      * @param NOTE_WIDTH
      */
-    constructor(ctx: CanvasRenderingContext2D, no: number, bomblife: number, NOTE_WIDTH: number) {
-        this.ctx = ctx;
+    constructor(render: TomoyoRender, no: number, bomblife: number, NOTE_WIDTH: number) {
+        this.render = render;
         this.no = no;
         this.bomblife = bomblife;
         this.NOTE_WIDTH = NOTE_WIDTH;
@@ -21,8 +23,11 @@ export class Bomb {
     writebomb() {
 
         if (this.bomblife > 0) {
-            this.ctx.fillStyle = `rgba( 100, 105, 200,${this.bomblife / 50})`;
-            this.ctx.fillRect(this.no * this.NOTE_WIDTH, 480 + (this.bomblife / 4), this.NOTE_WIDTH, 5);
+
+            const x = this.no * this.NOTE_WIDTH
+            const y = 480 + (this.bomblife / 4)
+
+            this.render.drawBox(x, y, this.NOTE_WIDTH, 5, `rgba( 100, 105, 200,${this.bomblife / 50})`);
             this.bomblife -= 1;
         }
 
@@ -33,7 +38,7 @@ export class Bomb {
      * これただのセッターじゃねーか！！！！！！なんなんだ
      * @param {number} bomblife
      */
-    setbomblife(bomblife:number) {
+    setbomblife(bomblife: number) {
         this.bomblife = bomblife;
     }
 }

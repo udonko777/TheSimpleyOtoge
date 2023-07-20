@@ -5,12 +5,14 @@ import { ComboView } from "./js/components/ComboView";
 import { Note } from "./js/components/Note";
 
 import { JudgeView } from "./js/components/JudgeView";
-//@ts-expect-error
-import { Bomb } from "./js/UI/Bomb.mjs";
+
+import { Bomb } from "./js/UI/Bomb";
 //@ts-expect-error
 import { MusicPlayer } from "./js/MusicPlayer.mjs";
 
 import { GrooveGauge } from "./js/Gauges/GrooveGauge";
+
+import { TomoyoRender } from "./TomoyoRender";
 
 import bmeFile from "./resource/demo/darksamba/_dark_sambaland_a.bme";
 
@@ -24,7 +26,6 @@ window.startClock = () => {
 
 class Game {
 
-    CANVAS: HTMLCanvasElement;
     CTX: CanvasRenderingContext2D;
 
     keypresscount: number;
@@ -32,8 +33,13 @@ class Game {
     judgeview: JudgeView;
     conboView: ComboView;
 
+    readonly CANVAS_HEIGHT: number;
+    readonly CANVAS_WIDTH: number;
+
     notes: Note[];
     bombs: Bomb[];
+
+    render: TomoyoRender;
 
     startGame: (e: KeyboardEvent) => void;
     GAUGE: any;
@@ -45,11 +51,11 @@ class Game {
     /** Game開始のための準備、いろいろ読み込んでstartGameを可能にする。*/
     constructor(canvas: HTMLCanvasElement) {
 
-        /** @readonly */
-        this.CANVAS = canvas;
+        this.CANVAS_HEIGHT = canvas.height;
+        this.CANVAS_WIDTH = canvas.width;
 
         /** @readonly */
-        this.CTX = this.CANVAS.getContext('2d') as CanvasRenderingContext2D;
+        this.CTX = canvas.getContext('2d') as CanvasRenderingContext2D;
 
         if (!this.CTX) {
             throw new Error('canvas?');
@@ -57,8 +63,10 @@ class Game {
 
         this.keypresscount = 0;
 
-        this.judgeview = new JudgeView(this.CTX);
-        this.conboView = new ComboView(this.CTX);
+        this.render = new TomoyoRender(this.CTX);
+
+        this.judgeview = new JudgeView(this.render);
+        this.conboView = new ComboView(this.render);
 
         this.notes = [];
 
@@ -71,16 +79,16 @@ class Game {
         const NOTE_WIDTH = 80;
 
         for (let i = 0; i < 4000; i++) {
-            this.notes.push(new Note(this.CTX, (i + 1) % 4, 4448 + (278 * i), 1, NOTE_WIDTH, 120));
-            this.notes.push(new Note(this.CTX, (i + 2) % 4, 4448 + (278 * i), 1, NOTE_WIDTH, 120));
-            this.notes.push(new Note(this.CTX, (i + 3) % 4, 4448 + (278 * i), 1, NOTE_WIDTH, 120));
+            this.notes.push(new Note(this.render, (i + 1) % 4, 4448 + (278 * i), 1, NOTE_WIDTH, 120));
+            this.notes.push(new Note(this.render, (i + 2) % 4, 4448 + (278 * i), 1, NOTE_WIDTH, 120));
+            this.notes.push(new Note(this.render, (i + 3) % 4, 4448 + (278 * i), 1, NOTE_WIDTH, 120));
         }
 
         /** @type {Array.<Bomb>} */
         this.bombs = [];
 
         for (let i = 0; i < 4; i++) {
-            this.bombs.push(new Bomb(this.CTX, i, 0, NOTE_WIDTH));
+            this.bombs.push(new Bomb(this.render, i, 0, NOTE_WIDTH));
         }
 
         this.startGame = (e) => { this._startGame(e) };
@@ -96,7 +104,7 @@ class Game {
         /** @type {Object.<Judge>} */
         // JUDGES
 
-        this.GAUGE = new GrooveGauge(this.CTX);
+        this.GAUGE = new GrooveGauge(this.render);
 
         document.removeEventListener('keydown', this.startGame);
 
@@ -120,11 +128,9 @@ class Game {
 
         this.writeBackGround();
 
-        this.CTX.fillStyle = 'rgb( 255, 102, 102)';
-        this.CTX.font = "18px serif";
+        this.render.drawText("キーボード押すと音が鳴るよ", 50, 100, "21px serif", 'rgb( 255, 102, 102)');
+        this.render.drawText("爆音なので注意", 50, 120, "21px serif", 'rgb( 255, 102, 102)');
 
-        this.CTX.fillText("キーボード押すと音が鳴るよ", 50, 100);
-        this.CTX.fillText("爆音なので注意", 50, 120);
     }
 
     //再帰的なメインループ
@@ -136,7 +142,7 @@ class Game {
         const NOW = performance.now();
 
         //画面のリフレッシュ
-        this.CTX.clearRect(0, 0, 3000, 3000);
+        this.CTX.clearRect(0, 0, this.CANVAS_WIDTH, this.CANVAS_HEIGHT);
 
         this.writeBackGround();
 
@@ -162,11 +168,10 @@ class Game {
     }
 
     writeBackGround() {
-        this.CTX.fillStyle = 'rgb( 0, 0, 0)';
-        this.CTX.fillRect(0, 0, this.CANVAS.width, this.CANVAS.height);
+        this.render.drawBox(0, 0, this.CANVAS_WIDTH, this.CANVAS_HEIGHT, 'rgb( 0, 0, 0)');
+
         //判定位置生成
-        this.CTX.fillStyle = 'rgb( 0, 255, 0)';
-        this.CTX.fillRect(0, 502, this.CANVAS.width, 5);
+        this.render.drawBox(0, 502, this.CANVAS_WIDTH, 5, 'rgb( 0, 255, 0)');
     }
 
     //何らかのキーが押されている時呼ばれます

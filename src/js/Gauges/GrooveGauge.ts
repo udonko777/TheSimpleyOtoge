@@ -1,15 +1,14 @@
 'use strict';
+import { TomoyoRender } from "TomoyoRender";
 import { Gauge } from "./Gauge";
 
 export class GrooveGauge extends Gauge {
 
     GAUGE_BOX_AS_GROOVE: number;
 
-    /** ゲージのUIの実装とゲージの計算
-     * @param ctx
-     */
-    constructor(ctx: CanvasRenderingContext2D) {
-        super(ctx);
+    /** ゲージのUIの実装とゲージの計算 */
+    constructor(render: TomoyoRender) {
+        super(render);
 
         this.groove = 22220;
         this.GAUGE_BOX_NUMBER = 24;

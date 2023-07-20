@@ -1,14 +1,10 @@
 'use strict';
 
-type RGB = `rgb(${number}, ${number}, ${number})`;
-type RGBA = `rgba(${number}, ${number}, ${number}, ${number})`;
-type HEX = `#${string}`;
-
-type Color = RGB | RGBA | HEX;
+import { TomoyoRender, Color } from "TomoyoRender";
 
 export abstract class Gauge {
 
-    ctx: CanvasRenderingContext2D;
+    render: TomoyoRender;
 
     groove: number;
     MAXGROOVE: number;
@@ -27,13 +23,9 @@ export abstract class Gauge {
     BREAK: number;
     IS_TOLERANT: boolean;
 
-    /**
-     * @abstract
-     * @param {CanvasRenderingContext2D} ctx
-     */
-    constructor(ctx: CanvasRenderingContext2D) {
+    constructor(render: TomoyoRender) {
 
-        this.ctx = ctx;
+        this.render = render;
 
         //0 <= groove <= 65536
         this.groove = 0;
@@ -84,8 +76,7 @@ export abstract class Gauge {
      */
     protected writebox(color: string | CanvasGradient | CanvasPattern, x: number, y: number, boxwidth: number, boxheight: number) {
         //ノーツの色の設定
-        this.ctx.fillStyle = color;
-        this.ctx.fillRect(x, y, boxwidth, boxheight);
+        this.render.drawBox(x,y,boxwidth,boxheight,String(color));
     }
 
     /** FIX せっかく実装を強制している割には外からアクセスできないのは悲しい。*/
