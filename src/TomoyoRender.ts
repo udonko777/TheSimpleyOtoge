@@ -12,8 +12,14 @@ export class TomoyoRender {
 
     private ctx: CanvasRenderingContext2D;
 
-    constructor(ctx: CanvasRenderingContext2D) {
+    CANVAS_WIDTH: number;
+    CANVAS_HEIGHT: number;
+
+    constructor(ctx: CanvasRenderingContext2D, width: number, height: number) {
         this.ctx = ctx;
+
+        this.CANVAS_WIDTH = width;
+        this.CANVAS_HEIGHT = height;
     }
 
     /** `ctx.fillRect`の代わりに用意された描画メソッド */
@@ -27,5 +33,9 @@ export class TomoyoRender {
         this.ctx.fillStyle = style;
         this.ctx.font = font;
         this.ctx.fillText(text, x, y);
+    }
+
+    public clear() {
+        this.ctx.clearRect(0, 0, this.CANVAS_WIDTH, this.CANVAS_HEIGHT);
     }
 }

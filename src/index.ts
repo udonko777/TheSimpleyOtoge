@@ -1,5 +1,3 @@
-
-
 import { ComboView } from "./js/components/ComboView";
 
 import { Note } from "./js/components/Note";
@@ -24,17 +22,12 @@ window.startClock = () => {
     const game = new Game(canvas);
 }
 
-class Game {
-
-    CTX: CanvasRenderingContext2D;
+export class Game {
 
     keypresscount: number;
 
     judgeview: JudgeView;
     conboView: ComboView;
-
-    readonly CANVAS_HEIGHT: number;
-    readonly CANVAS_WIDTH: number;
 
     notes: Note[];
     bombs: Bomb[];
@@ -48,6 +41,9 @@ class Game {
 
     exitMain: any;
 
+    CANVAS_HEIGHT: number;
+    CANVAS_WIDTH: number;
+
     /** Game開始のための準備、いろいろ読み込んでstartGameを可能にする。*/
     constructor(canvas: HTMLCanvasElement) {
 
@@ -55,15 +51,15 @@ class Game {
         this.CANVAS_WIDTH = canvas.width;
 
         /** @readonly */
-        this.CTX = canvas.getContext('2d') as CanvasRenderingContext2D;
+        const CTX = canvas.getContext('2d');
 
-        if (!this.CTX) {
+        if (!CTX) {
             throw new Error('canvas?');
         }
 
         this.keypresscount = 0;
 
-        this.render = new TomoyoRender(this.CTX);
+        this.render = new TomoyoRender(CTX, canvas.width, canvas.height);
 
         this.judgeview = new JudgeView(this.render);
         this.conboView = new ComboView(this.render);
@@ -84,7 +80,6 @@ class Game {
             this.notes.push(new Note(this.render, (i + 3) % 4, 4448 + (278 * i), 1, NOTE_WIDTH, 120));
         }
 
-        /** @type {Array.<Bomb>} */
         this.bombs = [];
 
         for (let i = 0; i < 4; i++) {
@@ -142,7 +137,7 @@ class Game {
         const NOW = performance.now();
 
         //画面のリフレッシュ
-        this.CTX.clearRect(0, 0, this.CANVAS_WIDTH, this.CANVAS_HEIGHT);
+        this.render.clear();
 
         this.writeBackGround();
 
