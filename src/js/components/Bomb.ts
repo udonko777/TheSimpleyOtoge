@@ -1,6 +1,7 @@
 import { TomoyoRender } from "TomoyoRender";
+import { GraphicComponent } from "./Component";
 
-export class Bomb {
+export class Bomb implements GraphicComponent{
 
     render: TomoyoRender;
     no: number;
@@ -20,7 +21,7 @@ export class Bomb {
         this.NOTE_WIDTH = NOTE_WIDTH;
     }
 
-    writebomb() {
+    draw() {
 
         if (this.bomblife > 0) {
 

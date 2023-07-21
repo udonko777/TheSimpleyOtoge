@@ -4,7 +4,7 @@ import { Note } from "./js/components/Note";
 
 import { JudgeView } from "./js/components/JudgeView";
 
-import { Bomb } from "./js/UI/Bomb";
+import { Bomb } from "./js/components/Bomb";
 //@ts-expect-error
 import { MusicPlayer } from "./js/MusicPlayer.mjs";
 
@@ -143,7 +143,7 @@ export class Game {
 
         this.GAUGE.draw();
 
-        this.bombs.forEach(bomb => bomb.writebomb())
+        this.bombs.forEach(bomb => bomb.draw())
 
         this.judgeview.draw();
         this.conboView.draw();
