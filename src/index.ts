@@ -14,6 +14,8 @@ import { TomoyoRender } from "./TomoyoRender";
 
 import bmeFile from "./resource/demo/darksamba/_dark_sambaland_a.bme";
 
+import { BackGround } from "./js/components/BackGround";
+
 //import {JUDGES} from '/jsons/judge.json' 
 
 //HTML側Bodyのonlordに書かれているので、この関数はBodyの読み込みが終わったら呼ばれるはず
@@ -41,28 +43,27 @@ export class Game {
 
     exitMain: any;
 
-    CANVAS_HEIGHT: number;
-    CANVAS_WIDTH: number;
+    backGround: BackGround;
+
+    canvasHeight: () => number;
+    canvasWidth: () => number;
 
     /** Game開始のための準備、いろいろ読み込んでstartGameを可能にする。*/
     constructor(canvas: HTMLCanvasElement) {
 
-        this.CANVAS_HEIGHT = canvas.height;
-        this.CANVAS_WIDTH = canvas.width;
-
-        /** @readonly */
-        const CTX = canvas.getContext('2d');
-
-        if (!CTX) {
-            throw new Error('canvas?');
-        }
+        //HACK canvasのサイズは実行中に変化する可能性がある為に、canvasのサイズを動的に入手する手段を持たせている。
+        //もっといい方法が思いつけばそれを採用する。
+        this.canvasHeight = () => { return canvas.height };
+        this.canvasWidth = () => { return canvas.width };
 
         this.keypresscount = 0;
 
-        this.render = new TomoyoRender(CTX, canvas.width, canvas.height);
+        this.render = new TomoyoRender(canvas);
 
         this.judgeview = new JudgeView(this.render);
         this.conboView = new ComboView(this.render);
+
+        this.backGround = new BackGround(this.render, canvas.height, canvas.width)
 
         this.notes = [];
 
@@ -121,7 +122,7 @@ export class Game {
     //gameが実際に始まる前までに表示し続ける表示
     inputWaitingscreen() {
 
-        this.writeBackGround();
+        this.backGround.draw();
 
         this.render.drawText("キーボード押すと音が鳴るよ", 50, 100, "21px serif", 'rgb( 255, 102, 102)');
         this.render.drawText("爆音なので注意", 50, 120, "21px serif", 'rgb( 255, 102, 102)');
@@ -139,7 +140,9 @@ export class Game {
         //画面のリフレッシュ
         this.render.clear();
 
-        this.writeBackGround();
+        //FIX 更新があってもなくても毎フレームリサイズしている。 canvasサイズの変更を受け取るハンドラから呼び出すべき
+        this.backGround.setSize(this.canvasHeight(), this.canvasWidth());
+        this.backGround.draw();
 
         this.GAUGE.draw();
 
@@ -160,13 +163,6 @@ export class Game {
             };
         }
 
-    }
-
-    writeBackGround() {
-        this.render.drawBox(0, 0, this.CANVAS_WIDTH, this.CANVAS_HEIGHT, 'rgb( 0, 0, 0)');
-
-        //判定位置生成
-        this.render.drawBox(0, 502, this.CANVAS_WIDTH, 5, 'rgb( 0, 255, 0)');
     }
 
     //何らかのキーが押されている時呼ばれます
