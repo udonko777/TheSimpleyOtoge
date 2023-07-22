@@ -4,13 +4,17 @@
  */
 export class MusicPlayer {
 
+    audioContext: AudioContext;
+    audioElement: HTMLAudioElement;
+    music: MediaElementAudioSourceNode;
+
     constructor() {
         //れとろなぶらうざ用
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        const AudioContext = window.AudioContext;
 
         this.audioContext = new AudioContext();
 
-        this.audioElement = document.querySelector('audio');
+        this.audioElement = document.querySelector('audio')!;
         this.music = this.audioContext.createMediaElementSource(this.audioElement);
 
         this.music.connect(this.audioContext.destination);

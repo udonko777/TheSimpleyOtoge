@@ -5,8 +5,8 @@ import { Note } from "./js/components/Note";
 import { JudgeView } from "./js/components/JudgeView";
 
 import { Bomb } from "./js/components/Bomb";
-//@ts-expect-error
-import { MusicPlayer } from "./js/MusicPlayer.mjs";
+
+import { MusicPlayer } from "./js/MusicPlayer";
 
 import { GrooveGauge } from "./js/Gauges/GrooveGauge";
 
