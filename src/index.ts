@@ -31,6 +31,8 @@ export class Game {
     judgeview: JudgeView;
     conboView: ComboView;
 
+    backGround: BackGround;
+
     notes: Note[];
     bombs: Bomb[];
 
@@ -39,11 +41,7 @@ export class Game {
     startGame: (e: KeyboardEvent) => void;
     GAUGE: any;
 
-    keypressed!: (e: KeyboardEvent) => void;
-
     exitMain: any;
-
-    backGround: BackGround;
 
     canvasHeight: () => number;
     canvasWidth: () => number;
@@ -109,8 +107,8 @@ export class Game {
         const NOW = performance.now();
         this.notes.forEach(note => note.begin(NOW));
 
-        this.keypressed = (e) => { this._keypressed(e) };
-        document.addEventListener('keydown', this.keypressed);
+        //アロー関数にしなくてもいいかも？静的な参照を持ちたい
+        document.addEventListener('keydown', (e) => { this._keypressed(e) });
 
         const musicplayer = new MusicPlayer();
         musicplayer.play();
