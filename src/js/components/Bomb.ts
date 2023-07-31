@@ -32,7 +32,6 @@ export class Bomb implements GraphicComponent{
             this.bomblife -= 1;
         }
 
-        return;
     }
 
     setbomblife(bomblife: number) {
