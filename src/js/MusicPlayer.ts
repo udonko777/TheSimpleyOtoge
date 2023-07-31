@@ -9,7 +9,6 @@ export class MusicPlayer {
     music: MediaElementAudioSourceNode;
 
     constructor() {
-        //れとろなぶらうざ用
         const AudioContext = window.AudioContext;
 
         this.audioContext = new AudioContext();
