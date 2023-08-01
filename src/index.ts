@@ -61,7 +61,9 @@ export class Game {
         this.judgeview = new JudgeView(this.render);
         this.conboView = new ComboView(this.render);
 
-        this.backGround = new BackGround(this.render, canvas.height, canvas.width)
+        this.backGround = new BackGround(this.render, canvas.height, canvas.width);
+
+        const source = bmeFile;
 
         this.notes = [];
 
@@ -144,7 +146,7 @@ export class Game {
 
         this.GAUGE.draw();
 
-        this.bombs.forEach(bomb => bomb.draw())
+        this.bombs.forEach(bomb => bomb.draw());
 
         this.judgeview.draw();
         this.conboView.draw();
@@ -191,7 +193,7 @@ export class Game {
 
                 //bは短縮のためのインスタンスな変数です。
 
-                const b = this.notes[i].falltime + (globalThis.performance.now() - this.notes[i].getSTART_TIME())
+                const b = this.notes[i].falltime + (globalThis.performance.now() - this.notes[i].getSTART_TIME());
 
                 if (50 > b && -50 < b) {
                     console.log(`${l}is GREAT!, i think it is${b}`);

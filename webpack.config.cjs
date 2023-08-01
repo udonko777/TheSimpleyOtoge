@@ -18,6 +18,7 @@ const config = {
     plugins: [
         new HtmlWebpackPlugin({
             template: 'index.html',
+            favicon: './src/resource/demo/favicon.ico'
         }),
     ],
     module: {
@@ -36,8 +37,12 @@ const config = {
                 loader: "html-loader",
             },
             {
-                test: /\.(mp3|text|txt|bms|bme)$/i,
+                test: /\.(mp3|wav|ogg)$/i,
                 type: 'asset/resource'
+            },
+            {
+                test: /\.(text|txt|bms|bme)$/i,
+                type: 'asset/source'
             }
 
             // Add your rules for custom modules here
