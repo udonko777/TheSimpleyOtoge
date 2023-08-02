@@ -18,7 +18,7 @@ export class Note implements GraphicComponent {
      * @param render
      * @param no - note index,0 is left side
      * @param fallTime - 落ちるまでの猶予時間
-     * @param hispeed
+     * @param hiSpeed
      * @param NOTE_WIDTH
      * @param FIRST_BPM - BPM
      * */
@@ -52,7 +52,7 @@ export class Note implements GraphicComponent {
 
         this.y = ((this.fallTime + this.beforeTime + ((now - this.START_TIME) * this.scrollSpeedForBPM)) / this.hiSpeed) + 500;
 
-        const x: number = this.no * this.NOTE_WIDTH;
+        const x = this.no * this.NOTE_WIDTH;
         this.render.drawBox(x, this.y, this.NOTE_WIDTH, 10, '#DD7070');
     }
 

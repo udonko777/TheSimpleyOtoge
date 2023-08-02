@@ -20,7 +20,7 @@ import { BackGround } from "./js/components/BackGround";
 
 //import {JUDGES} from '/jsons/judge.json' 
 
-//HTML側Bodyのonlordに書かれているので、この関数はBodyの読み込みが終わったら呼ばれるはず
+//HTML側BodyのonLordに書かれているので、この関数はBodyの読み込みが終わったら呼ばれるはず
 window.startClock = () => {
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;
     const game = new Game(canvas);
