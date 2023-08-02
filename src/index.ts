@@ -28,7 +28,7 @@ window.startClock = () => {
 
 export class Game {
 
-    keypresscount: number;
+    keyPressCount: number;
 
     judgeView: JudgeView;
     conboView: ComboView;
@@ -56,7 +56,7 @@ export class Game {
         this.canvasHeight = () => { return canvas.height };
         this.canvasWidth = () => { return canvas.width };
 
-        this.keypresscount = 0;
+        this.keyPressCount = 0;
 
         this.render = new TomoyoRender(canvas);
 
@@ -186,7 +186,7 @@ export class Game {
                 this.judgeTiming(3);
             }
         }
-        this.keypresscount += 1;
+        this.keyPressCount += 1;
         return false;
     }
 
@@ -226,7 +226,7 @@ export class Game {
 
         }
 
-        this.bombs[l].setbomblife(50);
+        this.bombs[l].setBombLife(50);
 
         return;
     }
