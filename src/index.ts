@@ -12,6 +12,8 @@ import { GrooveGauge } from "./js/Gauges/GrooveGauge";
 
 import { TomoyoRender } from "./TomoyoRender";
 
+import { BMSPurser } from "./js/BMSPurser";
+
 import bmeFile from "./resource/demo/darksamba/_dark_sambaland_a.bme";
 
 import { BackGround } from "./js/components/BackGround";
@@ -28,7 +30,7 @@ export class Game {
 
     keypresscount: number;
 
-    judgeview: JudgeView;
+    judgeView: JudgeView;
     conboView: ComboView;
 
     backGround: BackGround;
@@ -58,12 +60,16 @@ export class Game {
 
         this.render = new TomoyoRender(canvas);
 
-        this.judgeview = new JudgeView(this.render);
+        this.judgeView = new JudgeView(this.render);
         this.conboView = new ComboView(this.render);
 
         this.backGround = new BackGround(this.render, canvas.height, canvas.width);
 
-        const source = bmeFile;
+        const Parser = new BMSPurser();
+
+        const chartSourceText = Parser.parse(bmeFile);
+
+        console.info(chartSourceText);
 
         this.notes = [];
 
@@ -91,7 +97,7 @@ export class Game {
         document.addEventListener('keydown', this.startGame);
 
         //ゲームが実際に起動されるまで表示される待ち受け画面。
-        this.inputWaitingscreen();
+        this.inputWaitingScreen();
     }
 
     //実際にゲームが始まるタイミングで呼ばれる
@@ -110,17 +116,17 @@ export class Game {
         this.notes.forEach(note => note.begin(NOW));
 
         //アロー関数にしなくてもいいかも？静的な参照を持ちたい
-        document.addEventListener('keydown', (e) => { this._keypressed(e) });
+        document.addEventListener('keydown', (e) => { this._keyPressed(e) });
 
-        const musicplayer = new MusicPlayer();
-        musicplayer.play();
+        const musicPlayer = new MusicPlayer();
+        musicPlayer.play();
 
         this.frame();
 
     }
 
     //gameが実際に始まる前までに表示し続ける表示
-    inputWaitingscreen() {
+    inputWaitingScreen() {
 
         this.backGround.draw();
 
@@ -148,7 +154,7 @@ export class Game {
 
         this.bombs.forEach(bomb => bomb.draw());
 
-        this.judgeview.draw();
+        this.judgeView.draw();
         this.conboView.draw();
 
         //存在するすべてのNoteオブジェクトの時を進める
@@ -156,7 +162,7 @@ export class Game {
         for (let i = 0; i < this.notes.length; i++) {
             this.notes[i].draw(NOW);
             if (this.notes[i].isOVER(NOW)) {
-                this.judgeview.judge = "OVER";
+                this.judgeView.judge = "OVER";
                 this.GAUGE.judge = "OVER";
                 this.conboView.resetConboCount();
                 this.notes.splice(i, 1);
@@ -166,7 +172,7 @@ export class Game {
     }
 
     //何らかのキーが押されている時呼ばれます
-    _keypressed(e: KeyboardEvent) {
+    _keyPressed(e: KeyboardEvent) {
 
         console.log(e.key);
         if (e.repeat === false) {
@@ -197,22 +203,22 @@ export class Game {
 
                 if (50 > b && -50 < b) {
                     console.log(`${l}is GREAT!, i think it is${b}`);
-                    this.judgeview.judge = "GREAT";
+                    this.judgeView.judge = "GREAT";
                     this.GAUGE.judge = "GREAT";
                     this.conboView.addConboCount();
                     this.notes.splice(i, 1);
                 } else if (100 > b && -100 < b) {
-                    this.judgeview.judge = "GOOD";
+                    this.judgeView.judge = "GOOD";
                     this.GAUGE.judge = "GOOD";
                     this.conboView.addConboCount();
                     this.notes.splice(i, 1);
                 } else if (200 > b && -200 < b) {
-                    this.judgeview.judge = "bad";
+                    this.judgeView.judge = "bad";
                     this.GAUGE.judge = "BAD";
                     this.conboView.resetConboCount();
                     this.notes.splice(i, 1);
                 } else if (210 > b && -210 < b) {
-                    this.judgeview.judge = "POOR";
+                    this.judgeView.judge = "POOR";
                     this.notes.splice(i, 1);
                 }
 
