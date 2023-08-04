@@ -19,7 +19,7 @@ export class Note implements GraphicComponent {
      * @param hiSpeed
      * @param NOTE_WIDTH
      * @param FIRST_BPM - BPM
-     * */
+     */
     constructor(render: TomoyoRender, no: number, perfectTiming: number, hiSpeed: number, NOTE_WIDTH: number, FIRST_BPM: number) {
 
         this.render = render;

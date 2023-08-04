@@ -4,7 +4,7 @@ import { GraphicComponent } from './Component';
 /**
  * 現在のコンボ数を表示するView、実際にはJudgeViewと組み合わせて使う。
  * 現状conbo数のカウントとコンボ数の表示の両方をこのClassで行ってしまっているので、別々にしたい。
-*/
+ */
 export class ComboView implements GraphicComponent {
 
     readonly render: TomoyoRender;
