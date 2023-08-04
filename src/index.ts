@@ -12,11 +12,13 @@ import { GrooveGauge } from "./js/Gauges/GrooveGauge";
 
 import { TomoyoRender } from "./TomoyoRender";
 
-import { BMSPurser } from "./js/BMSPurser";
+import { Chart } from "./js/Chart";
 
 import bmeFile from "./resource/demo/darksamba/_dark_sambaland_a.bme";
 
 import { BackGround } from "./js/components/BackGround";
+
+import { BarLine } from "./js/components/BarLine";
 
 //import {JUDGES} from '/jsons/judge.json' 
 
@@ -34,6 +36,7 @@ export class Game {
     conboView: ComboView;
 
     backGround: BackGround;
+    barLine: BarLine;
 
     notes: Note[];
     bombs: Bomb[];
@@ -64,12 +67,11 @@ export class Game {
         this.conboView = new ComboView(this.render);
 
         this.backGround = new BackGround(this.render, canvas.height, canvas.width);
+        this.barLine = new BarLine(this.render, 10, canvas.width);
 
-        const Parser = new BMSPurser();
+        const BMEChart = new Chart(bmeFile);
 
-        const chartSourceText = Parser.parse(bmeFile);
-
-        console.info(chartSourceText);
+        console.info(BMEChart);
 
         this.notes = [];
 
@@ -149,6 +151,9 @@ export class Game {
         //FIX 更新があってもなくても毎フレームリサイズしている。 canvasサイズの変更を受け取るハンドラから呼び出すべき
         this.backGround.setSize(this.canvasHeight(), this.canvasWidth());
         this.backGround.draw();
+
+        this.barLine.setSize(10,this.canvasWidth());
+        this.barLine.draw();
 
         this.GAUGE.draw();
 
