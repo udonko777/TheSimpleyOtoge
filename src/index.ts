@@ -105,9 +105,6 @@ export class Game {
     //実際にゲームが始まるタイミングで呼ばれる
     _startGame(e: KeyboardEvent) {
 
-        /** @type {Object.<Judge>} */
-        // JUDGES
-
         this.GAUGE = new GrooveGauge(this.render);
 
         document.removeEventListener('keydown', this.startGame);
@@ -204,7 +201,7 @@ export class Game {
 
                 //bは短縮のためのインスタンスな変数です。
 
-                const b = this.notes[i].fallTime + (globalThis.performance.now() - this.notes[i].getSTART_TIME());
+                const b = (globalThis.performance.now() - this.notes[i].getSTART_TIME()) - this.notes[i].fallTime;
 
                 if (50 > b && -50 < b) {
                     console.log(`${l}is GREAT!, i think it is${b}`);

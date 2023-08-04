@@ -27,7 +27,7 @@ export class Note implements GraphicComponent {
         this.no = no;
         this.hiSpeed = hiSpeed;
         this.NOTE_WIDTH = NOTE_WIDTH;
-        this.fallTime = 0 - fallTime;
+        this.fallTime = fallTime;
 
         //scrollSpeed 1 : 120 bpm
         this.scrollSpeedForBPM = FIRST_BPM / 120;
@@ -54,13 +54,13 @@ export class Note implements GraphicComponent {
         const elapsedTime = this.getElapsedTime(now);
 
         const x = this.no * this.NOTE_WIDTH;
-        const y = ((this.fallTime + (elapsedTime * this.scrollSpeedForBPM)) / this.hiSpeed) + 500;
+        const y = (((elapsedTime * this.scrollSpeedForBPM) - this.fallTime) / this.hiSpeed) + 500;
 
         this.render.drawBox(x, y, this.NOTE_WIDTH, 10, '#DD7070');
     }
 
     isOVER(now: DOMHighResTimeStamp): boolean {
-        if (501 < (this.fallTime + this.getElapsedTime(now))) {
+        if (501 < (this.getElapsedTime(now) - this.fallTime)) {
             return true;
         }
         return false;
