@@ -3,19 +3,20 @@ import { GraphicComponent } from './Component';
 
 export class Note implements GraphicComponent {
 
-    render: TomoyoRender;
+    private render: TomoyoRender;
 
-    no: number;
-    hiSpeed: number;
-    NOTE_WIDTH: number;
-    perfectTiming: number;
-    scrollSpeedForBPM: number;
-    START_TIME: any;
+    private hiSpeed: number;
+    private NOTE_WIDTH: number;
+    private scrollSpeedForBPM: number;
+
+    public no: number;
+    public START_TIME: any;
+    public perfectTiming: number;
 
     /**
      * @param render
      * @param no - note index,0 is left side
-     * @param perfectTiming - 音符が
+     * @param perfectTiming - 自動演奏されるときこの音符が演奏される時間(ms)
      * @param hiSpeed
      * @param NOTE_WIDTH
      * @param FIRST_BPM - BPM
