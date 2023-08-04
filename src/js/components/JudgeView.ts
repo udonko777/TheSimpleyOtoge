@@ -36,7 +36,7 @@ export class JudgeView implements GraphicComponent {
                 this.judgeName = "GREAT";
                 break;
             default:
-                console.warn("i dont know this judgeName");
+                console.warn("i don't know this judgeName");
                 break;
         }
     }
