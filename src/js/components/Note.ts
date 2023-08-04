@@ -9,9 +9,7 @@ export class Note implements GraphicComponent {
     hiSpeed: number;
     NOTE_WIDTH: number;
     fallTime: number;
-    beforeTime: number;
     scrollSpeedForBPM: number;
-    y: number;
     START_TIME: any;
 
     /**
@@ -30,14 +28,13 @@ export class Note implements GraphicComponent {
         this.hiSpeed = hiSpeed;
         this.NOTE_WIDTH = NOTE_WIDTH;
         this.fallTime = 0 - fallTime;
-        this.beforeTime = 0;
 
         //scrollSpeed 1 : 120 bpm
         this.scrollSpeedForBPM = FIRST_BPM / 120;
 
         //(落ちるまでの時間 + 現在の時間 - 開始時間) / ハイスピ + 判定位置
         //このタイミングで現在の時間と開始時間が等しいので0
-        this.y = ((this.fallTime + 0) / this.hiSpeed) + 500;
+
     }
 
     begin(starttime: number) {
@@ -48,16 +45,22 @@ export class Note implements GraphicComponent {
         return this.START_TIME;
     }
 
+    private getElapsedTime(now: DOMHighResTimeStamp) {
+        return now - this.START_TIME;
+    }
+
     draw(now: DOMHighResTimeStamp) {
 
-        this.y = ((this.fallTime + this.beforeTime + ((now - this.START_TIME) * this.scrollSpeedForBPM)) / this.hiSpeed) + 500;
+        const elapsedTime = this.getElapsedTime(now);
 
         const x = this.no * this.NOTE_WIDTH;
-        this.render.drawBox(x, this.y, this.NOTE_WIDTH, 10, '#DD7070');
+        const y = ((this.fallTime + (elapsedTime * this.scrollSpeedForBPM)) / this.hiSpeed) + 500;
+
+        this.render.drawBox(x, y, this.NOTE_WIDTH, 10, '#DD7070');
     }
 
     isOVER(now: DOMHighResTimeStamp): boolean {
-        if (501 < this.fallTime + (now - this.START_TIME)) {
+        if (501 < (this.fallTime + this.getElapsedTime(now))) {
             return true;
         }
         return false;
