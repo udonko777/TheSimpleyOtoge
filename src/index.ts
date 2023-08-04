@@ -201,7 +201,7 @@ export class Game {
 
                 //bは短縮のためのインスタンスな変数です。
 
-                const b = (globalThis.performance.now() - this.notes[i].getSTART_TIME()) - this.notes[i].fallTime;
+                const b = (globalThis.performance.now() - this.notes[i].getSTART_TIME()) - this.notes[i].perfectTiming;
 
                 if (50 > b && -50 < b) {
                     console.log(`${l}is GREAT!, i think it is${b}`);

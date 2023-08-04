@@ -8,26 +8,26 @@ export class Note implements GraphicComponent {
     no: number;
     hiSpeed: number;
     NOTE_WIDTH: number;
-    fallTime: number;
+    perfectTiming: number;
     scrollSpeedForBPM: number;
     START_TIME: any;
 
     /**
      * @param render
      * @param no - note index,0 is left side
-     * @param fallTime - 落ちるまでの猶予時間
+     * @param perfectTiming - 音符が
      * @param hiSpeed
      * @param NOTE_WIDTH
      * @param FIRST_BPM - BPM
      * */
-    constructor(render: TomoyoRender, no: number, fallTime: number, hiSpeed: number, NOTE_WIDTH: number, FIRST_BPM: number) {
+    constructor(render: TomoyoRender, no: number, perfectTiming: number, hiSpeed: number, NOTE_WIDTH: number, FIRST_BPM: number) {
 
         this.render = render;
 
         this.no = no;
         this.hiSpeed = hiSpeed;
         this.NOTE_WIDTH = NOTE_WIDTH;
-        this.fallTime = fallTime;
+        this.perfectTiming = perfectTiming;
 
         //scrollSpeed 1 : 120 bpm
         this.scrollSpeedForBPM = FIRST_BPM / 120;
@@ -51,18 +51,24 @@ export class Note implements GraphicComponent {
 
     draw(now: DOMHighResTimeStamp) {
 
+        /** 経過時間 */
         const elapsedTime = this.getElapsedTime(now);
 
+        const JUDGE_LINE_POSITION = 500
+
         const x = this.no * this.NOTE_WIDTH;
-        const y = (((elapsedTime * this.scrollSpeedForBPM) - this.fallTime) / this.hiSpeed) + 500;
+        const y = (((elapsedTime * this.scrollSpeedForBPM) - this.perfectTiming) / this.hiSpeed) + JUDGE_LINE_POSITION;
 
         this.render.drawBox(x, y, this.NOTE_WIDTH, 10, '#DD7070');
     }
 
     isOVER(now: DOMHighResTimeStamp): boolean {
-        if (501 < (this.getElapsedTime(now) - this.fallTime)) {
+        
+        if (501 < (this.getElapsedTime(now) - this.perfectTiming)) {
             return true;
         }
+
         return false;
+
     }
 }
