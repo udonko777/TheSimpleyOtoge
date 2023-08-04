@@ -1,20 +1,20 @@
-
-
 import { ComboView } from "./js/components/ComboView";
 
 import { Note } from "./js/components/Note";
 
 import { JudgeView } from "./js/components/JudgeView";
 
-import { Bomb } from "./js/UI/Bomb";
-//@ts-expect-error
-import { MusicPlayer } from "./js/MusicPlayer.mjs";
+import { Bomb } from "./js/components/Bomb";
+
+import { MusicPlayer } from "./js/MusicPlayer";
 
 import { GrooveGauge } from "./js/Gauges/GrooveGauge";
 
 import { TomoyoRender } from "./TomoyoRender";
 
 import bmeFile from "./resource/demo/darksamba/_dark_sambaland_a.bme";
+
+import { BackGround } from "./js/components/BackGround";
 
 //import {JUDGES} from '/jsons/judge.json' 
 
@@ -24,17 +24,14 @@ window.startClock = () => {
     const game = new Game(canvas);
 }
 
-class Game {
-
-    CTX: CanvasRenderingContext2D;
+export class Game {
 
     keypresscount: number;
 
     judgeview: JudgeView;
     conboView: ComboView;
 
-    readonly CANVAS_HEIGHT: number;
-    readonly CANVAS_WIDTH: number;
+    backGround: BackGround;
 
     notes: Note[];
     bombs: Bomb[];
@@ -44,29 +41,27 @@ class Game {
     startGame: (e: KeyboardEvent) => void;
     GAUGE: any;
 
-    keypressed!: (e: KeyboardEvent) => void;
-
     exitMain: any;
+
+    canvasHeight: () => number;
+    canvasWidth: () => number;
 
     /** Game開始のための準備、いろいろ読み込んでstartGameを可能にする。*/
     constructor(canvas: HTMLCanvasElement) {
 
-        this.CANVAS_HEIGHT = canvas.height;
-        this.CANVAS_WIDTH = canvas.width;
-
-        /** @readonly */
-        this.CTX = canvas.getContext('2d') as CanvasRenderingContext2D;
-
-        if (!this.CTX) {
-            throw new Error('canvas?');
-        }
+        //HACK canvasのサイズは実行中に変化する可能性がある為に、canvasのサイズを動的に入手する手段を持たせている。
+        //もっといい方法が思いつけばそれを採用する。
+        this.canvasHeight = () => { return canvas.height };
+        this.canvasWidth = () => { return canvas.width };
 
         this.keypresscount = 0;
 
-        this.render = new TomoyoRender(this.CTX);
+        this.render = new TomoyoRender(canvas);
 
         this.judgeview = new JudgeView(this.render);
         this.conboView = new ComboView(this.render);
+
+        this.backGround = new BackGround(this.render, canvas.height, canvas.width)
 
         this.notes = [];
 
@@ -84,7 +79,6 @@ class Game {
             this.notes.push(new Note(this.render, (i + 3) % 4, 4448 + (278 * i), 1, NOTE_WIDTH, 120));
         }
 
-        /** @type {Array.<Bomb>} */
         this.bombs = [];
 
         for (let i = 0; i < 4; i++) {
@@ -113,8 +107,8 @@ class Game {
         const NOW = performance.now();
         this.notes.forEach(note => note.begin(NOW));
 
-        this.keypressed = (e) => { this._keypressed(e) };
-        document.addEventListener('keydown', this.keypressed);
+        //アロー関数にしなくてもいいかも？静的な参照を持ちたい
+        document.addEventListener('keydown', (e) => { this._keypressed(e) });
 
         const musicplayer = new MusicPlayer();
         musicplayer.play();
@@ -126,7 +120,7 @@ class Game {
     //gameが実際に始まる前までに表示し続ける表示
     inputWaitingscreen() {
 
-        this.writeBackGround();
+        this.backGround.draw();
 
         this.render.drawText("キーボード押すと音が鳴るよ", 50, 100, "21px serif", 'rgb( 255, 102, 102)');
         this.render.drawText("爆音なので注意", 50, 120, "21px serif", 'rgb( 255, 102, 102)');
@@ -142,13 +136,15 @@ class Game {
         const NOW = performance.now();
 
         //画面のリフレッシュ
-        this.CTX.clearRect(0, 0, this.CANVAS_WIDTH, this.CANVAS_HEIGHT);
+        this.render.clear();
 
-        this.writeBackGround();
+        //FIX 更新があってもなくても毎フレームリサイズしている。 canvasサイズの変更を受け取るハンドラから呼び出すべき
+        this.backGround.setSize(this.canvasHeight(), this.canvasWidth());
+        this.backGround.draw();
 
         this.GAUGE.draw();
 
-        this.bombs.forEach(bomb => bomb.writebomb())
+        this.bombs.forEach(bomb => bomb.draw())
 
         this.judgeview.draw();
         this.conboView.draw();
@@ -165,13 +161,6 @@ class Game {
             };
         }
 
-    }
-
-    writeBackGround() {
-        this.render.drawBox(0, 0, this.CANVAS_WIDTH, this.CANVAS_HEIGHT, 'rgb( 0, 0, 0)');
-
-        //判定位置生成
-        this.render.drawBox(0, 502, this.CANVAS_WIDTH, 5, 'rgb( 0, 255, 0)');
     }
 
     //何らかのキーが押されている時呼ばれます
