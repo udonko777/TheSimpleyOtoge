@@ -151,7 +151,7 @@ export class Game {
         this.backGround.setSize(this.canvasHeight(), this.canvasWidth());
         this.backGround.draw();
 
-        this.barLine.setSize(10, this.canvasWidth());
+        this.barLine.setSize(this.canvasWidth());
 
         this.GAUGE.draw();
 
