@@ -67,7 +67,7 @@ export class Game {
         this.conboView = new ComboView(this.render);
 
         this.backGround = new BackGround(this.render, canvas.height, canvas.width);
-        this.barLine = new BarLine(this.render, 10, canvas.width);
+        this.barLine = new BarLine(this.render, 2, canvas.width, 4448, 120);
 
         const BMEChart = new Chart(bmeFile);
 
@@ -114,6 +114,8 @@ export class Game {
         const NOW = performance.now();
         this.notes.forEach(note => note.begin(NOW));
 
+        this.barLine.begin(NOW);
+
         //アロー関数にしなくてもいいかも？静的な参照を持ちたい
         document.addEventListener('keydown', (e) => { this._keyPressed(e) });
 
@@ -149,8 +151,7 @@ export class Game {
         this.backGround.setSize(this.canvasHeight(), this.canvasWidth());
         this.backGround.draw();
 
-        this.barLine.setSize(10,this.canvasWidth());
-        this.barLine.draw();
+        this.barLine.setSize(10, this.canvasWidth());
 
         this.GAUGE.draw();
 
@@ -158,6 +159,8 @@ export class Game {
 
         this.judgeView.draw();
         this.conboView.draw();
+
+        this.barLine.draw(NOW);
 
         //存在するすべてのNoteオブジェクトの時を進める
 
