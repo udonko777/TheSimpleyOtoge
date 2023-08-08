@@ -1,14 +1,14 @@
 import { TomoyoRender } from "TomoyoRender";
 import { GraphicComponent } from "./Component";
 
-export class BackGround implements GraphicComponent{
+export class BackGround implements GraphicComponent {
 
-    render:TomoyoRender;
+    render: TomoyoRender;
 
-    height:number;
-    width:number;
+    height: number;
+    width: number;
 
-    constructor(render:TomoyoRender,height:number,width:number){
+    constructor(render: TomoyoRender, height: number, width: number) {
         this.render = render;
 
         this.height = height;
@@ -18,7 +18,7 @@ export class BackGround implements GraphicComponent{
     /**
      * 親コンポーネントに変化があったときに親から呼ばれる
      */
-    setSize(height : number ,width :number){
+    setSize(height: number, width: number) {
         this.height = height;
         this.width = width;
     }
