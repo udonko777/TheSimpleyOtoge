@@ -1,6 +1,3 @@
-
-import { } from "./TextSplitter";
-
 export type BMSMainDefinition = {
     /** 000 ~ 999 に収まる、何小節目かを表す数字*/
     measure: number,
