@@ -7,7 +7,6 @@ export class BarLine implements GraphicComponent {
     private height: number;
     private width: number;
     private perfectTiming: number;
-    private bpm: number;
 
     beginTime: number;
     scrollSpeedForBPM: number;
@@ -20,7 +19,6 @@ export class BarLine implements GraphicComponent {
         this.width = width;
 
         this.perfectTiming = perfectTiming;
-        this.bpm = bpm;
 
         this.scrollSpeedForBPM = bpm / 120
 
