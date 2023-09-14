@@ -1,37 +1,86 @@
+import { NullLiteral } from "typescript";
+
 export type BMSMainDefinition = {
     /** 000 ~ 999 に収まる、何小節目かを表す数字*/
     measure: number,
     /** 00 ~ 99 */
     channel: number;
     /** 2文字の36進数の連続 */
-    indexes: string;
+    indexes: Array<string>;
+}
+
+export type Measure = {
+    /** その小節が始まる時刻(ms) */
+    beginTime: number;
+    notePositions: Map<number, number>;
 }
 
 export class Chart {
 
-    FILE_TYPE: string = "BMS";
+    private FILE_TYPE: string = "BMS";
 
-    readonly MainDataField: Set<BMSMainDefinition>
+    //TODO とりあえず手打ちで
+    private BPM: number = 145;
 
-    constructor(SourceText: string){
+    /** 全音符1回が対応する時間(ms) */
+    private quarterNote: number = 240000 / this.BPM;
+
+    readonly MainDataField: Set<BMSMainDefinition>;
+    readonly measures: any;
+
+    constructor(SourceText: string) {
 
         // [小節][チャンネル]:[定義]
         const mainDataFieldFinder = new RegExp(/#(\d{3})(\d{2}):(.*)$/, "gm");
         const mainDataLines = SourceText.matchAll(mainDataFieldFinder);
 
-        const MainDataField: Set<BMSMainDefinition> = new Set();
+        const MainDataFields: Set<BMSMainDefinition> = new Set();
+
+        let countOfMeasures: number = -Infinity;
 
         for (const L of mainDataLines) {
-            MainDataField.add(
+
+            const m = Number(L[1]);
+            const c = Number(L[2]);
+            const i = String(L[3]);
+
+            MainDataFields.add(
                 {
-                    measure: Number(L[1]),
-                    channel: Number(L[2]),
-                    indexes: String(L[3])
+                    measure: m,
+                    channel: c,
+                    //2文字づつに分割
+                    indexes: i.match(/.{2}/g) || []
                 }
-            )
+            );
+
+            if (countOfMeasures < m) {
+                countOfMeasures = m;
+            };
         }
 
-        this.MainDataField = MainDataField;
+        //logで見るためのとりあえず
+        this.MainDataField = MainDataFields;
 
+        //空のオブジェクトで埋める。クソ読みにくいので早急に書き直すこと
+        const measures: Measure[] = Array(countOfMeasures).fill(null).map(()=>(<Measure>{beginTime:0,notePositions:new Map()}));
+
+        for (const dataField of MainDataFields) {
+
+            const indexes = dataField.indexes;
+            const INDEXES_LENGTH = indexes.length;
+
+            const beat = this.quarterNote / indexes.length;
+
+            for (let i = 0; i < INDEXES_LENGTH; i = i+1) {
+
+                if (indexes[i] === "00") break;
+
+                measures[dataField.measure].notePositions.set(i * beat, Number(indexes[i]));
+            }
+
+        }
+
+        this.measures = measures;
+        console.info(measures);
     }
 }
