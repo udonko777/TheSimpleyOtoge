@@ -61,8 +61,13 @@ export class Chart {
         //logで見るためのとりあえず
         this.MainDataField = MainDataFields;
 
-        //空のオブジェクトで埋める。クソ読みにくいので早急に書き直すこと
-        const measures: Measure[] = Array(countOfMeasures).fill(null).map(()=>(<Measure>{beginTime:0,notePositions:new Map()}));
+        //空のmeasureで埋める。もっといい書き方があるかも
+        const measures: Measure[] = Array(countOfMeasures)
+            .fill(null)
+            .map(() => ({
+                beginTime: 0,
+                notePositions: new Map(),
+            }));
 
         for (const dataField of MainDataFields) {
 
@@ -71,7 +76,7 @@ export class Chart {
 
             const beat = this.quarterNote / indexes.length;
 
-            for (let i = 0; i < INDEXES_LENGTH; i = i+1) {
+            for (let i = 0; i < INDEXES_LENGTH; i = i + 1) {
 
                 if (indexes[i] === "00") break;
 
