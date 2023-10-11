@@ -12,6 +12,7 @@ export type BMSMainDefinition = {
 export type Measure = {
     /** その小節が始まる時刻(ms) */
     beginTime: number;
+    /** 落ちてくるタイミング 流すべきSEのID */
     notePositions: Map<number, number>;
 }
 
@@ -62,7 +63,7 @@ export class Chart {
         this.MainDataField = MainDataFields;
 
         //空のmeasureで埋める。もっといい書き方があるかも
-        const measures: Measure[] = Array(countOfMeasures)
+        const measures: Measure[] = Array(countOfMeasures + 1)
             .fill(null)
             .map(() => ({
                 beginTime: 0,
@@ -80,7 +81,7 @@ export class Chart {
 
                 if (indexes[i] === "00") break;
 
-                measures[dataField.measure].notePositions.set(i * beat, Number(indexes[i]));
+                measures[dataField.measure].notePositions.set(i * beat, parseInt(indexes[i], 36));
             }
 
         }
