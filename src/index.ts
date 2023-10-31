@@ -12,7 +12,7 @@ import { GrooveGauge } from "./js/Gauges/GrooveGauge";
 
 import { TomoyoRender } from "./TomoyoRender";
 
-import { Chart } from "./js/Chart";
+import { BMSParser } from "./js/Parser/Chart";
 
 import bmeFile from "./resource/demo/darksamba/_dark_sambaland_a.bme";
 
@@ -69,7 +69,7 @@ export class Game {
         this.backGround = new BackGround(this.render, canvas.height, canvas.width);
         this.barLine = new BarLine(this.render, 2, canvas.width, 4448, 120);
 
-        const BMEChart = new Chart(bmeFile);
+        const BMEChart = new BMSParser().parse(bmeFile);
 
         console.info(BMEChart);
 
