@@ -6,7 +6,7 @@ export type BMSMainDefinition = {
     /** 00 ~ 99 */
     channel: number;
     /** 2文字の36進数の連続 */
-    indexes: Array<string>;
+    indexes: ReadonlyArray<string>;
 }
 
 export type Measure = {
@@ -31,18 +31,18 @@ export class BMSParser {
     /** 全音符1回が対応する時間(ms) */
     private quarterNote: number = 240000 / this.BPM;
 
-    private measures: any;
+    private measures: Measure[] | undefined;
 
     constructor() {
 
     }
 
     public parse(SourceText: string) {
-        const [MainDataFields, countOfMeasures] = this.tokenizer(SourceText) as any;
+        const [MainDataFields, countOfMeasures] = this.tokenizer(SourceText);
         this.scanner(MainDataFields, countOfMeasures);
     }
 
-    private tokenizer(SourceText: string) {
+    private tokenizer(SourceText: string): [Set<BMSMainDefinition>, number] {
         // [小節][チャンネル]:[定義]
         const mainDataFieldFinder = new RegExp(/#(\d{3})(\d{2}):(.*)$/, "gm");
         const mainDataLines = SourceText.matchAll(mainDataFieldFinder);
@@ -81,7 +81,7 @@ export class BMSParser {
             .fill(null)
             .map(() => ({
                 beginTime: 0,
-                notePositions: new Map(),
+                notePositions: new Map<number,number>()
             }));
 
         for (const dataField of MainDataFields) {
