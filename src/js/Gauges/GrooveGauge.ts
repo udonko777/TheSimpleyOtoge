@@ -59,7 +59,7 @@ export class GrooveGauge extends Gauge {
                 break;
 
             default:
-                console.log("i dont know this judgeName");
+                console.log("i d'ont know this judgeName");
                 break;
         }
 

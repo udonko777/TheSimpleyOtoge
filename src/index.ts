@@ -195,7 +195,7 @@ export class Game {
         return false;
     }
 
-    judgeTiming(l: number) {
+    judgeTiming(l: number) : void {
 
         //TODO クッソ雑に全ノーツを判定します。
 

@@ -26,7 +26,7 @@ export class BarLine implements GraphicComponent {
         this.beginTime = 0;
     }
 
-    begin(now: DOMHighResTimeStamp) {
+    begin(now: DOMHighResTimeStamp): void {
         this.beginTime = now;
     }
 
