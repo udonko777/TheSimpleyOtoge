@@ -81,32 +81,39 @@ export class BMSParser {
             .fill(null)
             .map(() => ({
                 beginTime: 0,
-                notePositions: new Map<number,number>()
+                notePositions: new Map<number, number>()
             }));
 
         for (const dataField of MainDataFields) {
 
-            const indexes = dataField.indexes;
+            const channel = dataField.channel;
 
-            if (!isConvertibleKeyChannel(dataField.channel)) {
+            const positions = dataField.indexes;
+
+            if (!isConvertibleKeyChannel(channel)) {
                 console.warn("data field channel has UnConvertible KeyChannel");
                 continue;
             }
 
-            if (!BMSChannelToKeyStatement.get(dataField.channel)) {
+            if (BMSChannelToKeyStatement.get(channel) == null) {
                 throw new Error("BMSChannelToKeyStatement returned an invalid value. chartConfig may be incorrect.");
             }
 
-            const beat = this.quarterNote / indexes.length;
+            const beat = this.quarterNote / positions.length;
 
-            for (let i = 0; i < indexes.length; i = i + 1) {
+            positions.forEach((position, i) => {
 
-                if (indexes[i] === "00") {
-                    continue;
+                if (position === "00") {
+                    return;
                 }
 
-                measures[dataField.measure].notePositions.set(i * beat, BMSChannelToKeyStatement.get(dataField.channel)! /* FIX ME */);
-            }
+                measures[dataField.measure]
+                    .notePositions
+                    .set(
+                        i * beat,
+                        BMSChannelToKeyStatement.get(channel)! /* FIX ME */
+                    );
+            })
 
         }
 
