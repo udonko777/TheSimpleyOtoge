@@ -47,7 +47,7 @@ export class BMSParser {
         const mainDataFieldFinder = new RegExp(/#(\d{3})(\d{2}):(.*)$/, "gm");
         const mainDataLines = SourceText.matchAll(mainDataFieldFinder);
 
-        const MainDataFields: Set<BMSMainDefinition> = new Set();
+        const MainDataFields = new Set<BMSMainDefinition>();
 
         let countOfMeasures: number = -Infinity;
 

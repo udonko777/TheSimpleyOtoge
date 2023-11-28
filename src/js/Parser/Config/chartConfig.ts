@@ -15,6 +15,6 @@ export const BMSChannelToKeyStatement: Map<ConvertibleKeyChannel, number> = new 
 
 export function isConvertibleKeyChannel(value: number): value is ConvertibleKeyChannel {
 
-    return [11,13,15,19].includes(value);
+    return [11, 13, 15, 19].includes(value);
 
 } 
