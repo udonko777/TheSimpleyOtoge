@@ -46,7 +46,7 @@ export class Game {
     startGame: (e: KeyboardEvent) => void;
     GAUGE: any;
 
-    exitMain: any;
+    exitMain: number | undefined;
 
     canvasHeight: () => number;
     canvasWidth: () => number;
@@ -103,7 +103,7 @@ export class Game {
     }
 
     //実際にゲームが始まるタイミングで呼ばれる
-    _startGame(e: KeyboardEvent) {
+    private _startGame(e: KeyboardEvent) {
 
         this.GAUGE = new GrooveGauge(this.render);
 
@@ -127,7 +127,7 @@ export class Game {
     }
 
     //gameが実際に始まる前までに表示し続ける表示
-    inputWaitingScreen() {
+    private inputWaitingScreen() {
 
         this.backGround.draw();
 
@@ -137,7 +137,7 @@ export class Game {
     }
 
     //再帰的なメインループ
-    frame = () => {
+    private frame = () => {
 
         //window.cancelAnimationFrame(this.exitMain)でメインループを抜けられる
         this.exitMain = window.requestAnimationFrame(this.frame);
@@ -177,7 +177,7 @@ export class Game {
     }
 
     //何らかのキーが押されている時呼ばれます
-    _keyPressed(e: KeyboardEvent) {
+    private _keyPressed(e: KeyboardEvent) {
 
         console.log(e.key);
         if (e.repeat === false) {
@@ -195,7 +195,7 @@ export class Game {
         return false;
     }
 
-    judgeTiming(l: number) : void {
+    private judgeTiming(l: number) : void {
 
         //TODO クッソ雑に全ノーツを判定します。
 
