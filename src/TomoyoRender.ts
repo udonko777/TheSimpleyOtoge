@@ -31,13 +31,13 @@ export class TomoyoRender {
     }
 
     /** `ctx.fillRect`の代わりに用意された描画メソッド */
-    public drawBox(x: number, y: number, width: number, height: number, style: string) {
+    public drawBox(x: number, y: number, width: number, height: number, style: Color) {
         this.ctx.fillStyle = style;
         this.ctx.fillRect(x, y, width, height);
     }
 
     /** `ctx.fillText`の代わりに用意された描画メソッド */
-    public drawText(text: string, x: number, y: number, font: string, style: string) {
+    public drawText(text: string, x: number, y: number, font: string, style: Color) {
         this.ctx.fillStyle = style;
         this.ctx.font = font;
         this.ctx.fillText(text, x, y);
