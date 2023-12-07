@@ -31,42 +31,4 @@ export class GrooveGauge extends Gauge {
         }
     }
 
-    /** ジャッジの名前からゲージの増減を計算する。ジャッジをオブジェクトにすればこんなことしなくていいと思う。
-     * @param judgeName
-     */
-    set judge(judgeName: string) {
-        switch (judgeName) {
-            case "PGREAT":
-                this.groove += this.PGREAT;
-                break;
-            case "GREAT":
-                this.groove += this.GREAT;
-                break;
-            case "GOOD":
-                this.groove += this.GOOD;
-                break;
-            case "BAD":
-                this.groove += this.BAD;
-                break;
-            case "POOR":
-                this.groove += this.POOR;
-                break;
-            case "OVER":
-                this.groove += this.OVER;
-                break;
-            case "BREAK":
-                this.groove += this.BREAK;
-                break;
-
-            default:
-                console.log("i d'ont know this judgeName");
-                break;
-        }
-
-        //this.grooveを0 ~ MAXGROOVEに成型する
-        this.groove = Math.max(this.groove, 0);
-
-        this.groove = Math.min(this.groove, this.MAXGROOVE);
-    }
-
 }

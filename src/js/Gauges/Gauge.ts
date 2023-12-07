@@ -77,6 +77,41 @@ export abstract class Gauge {
         this.render.drawBox(x, y, boxwidth, boxheight, String(color));
     }
 
+    public setJudge(judgeName : string):void{
+        switch (judgeName) {
+            case "PGREAT":
+                this.groove += this.PGREAT;
+                break;
+            case "GREAT":
+                this.groove += this.GREAT;
+                break;
+            case "GOOD":
+                this.groove += this.GOOD;
+                break;
+            case "BAD":
+                this.groove += this.BAD;
+                break;
+            case "POOR":
+                this.groove += this.POOR;
+                break;
+            case "OVER":
+                this.groove += this.OVER;
+                break;
+            case "BREAK":
+                this.groove += this.BREAK;
+                break;
+
+            default:
+                console.log("i d'ont know this judgeName");
+                break;
+        }
+
+        //this.grooveを0 ~ MAXGROOVEに成型する
+        this.groove = Math.max(this.groove, 0);
+
+        this.groove = Math.min(this.groove, this.MAXGROOVE);
+    }
+
     /** FIX せっかく実装を強制している割には外からアクセスできないのは悲しい。*/
     protected abstract boxcolor(no: number): Color
 

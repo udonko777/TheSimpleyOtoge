@@ -19,6 +19,7 @@ import bmeFile from "./resource/demo/darksamba/_dark_sambaland_a.bme";
 import { BackGround } from "./js/components/BackGround";
 
 import { BarLine } from "./js/components/BarLine";
+import { Gauge } from "js/Gauges/Gauge";
 
 //import {JUDGES} from '/jsons/judge.json' 
 
@@ -44,7 +45,7 @@ export class Game {
     render: TomoyoRender;
 
     startGame: (e: KeyboardEvent) => void;
-    GAUGE: any;
+    GAUGE: Gauge | undefined;
 
     exitMain: number | undefined;
 
@@ -153,7 +154,8 @@ export class Game {
 
         this.barLine.setSize(this.canvasWidth());
 
-        this.GAUGE.draw();
+        /// !?
+        this.GAUGE?.draw();
 
         this.bombs.forEach(bomb => bomb.draw());
 
@@ -167,10 +169,12 @@ export class Game {
         for (let i = 0; i < this.notes.length; i++) {
             this.notes[i].draw(NOW);
             if (this.notes[i].isOVER(NOW)) {
+
                 this.judgeView.judge = "OVER";
-                this.GAUGE.judge = "OVER";
+                this.GAUGE?.setJudge("OVER");
                 this.conboView.resetConboCount();
                 this.notes.splice(i, 1);
+
             };
         }
 
@@ -209,17 +213,17 @@ export class Game {
                 if (50 > b && -50 < b) {
                     console.log(`${l}is GREAT!, i think it is${b}`);
                     this.judgeView.judge = "GREAT";
-                    this.GAUGE.judge = "GREAT";
+                    this.GAUGE?.setJudge("GREAT");
                     this.conboView.addConboCount();
                     this.notes.splice(i, 1);
                 } else if (100 > b && -100 < b) {
                     this.judgeView.judge = "GOOD";
-                    this.GAUGE.judge = "GOOD";
+                    this.GAUGE?.setJudge("GOOD");
                     this.conboView.addConboCount();
                     this.notes.splice(i, 1);
                 } else if (200 > b && -200 < b) {
                     this.judgeView.judge = "bad";
-                    this.GAUGE.judge = "BAD";
+                    this.GAUGE?.setJudge("BAD");
                     this.conboView.resetConboCount();
                     this.notes.splice(i, 1);
                 } else if (210 > b && -210 < b) {
