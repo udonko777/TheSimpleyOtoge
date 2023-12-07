@@ -1,65 +1,71 @@
 import { TomoyoRender, Color } from "TomoyoRender";
 
-export abstract class Gauge {
+export class Gauge {
 
     protected readonly render: TomoyoRender;
 
-    protected groove: number;
-    protected MAXGROOVE: number;
-    protected STATEX: number;
-    protected STATEY: number;
-    protected GAUGE_HEIGHT: number;
-    protected GAUGE_WIDTH: number;
-    protected GAUGE_VOID_WIDTH: number;
-    protected GAUGE_BOX_NUMBER: number;
-    protected PGREAT: number;
-    protected GREAT: number;
-    protected GOOD: number;
-    protected BAD: number;
-    protected POOR: number;
-    protected OVER: number;
-    protected BREAK: number;
-    protected IS_TOLERANT: boolean;
+    private readonly GAUGE_BOX_AS_GROOVE: number;
+
+    private groove: number;
+    private readonly MAX_GROOVE: number;
+    private readonly STATE_X: number;
+    private readonly STATE_Y: number;
+    private readonly GAUGE_HEIGHT: number;
+    private readonly GAUGE_WIDTH: number;
+    private readonly GAUGE_VOID_WIDTH: number;
+    private readonly GAUGE_BOX_NUMBER: number;
+    private readonly P_GREAT: number;
+    private readonly GREAT: number;
+    private readonly GOOD: number;
+    private readonly BAD: number;
+    private readonly POOR: number;
+    private readonly OVER: number;
+    private readonly BREAK: number;
+    private readonly IS_TOLERANT: boolean;
 
     constructor(render: TomoyoRender) {
 
         this.render = render;
 
         //0 <= groove <= 65536
-        this.groove = 0;
-        this.MAXGROOVE = 65536;
+        this.MAX_GROOVE = 65536;
+        this.GAUGE_BOX_NUMBER = 24;
 
-        this.STATEX = 0;
-        this.STATEY = 0;
+        this.GAUGE_BOX_AS_GROOVE = this.MAX_GROOVE / this.GAUGE_BOX_NUMBER;
+
+        this.STATE_X = 0;
+        this.STATE_Y = 0;
 
         this.GAUGE_HEIGHT = 30;
         this.GAUGE_WIDTH = 320;
 
         this.GAUGE_VOID_WIDTH = 20;
-        this.GAUGE_BOX_NUMBER = 20;
 
         //ゲージの計算関連
-        this.PGREAT = 0;
-        this.GREAT = 0;
-        this.GOOD = 0;
-        this.BAD = 0;
+        this.P_GREAT = 0;
         this.POOR = 0;
-        this.OVER = 0;
         this.BREAK = 0;
         //this.judge = ;
         //grooveが0の時ゲームを終了させるか
         this.IS_TOLERANT = false;
+
+        this.groove = 22220;
+
+        this.GREAT = 1000;
+        this.GOOD = 100;
+        this.BAD = -1200;
+        this.OVER = -2000;
     }
 
     public draw() {
 
         const VISIBLE_AREA = (this.GAUGE_WIDTH - this.GAUGE_VOID_WIDTH) / this.GAUGE_BOX_NUMBER;
         const INVISIBLE_AREA = this.GAUGE_VOID_WIDTH / this.GAUGE_BOX_NUMBER;
-        let usedarea = 0;
+        let usedArea = 0;
 
         for (let i = 0; i < this.GAUGE_BOX_NUMBER; i++) {
-            this.writebox(this.boxcolor(i), usedarea + this.STATEX, this.STATEY, VISIBLE_AREA, this.GAUGE_HEIGHT);
-            usedarea = usedarea + VISIBLE_AREA + INVISIBLE_AREA;
+            this.writeBox(this.boxColor(i), usedArea + this.STATE_X, this.STATE_Y, VISIBLE_AREA, this.GAUGE_HEIGHT);
+            usedArea = usedArea + VISIBLE_AREA + INVISIBLE_AREA;
         }
 
     }
@@ -72,15 +78,15 @@ export abstract class Gauge {
      * @param boxwidth
      * @param boxheight
      */
-    protected writebox(color: Color, x: number, y: number, boxwidth: number, boxheight: number) {
+    protected writeBox(color: Color, x: number, y: number, boxwidth: number, boxheight: number) {
         //ノーツの色の設定
-        this.render.drawBox(x, y, boxwidth, boxheight, String(color));
+        this.render.drawBox(x, y, boxwidth, boxheight, color);
     }
 
-    public setJudge(judgeName : string):void{
+    public setJudge(judgeName: string): void {
         switch (judgeName) {
             case "PGREAT":
-                this.groove += this.PGREAT;
+                this.groove += this.P_GREAT;
                 break;
             case "GREAT":
                 this.groove += this.GREAT;
@@ -106,13 +112,20 @@ export abstract class Gauge {
                 break;
         }
 
-        //this.grooveを0 ~ MAXGROOVEに成型する
+        //this.grooveを0 ~ MAX_GROOVEに成型する
         this.groove = Math.max(this.groove, 0);
 
-        this.groove = Math.min(this.groove, this.MAXGROOVE);
+        this.groove = Math.min(this.groove, this.MAX_GROOVE);
     }
 
-    /** FIX せっかく実装を強制している割には外からアクセスできないのは悲しい。*/
-    protected abstract boxcolor(no: number): Color
+    private boxColor(no: number): Color {
+        const enableBoxNumber = Math.floor(this.groove / this.GAUGE_BOX_AS_GROOVE);
+
+        if (no < enableBoxNumber) {
+            return '#3ad132';
+        } else {
+            return '#444444';
+        }
+    }
 
 }

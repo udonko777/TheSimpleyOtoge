@@ -8,8 +8,6 @@ import { Bomb } from "./js/components/Bomb";
 
 import { MusicPlayer } from "./js/MusicPlayer";
 
-import { GrooveGauge } from "./js/Gauges/GrooveGauge";
-
 import { TomoyoRender } from "./TomoyoRender";
 
 import { BMSParser } from "./js/Parser/Chart";
@@ -19,7 +17,8 @@ import bmeFile from "./resource/demo/darksamba/_dark_sambaland_a.bme";
 import { BackGround } from "./js/components/BackGround";
 
 import { BarLine } from "./js/components/BarLine";
-import { Gauge } from "js/Gauges/Gauge";
+
+import { Gauge } from "./js/Gauges/Gauge";
 
 //import {JUDGES} from '/jsons/judge.json' 
 
@@ -106,7 +105,7 @@ export class Game {
     //実際にゲームが始まるタイミングで呼ばれる
     private _startGame(e: KeyboardEvent) {
 
-        this.GAUGE = new GrooveGauge(this.render);
+        this.GAUGE = new Gauge(this.render);
 
         document.removeEventListener('keydown', this.startGame);
 
@@ -190,7 +189,7 @@ export class Game {
         console.log(e.key);
 
         switch (e.code) {
-            case `KeyF`:
+            case `KeyD`:
                 this.judgeTiming(0);
                 break
             case 'KeyF':
@@ -221,10 +220,10 @@ export class Game {
 
             switch (howCountUpConbo) {
                 case "up":
-                    this.conboView.resetConboCount();
+                    this.conboView.addConboCount();
                     break;
                 case "reset":
-                    this.conboView.addConboCount();
+                    this.conboView.resetConboCount();
                     break;
             }
 
