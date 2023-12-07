@@ -1,6 +1,6 @@
-'use strict';
+
 /**
- * ただ音楽を流すだけのClass。
+ * 音楽を流す。
  */
 export class MusicPlayer {
 
