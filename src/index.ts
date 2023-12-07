@@ -181,53 +181,74 @@ export class Game {
     }
 
     //何らかのキーが押されている時呼ばれます
-    private _keyPressed(e: KeyboardEvent) {
+    private _keyPressed(e: KeyboardEvent): void {
+
+        if (e.repeat) {
+            return;
+        }
 
         console.log(e.key);
-        if (e.repeat === false) {
-            if (e.code === 'KeyD') {
+
+        switch (e.code) {
+            case `KeyF`:
                 this.judgeTiming(0);
-            } else if (e.code === 'KeyF') {
+                break
+            case 'KeyF':
                 this.judgeTiming(1);
-            } else if (e.code === 'KeyJ') {
+                break
+            case 'KeyJ':
                 this.judgeTiming(2);
-            } else if (e.code === 'KeyK') {
+                break
+            case 'KeyK':
                 this.judgeTiming(3);
-            }
+                break
         }
         this.keyPressCount += 1;
-        return false;
+        return;
     }
 
-    private judgeTiming(l: number) : void {
+    private judgeTiming(laneID: 0 | 1 | 2 | 3): void {
 
         //TODO クッソ雑に全ノーツを判定します。
 
+        type EZjudge = "GREAT" | "GOOD" | "BAD" | "POOR"
+        type conboStrategy = "keep" | "up" | "reset"
+
+        const sendJudge = (judge: EZjudge, howCountUpConbo: conboStrategy = "keep"): void => {
+
+            this.judgeView.judge = judge;
+            this.GAUGE?.setJudge(judge);
+
+            switch (howCountUpConbo) {
+                case "up":
+                    this.conboView.resetConboCount();
+                    break;
+                case "reset":
+                    this.conboView.addConboCount();
+                    break;
+            }
+
+        }
+
         for (let i = 0; i < this.notes.length; i++) {
-            if (this.notes[i].no === l) {
+
+            if (this.notes[i].no === laneID) {
 
                 //bは短縮のためのインスタンスな変数です。
 
                 const b = (globalThis.performance.now() - this.notes[i].getSTART_TIME()) - this.notes[i].perfectTiming;
 
-                if (50 > b && -50 < b) {
-                    console.log(`${l}is GREAT!, i think it is${b}`);
-                    this.judgeView.judge = "GREAT";
-                    this.GAUGE?.setJudge("GREAT");
-                    this.conboView.addConboCount();
-                    this.notes.splice(i, 1);
-                } else if (100 > b && -100 < b) {
-                    this.judgeView.judge = "GOOD";
-                    this.GAUGE?.setJudge("GOOD");
-                    this.conboView.addConboCount();
-                    this.notes.splice(i, 1);
-                } else if (200 > b && -200 < b) {
-                    this.judgeView.judge = "bad";
-                    this.GAUGE?.setJudge("BAD");
-                    this.conboView.resetConboCount();
-                    this.notes.splice(i, 1);
-                } else if (210 > b && -210 < b) {
-                    this.judgeView.judge = "POOR";
+                if (260 > b && -260 < b) {
+                    if (50 > b && -50 < b) {
+                        console.log(`${laneID}is GREAT!, i think it is${b}`);
+                        sendJudge("GREAT", "up")
+                    } else if (100 > b && -100 < b) {
+                        sendJudge("GOOD", "up")
+                    } else if (200 > b && -200 < b) {
+                        sendJudge("BAD", "reset")
+                    } else if (210 > b && -210 < b) {
+                        sendJudge("POOR", "keep");
+                    }
                     this.notes.splice(i, 1);
                 }
 
@@ -235,7 +256,7 @@ export class Game {
 
         }
 
-        this.bombs[l].setBombLife(50);
+        this.bombs[laneID].setBombLife(50);
 
         return;
     }
