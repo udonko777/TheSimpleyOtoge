@@ -10,7 +10,7 @@ export class Note implements GraphicComponent {
     private scrollSpeedForBPM: number;
 
     public no: number;
-    public START_TIME: any;
+    public START_TIME: number;
     public perfectTiming: number;
 
     /**
@@ -29,6 +29,8 @@ export class Note implements GraphicComponent {
         this.hiSpeed = hiSpeed;
         this.NOTE_WIDTH = NOTE_WIDTH;
         this.perfectTiming = perfectTiming;
+        
+        this.START_TIME = 0;
 
         //scrollSpeed 1 : 120 bpm
         this.scrollSpeedForBPM = FIRST_BPM / 120;

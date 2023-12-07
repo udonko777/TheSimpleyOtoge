@@ -25,7 +25,7 @@ import { Gauge } from "./js/Gauges/Gauge";
 //HTML側BodyのonLordに書かれているので、この関数はBodyの読み込みが終わったら呼ばれるはず
 window.startClock = () => {
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;
-    const game = new Game(canvas);
+    new Game(canvas);
 }
 
 export class Game {
@@ -95,7 +95,7 @@ export class Game {
             this.bombs.push(new Bomb(this.render, i, 0, NOTE_WIDTH));
         }
 
-        this.startGame = (e) => { this._startGame(e) };
+        this.startGame = () => { this._startGame() };
         document.addEventListener('keydown', this.startGame);
 
         //ゲームが実際に起動されるまで表示される待ち受け画面。
@@ -103,7 +103,7 @@ export class Game {
     }
 
     //実際にゲームが始まるタイミングで呼ばれる
-    private _startGame(e: KeyboardEvent) {
+    private _startGame() {
 
         this.GAUGE = new Gauge(this.render);
 
@@ -174,7 +174,7 @@ export class Game {
                 this.conboView.resetConboCount();
                 this.notes.splice(i, 1);
 
-            };
+            }
         }
 
     }
