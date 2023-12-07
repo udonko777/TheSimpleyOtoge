@@ -225,6 +225,8 @@ export class Game {
                 case "reset":
                     this.conboView.resetConboCount();
                     break;
+                case "keep":
+                    break
             }
 
         }
