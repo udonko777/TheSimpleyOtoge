@@ -4,9 +4,9 @@ import { GraphicComponent } from './Component'
 export class JudgeView implements GraphicComponent {
 
     readonly render: TomoyoRender;
-    judgeName: string;
-    x: number;
-    y: number;
+    private judgeName: string;
+    private x: number;
+    private y: number;
 
     /** Judgeを実際に表示させるUI。実際にはcomboViewと組み合わせてつかうゾ
      */
@@ -41,7 +41,7 @@ export class JudgeView implements GraphicComponent {
         }
     }
 
-    draw() {
+    public draw() {
         switch (this.judgeName) {
             case "N/A":
                 break;

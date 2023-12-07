@@ -2,24 +2,24 @@ import { TomoyoRender, Color } from "TomoyoRender";
 
 export abstract class Gauge {
 
-    render: TomoyoRender;
+    protected readonly render: TomoyoRender;
 
-    groove: number;
-    MAXGROOVE: number;
-    STATEX: number;
-    STATEY: number;
-    GAUGE_HEIGHT: number;
-    GAUGE_WIDTH: number;
-    GAUGE_VOID_WIDTH: number;
-    GAUGE_BOX_NUMBER: number;
-    PGREAT: number;
-    GREAT: number;
-    GOOD: number;
-    BAD: number;
-    POOR: number;
-    OVER: number;
-    BREAK: number;
-    IS_TOLERANT: boolean;
+    protected groove: number;
+    protected MAXGROOVE: number;
+    protected STATEX: number;
+    protected STATEY: number;
+    protected GAUGE_HEIGHT: number;
+    protected GAUGE_WIDTH: number;
+    protected GAUGE_VOID_WIDTH: number;
+    protected GAUGE_BOX_NUMBER: number;
+    protected PGREAT: number;
+    protected GREAT: number;
+    protected GOOD: number;
+    protected BAD: number;
+    protected POOR: number;
+    protected OVER: number;
+    protected BREAK: number;
+    protected IS_TOLERANT: boolean;
 
     constructor(render: TomoyoRender) {
 

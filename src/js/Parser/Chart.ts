@@ -4,12 +4,12 @@ import { BMSChannelToKeyStatement, isConvertibleKeyChannel } from "./Config/char
  * tokenizeされたBMS定義の1行
  */
 export type BMSMainDefinition = {
-    /** 000 ~ 999 に収まる、何小節目かを表す数字*/
-    measure: number,
+    /** 000 ~ 999 に収まる、何小節目かを表す数字 */
+    readonly measure: number,
     /** 00 ~ 99 */
-    channel: number;
+    readonly channel: number;
     /** 2文字の36進数の連続 */
-    indexes: ReadonlyArray<string>;
+    readonly indexes: ReadonlyArray<string>;
 }
 
 export type Measure = {

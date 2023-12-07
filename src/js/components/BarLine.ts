@@ -4,13 +4,14 @@ import { GraphicComponent } from "./Component";
 export class BarLine implements GraphicComponent {
 
     private render: TomoyoRender;
-    private height: number;
-    private width: number;
-    private perfectTiming: number;
 
-    beginTime: number;
-    scrollSpeedForBPM: number;
-    hiSpeed: number;
+    private readonly height: number;
+    private width: number;
+    private readonly perfectTiming: number;
+
+    private beginTime: number;
+    private scrollSpeedForBPM: number;
+    private hiSpeed: number;
 
     constructor(render: TomoyoRender, height: number, width: number, perfectTiming: number, bpm: number) {
         this.render = render;
@@ -26,11 +27,11 @@ export class BarLine implements GraphicComponent {
         this.beginTime = 0;
     }
 
-    begin(now: DOMHighResTimeStamp): void {
+    public begin(now: DOMHighResTimeStamp): void {
         this.beginTime = now;
     }
 
-    draw(now: DOMHighResTimeStamp): void {
+    public draw(now: DOMHighResTimeStamp): void {
         const elapsedTime = now - this.beginTime;
 
         const JUDGE_LINE_POSITION = 500;
@@ -43,7 +44,7 @@ export class BarLine implements GraphicComponent {
    /**
     * 親コンポーネントに変化があったときに親から呼ばれる
     */
-    setSize(width: number) {
+    public setSize(width: number) {
         this.width = width;
     }
 

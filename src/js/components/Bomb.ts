@@ -3,10 +3,10 @@ import { GraphicComponent } from "./Component";
 
 export class Bomb implements GraphicComponent{
 
-    render: TomoyoRender;
-    no: number;
-    bombLife: number;
-    NOTE_WIDTH: number;
+    private readonly render: TomoyoRender;
+    private readonly no: number;
+    private bombLife: number;
+    private readonly NOTE_WIDTH: number;
 
     /**
      * @param ctx
@@ -21,7 +21,7 @@ export class Bomb implements GraphicComponent{
         this.NOTE_WIDTH = NOTE_WIDTH;
     }
 
-    draw() {
+    public draw() {
 
         if (this.bombLife > 0) {
 
@@ -34,7 +34,7 @@ export class Bomb implements GraphicComponent{
 
     }
 
-    setBombLife(bombLife: number) {
+    public setBombLife(bombLife: number) {
         this.bombLife = bombLife;
     }
 

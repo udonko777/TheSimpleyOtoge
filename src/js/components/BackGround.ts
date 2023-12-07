@@ -18,12 +18,12 @@ export class BackGround implements GraphicComponent {
     /**
      * 親コンポーネントに変化があったときに親から呼ばれる
      */
-    setSize(height: number, width: number) {
+    public setSize(height: number, width: number) {
         this.height = height;
         this.width = width;
     }
 
-    draw(): void {
+    public draw(): void {
         this.render.drawBox(0, 0, this.width, this.height, 'rgb( 0, 0, 0)');
 
         //判定位置生成

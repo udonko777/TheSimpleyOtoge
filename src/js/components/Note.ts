@@ -38,11 +38,11 @@ export class Note implements GraphicComponent {
 
     }
 
-    begin(starttime: number) {
+    public begin(starttime: number) {
         this.START_TIME = starttime;
     }
 
-    getSTART_TIME(): number {
+    public getSTART_TIME(): number {
         return this.START_TIME;
     }
 
@@ -50,7 +50,7 @@ export class Note implements GraphicComponent {
         return now - this.START_TIME;
     }
 
-    draw(now: DOMHighResTimeStamp) {
+    public draw(now: DOMHighResTimeStamp) {
 
         /** 経過時間 */
         const elapsedTime = this.getElapsedTime(now);
@@ -63,7 +63,7 @@ export class Note implements GraphicComponent {
         this.render.drawBox(x, y, this.NOTE_WIDTH, 10, '#DD7070');
     }
 
-    isOVER(now: DOMHighResTimeStamp): boolean {
+    public isOVER(now: DOMHighResTimeStamp): boolean {
         
         if (501 < (this.getElapsedTime(now) - this.perfectTiming)) {
             return true;

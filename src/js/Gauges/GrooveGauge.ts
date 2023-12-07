@@ -4,7 +4,7 @@ import { Gauge } from "./Gauge";
 
 export class GrooveGauge extends Gauge {
 
-    GAUGE_BOX_AS_GROOVE: number;
+    private readonly GAUGE_BOX_AS_GROOVE: number;
 
     /** ゲージのUIの実装とゲージの計算 */
     constructor(render: TomoyoRender) {

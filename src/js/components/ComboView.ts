@@ -7,8 +7,8 @@ import { GraphicComponent } from './Component';
  */
 export class ComboView implements GraphicComponent {
 
-    readonly render: TomoyoRender;
-    comboCount: number;
+    private readonly render: TomoyoRender;
+    private comboCount: number;
 
     constructor(render: TomoyoRender) {
         this.render = render;
@@ -16,15 +16,15 @@ export class ComboView implements GraphicComponent {
     }
 
     //FIXME ViewなのにConboCountの論理的実装が行われている
-    addConboCount() {
+    public addConboCount() {
         this.comboCount += 1;
     }
 
-    resetConboCount() {
+    public resetConboCount() {
         this.comboCount = 0;
     }
 
-    draw() {
+    public draw() {
         if (this.comboCount > 0) {
             this.render.drawText(String(this.comboCount), 10, 100, "48px serif", 'rgb( 255, 102, 102)');
         } else {

@@ -4,9 +4,9 @@
  */
 export class MusicPlayer {
 
-    audioContext: AudioContext;
-    audioElement: HTMLAudioElement;
-    music: MediaElementAudioSourceNode;
+    readonly audioContext: AudioContext;
+    readonly audioElement: HTMLAudioElement;
+    readonly music: MediaElementAudioSourceNode;
 
     constructor() {
         const AudioContext = window.AudioContext;
