@@ -1,34 +1,39 @@
 module.exports = {
     "env": {
         "browser": true,
-        "es2021": true
+        "es2021": true,
+        "node": false,
     },
     "extends": [
         "eslint:recommended",
-        "plugin:@typescript-eslint/recommended"
-    ],
-    "overrides": [
-        {
-            "env": {
-                "node": true
-            },
-            "files": [
-                ".eslintrc.{js,cjs}"
-            ],
-            "parserOptions": {
-                "sourceType": "script"
-            }
-        }
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking"
     ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
-        "ecmaVersion": "latest"
+        "project": ['./tsconfig.json']
     },
-    "plugins": [
-        "@typescript-eslint"
+    "ignorePatterns": [
+        "/dist/**/*", // Ignore built files.
+        "**/*.cjs",
     ],
     "rules": {
         "@typescript-eslint/strict-boolean-expressions": "error",
-        "no-implicit-coercion": "error"
+        "no-implicit-coercion": "error",
+        "@typescript-eslint/restrict-plus-operands": [
+            "error",
+            {
+                "allowBoolean": false,
+                "allowNullish": false,
+                "allowNumberAndString": false,
+                "allowRegExp": false,
+                "allowAny": false
+            }
+        ],
+        "prefer-template": "error",
+        "no-useless-concat": "error",
+
+        "@typescript-eslint/switch-exhaustiveness-check": "error",
+        
     }
-}
+};
