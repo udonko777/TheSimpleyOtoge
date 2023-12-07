@@ -77,7 +77,7 @@ export class BMSParser {
         return [MainDataFields, countOfMeasures];
     }
 
-    public scanner(MainDataFields: Set<BMSMainDefinition>, countOfMeasures: number) {
+    public scanner(MainDataFields: ReadonlySet<BMSMainDefinition>, countOfMeasures: number) {
 
         //空のmeasureで埋める。もっといい書き方があるかも
         const measures: Measure[] = Array(countOfMeasures + 1)
