@@ -59,7 +59,7 @@ const bmsTokenizer: ChartTokenizer<BMSMainDefinition> = (sourceText) => {
                 measuresIndex: m,
                 channel: c,
                 //2文字づつに分割
-                notesPositions: i.match(/.{2}/g) || []
+                notesPositions: i.match(/.{2}/g) ?? []
             }
         );
 
