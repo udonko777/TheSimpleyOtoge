@@ -4,7 +4,7 @@ export type ConvertibleKeyChannel = 11 | 13 | 15 | 19;
 /** 
  * BMS形式での定義チャンネルをローカルな形式に変換する。
  */
-export const BMSChannelToKeyStatement: Map<ConvertibleKeyChannel, number> = new Map(
+export const bmsChannelToKeyStatement: Map<ConvertibleKeyChannel, number> = new Map(
     [
         [11, 1],
         [13, 2],

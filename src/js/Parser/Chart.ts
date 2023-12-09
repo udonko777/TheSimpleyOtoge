@@ -1,4 +1,4 @@
-import { BMSChannelToKeyStatement, isConvertibleKeyChannel } from "./Config/chartConfig"
+import { bmsChannelToKeyStatement, isConvertibleKeyChannel } from "./Config/chartConfig"
 
 /**
  * tokenizeされたBMS定義の1行
@@ -98,7 +98,7 @@ const bmsScanner: ChartTokenScanner<BMSMainDefinition> = ([mainDataFields, count
             continue;
         }
 
-        if (!BMSChannelToKeyStatement.has(channel)) {
+        if (!bmsChannelToKeyStatement.has(channel)) {
             throw new Error("BMSChannelToKeyStatement returned an invalid value. chartConfig may be incorrect.");
         }
 
@@ -115,7 +115,7 @@ const bmsScanner: ChartTokenScanner<BMSMainDefinition> = ([mainDataFields, count
                 .notePositions
                 .set(
                     i * beat,
-                    BMSChannelToKeyStatement.get(channel)! /* FIX ME */
+                    bmsChannelToKeyStatement.get(channel)! /* FIX ME */
                 );
         }
 
