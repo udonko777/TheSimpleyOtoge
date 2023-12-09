@@ -21,9 +21,9 @@ export class MusicPlayer {
 
     play() {
         if (this.audioContext.state === 'suspended') {
-            this.audioContext.resume();
+            void this.audioContext.resume();
         } else {
-            this.audioElement.play();
+            void this.audioElement.play();
         }
     }
 
