@@ -10,7 +10,7 @@ import { MusicPlayer } from "./js/MusicPlayer";
 
 import { TomoyoRender } from "./TomoyoRender";
 
-import { BMSParser } from "./js/Parser/Chart";
+import { parse } from "./js/Parser/Chart";
 
 import bmeFile from "./resource/demo/darksamba/_dark_sambaland_a.bme";
 
@@ -69,9 +69,9 @@ export class Game {
         this.backGround = new BackGround(this.render, canvas.height, canvas.width);
         this.barLine = new BarLine(this.render, 2, canvas.width, 4448, 120);
 
-        const BMEChart = new BMSParser().parse(bmeFile);
+        parse(bmeFile);
 
-        console.info(BMEChart);
+        //console.info(BMEChart);
 
         this.notes = [];
 
