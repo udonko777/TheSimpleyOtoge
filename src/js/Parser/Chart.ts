@@ -1,8 +1,6 @@
 import { bmsChannelToKeyStatement, isConvertibleKeyChannel } from "./Config/chartConfig"
 
-/**
- * tokenizeされたBMS定義の1行
- */
+/** tokenizeされたBMS定義の1行 */
 type BMSMainDefinition = {
     /** 000 ~ 999 に収まる、何小節目かを表す数字 */
     readonly measuresIndex: number,
@@ -30,10 +28,13 @@ type ChartTokenScanner<T> = (tokens: ChartTokens<T>) => ReadonlyArray<Measure>;
 //TODO とりあえず手打ちで
 const BPM: number = 145;
 
-/** 全音符1回が対応する時間(ms) */
+/** 全音符1回が対応する時間(ms) 実際はBPMの変化があるため、mutableな値になる */
 const quarterNote: number = 240000 / BPM;
 
-
+/**
+ * テキストから譜面データを読み込む
+ * @param sourceText BMS形式の譜面テキスト。
+ */
 export const parse = (sourceText: string): void => {
     const [mainDataFields, countOfMeasures] = bmsTokenizer(sourceText);
     bmsScanner([mainDataFields, countOfMeasures]);
@@ -73,6 +74,7 @@ const bmsTokenizer: ChartTokenizer<BMSMainDefinition> = (sourceText) => {
 
 const bmsScanner: ChartTokenScanner<BMSMainDefinition> = ([mainDataFields, countOfMeasures]) => {
 
+    //小節の集合の初期化
     //空のmeasureで埋める。もっといい書き方があるかも
     const measures: Measure[] = Array(countOfMeasures + 1)
         .fill(null)
@@ -81,12 +83,12 @@ const bmsScanner: ChartTokenScanner<BMSMainDefinition> = ([mainDataFields, count
             notePositions: new Map<number, number>()
         }));
 
-    //定義されていない分、例えば完全に空白の小節についても処理する
+    //定義されていない分、例えば空白の小節について対応する定義があるとは限らない。
     for (const [i, measure] of measures.entries()) {
         measure.beginTime = i * quarterNote;
     }
 
-    //定義を一行づつ
+    //定義を元に小節にノーツを置いていく
     for (const dataField of mainDataFields) {
 
         const channel = dataField.channel;
@@ -94,6 +96,7 @@ const bmsScanner: ChartTokenScanner<BMSMainDefinition> = ([mainDataFields, count
         const measuresIndex = dataField.measuresIndex;
 
         if (!isConvertibleKeyChannel(channel)) {
+            //かなりの量のlogが出るので、基本無効にしてある
             //console.warn(`data field channel ${channel} is UnConvertible KeyChannel`);
             continue;
         }
