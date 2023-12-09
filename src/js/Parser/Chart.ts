@@ -36,8 +36,8 @@ const quarterNote: number = 240000 / BPM;
  * @param sourceText BMS形式の譜面テキスト。
  */
 export const parse = (sourceText: string): void => {
-    const [mainDataFields, countOfMeasures] = bmsTokenizer(sourceText);
-    bmsScanner([mainDataFields, countOfMeasures]);
+    const tokens = bmsTokenizer(sourceText);
+    bmsScanner(tokens);
 }
 
 const bmsTokenizer: ChartTokenizer<BMSMainDefinition> = (sourceText) => {
