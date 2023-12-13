@@ -18,7 +18,7 @@ type Measure = {
 }
 
 type ChartTokens<T> = readonly [
-    tokens: ReadonlySet<T>,
+    tokens: ReadonlyArray<T>,
     countOfMeasures: number
 ]
 
@@ -40,32 +40,56 @@ export const parse = (sourceText: string): void => {
     bmsScanner(tokens);
 }
 
+const getBMSMainDefinition = (measuresIndex: number, channel: number, notesPositions: ReadonlyArray<string> = []): BMSMainDefinition => {
+
+    if (measuresIndex < 0 || measuresIndex > 999) {
+        console.error('measuresIndex must be between 0 and 999.');
+    }
+
+    if (channel < 0 || channel > 99) {
+        console.error('channel must be between 0 and 99.');
+    }
+
+    return {
+        measuresIndex,
+        channel,
+        notesPositions,
+    };
+
+}
+
 const bmsTokenizer: ChartTokenizer<BMSMainDefinition> = (sourceText) => {
     // [小節][チャンネル]:[定義]
     const mainDataFieldFinder = new RegExp(/#(\d{3})(\d{2}):(.*)$/, "gm");
     const mainDataLines = sourceText.matchAll(mainDataFieldFinder);
 
-    const mainDataFields = new Set<BMSMainDefinition>();
+    const mainDataFields: BMSMainDefinition[] = [];
 
     let countOfMeasures: number = -Infinity;
 
     for (const L of mainDataLines) {
 
-        const m = Number(L[1]);
-        const c = Number(L[2]);
-        const i = String(L[3]);
+        const measuresIndex = Number(L[1]);
+        const channel = Number(L[2]);
+        const notesPositions = String(L[3]).match(/.{2}/g) ?? []; //2文字づつに分割
 
-        mainDataFields.add(
+        //省略された分の小節を空の小節として書き加える
+        for (let i = 0; (i + mainDataFields.length) < measuresIndex; i++) {
+            mainDataFields.push(
+                getBMSMainDefinition(i + mainDataFields.length, 0)
+            )
+        }
+
+        mainDataFields.push(
             {
-                measuresIndex: m,
-                channel: c,
-                //2文字づつに分割
-                notesPositions: i.match(/.{2}/g) ?? []
+                measuresIndex,
+                channel,
+                notesPositions
             }
         );
 
-        if (countOfMeasures < m) {
-            countOfMeasures = m;
+        if (countOfMeasures < measuresIndex) {
+            countOfMeasures = measuresIndex;
         }
     }
 
