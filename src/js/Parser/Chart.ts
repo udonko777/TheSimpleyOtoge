@@ -65,7 +65,7 @@ const bmsTokenizer: ChartTokenizer<BMSMainDefinition> = (sourceText) => {
 
     const mainDataFields: BMSMainDefinition[] = [];
 
-    let countOfMeasures: number = -Infinity;
+    let countOfMeasures: number = 0;
 
     for (const L of mainDataLines) {
 
