@@ -5,7 +5,6 @@ export class Note implements GraphicComponent {
 
     private render: TomoyoRender;
 
-    private hiSpeed: number;
     private NOTE_WIDTH: number;
     private scrollSpeedForBPM: number;
 
@@ -21,12 +20,11 @@ export class Note implements GraphicComponent {
      * @param NOTE_WIDTH
      * @param FIRST_BPM - BPM
      */
-    constructor(render: TomoyoRender, no: number, perfectTiming: number, hiSpeed: number, NOTE_WIDTH: number, FIRST_BPM: number) {
+    constructor(render: TomoyoRender, no: number, perfectTiming: number, NOTE_WIDTH: number, FIRST_BPM: number) {
 
         this.render = render;
 
         this.no = no;
-        this.hiSpeed = hiSpeed;
         this.NOTE_WIDTH = NOTE_WIDTH;
         this.perfectTiming = perfectTiming;
         
@@ -60,7 +58,7 @@ export class Note implements GraphicComponent {
         const JUDGE_LINE_POSITION = 500
 
         const x = this.no * this.NOTE_WIDTH;
-        const y = (((elapsedTime * this.scrollSpeedForBPM) - this.perfectTiming) / this.hiSpeed) + JUDGE_LINE_POSITION;
+        const y = ((elapsedTime * this.scrollSpeedForBPM) - this.perfectTiming) + JUDGE_LINE_POSITION;
 
         this.render.drawBox(x, y, this.NOTE_WIDTH, 10, '#DD7070');
     }
