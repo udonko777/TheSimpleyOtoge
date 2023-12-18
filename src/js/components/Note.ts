@@ -9,7 +9,7 @@ export class Note implements GraphicComponent {
     private scrollSpeedForBPM: number;
 
     public no: number;
-    public START_TIME: number;
+    public startTime: number;
     public perfectTiming: number;
 
     /**
@@ -27,8 +27,8 @@ export class Note implements GraphicComponent {
         this.no = no;
         this.NOTE_WIDTH = NOTE_WIDTH;
         this.perfectTiming = perfectTiming;
-        
-        this.START_TIME = 0;
+
+        this.startTime = 0;
 
         //scrollSpeed 1 : 120 bpm
         this.scrollSpeedForBPM = FIRST_BPM / 120;
@@ -38,16 +38,16 @@ export class Note implements GraphicComponent {
 
     }
 
-    public begin(starttime: number) {
-        this.START_TIME = starttime;
+    public begin(starttime: number): void {
+        this.startTime = starttime;
     }
 
     public getSTART_TIME(): number {
-        return this.START_TIME;
+        return this.startTime;
     }
 
-    private getElapsedTime(now: DOMHighResTimeStamp) {
-        return now - this.START_TIME;
+    private getElapsedTime(now: DOMHighResTimeStamp) : number {
+        return now - this.startTime;
     }
 
     public draw(now: DOMHighResTimeStamp) {
@@ -64,7 +64,7 @@ export class Note implements GraphicComponent {
     }
 
     public isOVER(now: DOMHighResTimeStamp): boolean {
-        
+
         if (501 < (this.getElapsedTime(now) - this.perfectTiming)) {
             return true;
         }
