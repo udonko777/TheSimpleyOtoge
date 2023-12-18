@@ -1,65 +1,77 @@
+import { ComboView } from "./js/components/ComboView";
 
-//@ts-expect-error
-import { ComboView } from "./js/components/ComboView.mjs";
+import { Note } from "./js/components/Note";
 
-import { Note } from "./js/components/Note.js";
-//@ts-expect-error
-import { JudgeView } from "./js/components/JudgeView.mjs";
-//@ts-expect-error
-import { Bomb } from "./js/UI/Bomb.mjs";
-//@ts-expect-error
-import { MusicPlayer } from "./js/MusicPlayer.mjs";
+import { JudgeView } from "./js/components/JudgeView";
 
-//@ts-expect-error
-import { GrooveGauge } from "./js/Gauges/GrooveGauge.mjs";
+import { Bomb } from "./js/components/Bomb";
+
+import { MusicPlayer } from "./js/MusicPlayer";
+
+import { TomoyoRender } from "./TomoyoRender";
+
+import { parse } from "./js/Parser/parser";
 
 import bmeFile from "./resource/demo/darksamba/_dark_sambaland_a.bme";
 
+import { BackGround } from "./js/components/BackGround";
+
+import { BarLine } from "./js/components/BarLine";
+
+import { Gauge } from "./js/Gauges/Gauge";
+
 //import {JUDGES} from '/jsons/judge.json' 
 
-//HTML側Bodyのonlordに書かれているので、この関数はBodyの読み込みが終わったら呼ばれるはず
+//HTML側BodyのonLordに書かれているので、この関数はBodyの読み込みが終わったら呼ばれるはず
 window.startClock = () => {
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;
-    const game = new Game(canvas);
+    new Game(canvas);
 }
 
-class Game {
+export class Game {
 
-    CANVAS: HTMLCanvasElement;
-    CTX: CanvasRenderingContext2D;
+    keyPressCount: number;
 
-    keypresscount: number;
-
-    judgeview: JudgeView;
+    judgeView: JudgeView;
     conboView: ComboView;
+
+    backGround: BackGround;
+    barLine: BarLine;
 
     notes: Note[];
     bombs: Bomb[];
 
+    render: TomoyoRender;
+
     startGame: (e: KeyboardEvent) => void;
-    GAUGE: GrooveGauge;
+    GAUGE: Gauge | undefined;
 
-    keypressed!: (e: KeyboardEvent) => void;
+    exitMain: number | undefined;
 
-    exitMain: any;
+    canvasHeight: () => number;
+    canvasWidth: () => number;
 
     /** Game開始のための準備、いろいろ読み込んでstartGameを可能にする。*/
-    constructor(canvas : HTMLCanvasElement) {
+    constructor(canvas: HTMLCanvasElement) {
 
-        /** @readonly */
-        this.CANVAS = canvas;
+        //HACK canvasのサイズは実行中に変化する可能性がある為に、canvasのサイズを動的に入手する手段を持たせている。
+        //もっといい方法が思いつけばそれを採用する。
+        this.canvasHeight = () => { return canvas.height };
+        this.canvasWidth = () => { return canvas.width };
 
-        /** @readonly */
-        this.CTX = this.CANVAS.getContext('2d') as CanvasRenderingContext2D;
+        this.keyPressCount = 0;
 
-        if(!this.CTX){
-            throw new Error('canvas?');
-        }
+        this.render = new TomoyoRender(canvas);
 
-        this.keypresscount = 0;
+        this.judgeView = new JudgeView(this.render);
+        this.conboView = new ComboView(this.render);
 
-        this.judgeview = new JudgeView(this.CTX);
-        this.conboView = new ComboView(this.CTX);
+        this.backGround = new BackGround(this.render, canvas.height, canvas.width);
+        this.barLine = new BarLine(this.render, 2, canvas.width, 4448, 120);
+
+        parse(bmeFile);
+
+        //console.info(BMEChart);
 
         this.notes = [];
 
@@ -72,64 +84,60 @@ class Game {
         const NOTE_WIDTH = 80;
 
         for (let i = 0; i < 4000; i++) {
-            this.notes.push(new Note(this.CTX, (i + 1) % 4, 4448 + (278 * i), 1, NOTE_WIDTH, 120));
-            this.notes.push(new Note(this.CTX, (i + 2) % 4, 4448 + (278 * i), 1, NOTE_WIDTH, 120));
-            this.notes.push(new Note(this.CTX, (i + 3) % 4, 4448 + (278 * i), 1, NOTE_WIDTH, 120));
+            this.notes.push(new Note(this.render, (i + 1) % 4, 4448 + (278 * i), 1, NOTE_WIDTH, 120));
+            this.notes.push(new Note(this.render, (i + 2) % 4, 4448 + (278 * i), 1, NOTE_WIDTH, 120));
+            this.notes.push(new Note(this.render, (i + 3) % 4, 4448 + (278 * i), 1, NOTE_WIDTH, 120));
         }
 
-        /** @type {Array.<Bomb>} */
         this.bombs = [];
 
         for (let i = 0; i < 4; i++) {
-            this.bombs.push(new Bomb(this.CTX, i, 0, NOTE_WIDTH));
+            this.bombs.push(new Bomb(this.render, i, 0, NOTE_WIDTH));
         }
 
-        this.startGame = (e) => { this._startGame(e) };
+        this.startGame = () => { this._startGame() };
         document.addEventListener('keydown', this.startGame);
 
         //ゲームが実際に起動されるまで表示される待ち受け画面。
-        this.inputWaitingscreen();
+        this.inputWaitingScreen();
     }
 
     //実際にゲームが始まるタイミングで呼ばれる
-    _startGame(e : KeyboardEvent) {
+    private _startGame() {
 
-        /** @type {Object.<Judge>} */
-        // JUDGES
-
-        this.GAUGE = new GrooveGauge(this.CTX);
+        this.GAUGE = new Gauge(this.render);
 
         document.removeEventListener('keydown', this.startGame);
 
         //ノーツの開始地点を記録
         //TODO performance.nowが使えなければDate.nowを取得
         const NOW = performance.now();
-        this.notes.forEach(note=>note.begin(NOW));
+        this.notes.forEach(note => note.begin(NOW));
 
-        this.keypressed = (e) => { this._keypressed(e) };
-        document.addEventListener('keydown', this.keypressed);
+        this.barLine.begin(NOW);
 
-        const musicplayer = new MusicPlayer();
-        musicplayer.play();
+        //アロー関数にしなくてもいいかも？静的な参照を持ちたい
+        document.addEventListener('keydown', (e) => { this._keyPressed(e) });
+
+        const musicPlayer = new MusicPlayer();
+        musicPlayer.play();
 
         this.frame();
 
     }
 
     //gameが実際に始まる前までに表示し続ける表示
-    inputWaitingscreen() {
+    private inputWaitingScreen() {
 
-        this.writeBackGround();
+        this.backGround.draw();
 
-        this.CTX.fillStyle = 'rgb( 255, 102, 102)';
-        this.CTX.font = "18px serif";
-        
-        this.CTX.fillText("キーボード押すと音が鳴るよ", 50, 100);
-        this.CTX.fillText("爆音なので注意", 50, 120);
+        this.render.drawText("キーボード押すと音が鳴るよ", 50, 100, "21px serif", 'rgb( 255, 102, 102)');
+        this.render.drawText("爆音なので注意", 50, 120, "21px serif", 'rgb( 255, 102, 102)');
+
     }
 
     //再帰的なメインループ
-    frame = () => {
+    private frame = () => {
 
         //window.cancelAnimationFrame(this.exitMain)でメインループを抜けられる
         this.exitMain = window.requestAnimationFrame(this.frame);
@@ -137,87 +145,111 @@ class Game {
         const NOW = performance.now();
 
         //画面のリフレッシュ
-        this.CTX.clearRect(0, 0, 3000, 3000);
+        this.render.clear();
 
-        this.writeBackGround();
+        //FIX 更新があってもなくても毎フレームリサイズしている。 canvasサイズの変更を受け取るハンドラから呼び出すべき
+        this.backGround.setSize(this.canvasHeight(), this.canvasWidth());
+        this.backGround.draw();
 
-        this.GAUGE.draw();
+        this.barLine.setSize(this.canvasWidth());
 
-        this.bombs.forEach(bomb => bomb.writebomb())
+        /// !?
+        this.GAUGE?.draw();
 
-        this.judgeview.draw();
+        this.bombs.forEach(bomb => bomb.draw());
+
+        this.judgeView.draw();
         this.conboView.draw();
+
+        this.barLine.draw(NOW);
 
         //存在するすべてのNoteオブジェクトの時を進める
 
         for (let i = 0; i < this.notes.length; i++) {
             this.notes[i].draw(NOW);
             if (this.notes[i].isOVER(NOW)) {
-                this.judgeview.judge = "OVER";
-                this.GAUGE.judge = "OVER";
+
+                this.judgeView.judge = "OVER";
+                this.GAUGE?.setJudge("OVER");
                 this.conboView.resetConboCount();
                 this.notes.splice(i, 1);
-            };
+
+            }
         }
 
-    }
-
-    writeBackGround() {
-        this.CTX.fillStyle = 'rgb( 0, 0, 0)';
-        this.CTX.fillRect(0, 0, this.CANVAS.width, this.CANVAS.height);
-        //判定位置生成
-        this.CTX.fillStyle = 'rgb( 0, 255, 0)';
-        this.CTX.fillRect(0, 502, this.CANVAS.width, 5);
     }
 
     //何らかのキーが押されている時呼ばれます
-    _keypressed(e : KeyboardEvent) {
+    private _keyPressed(e: KeyboardEvent): void {
+
+        if (e.repeat) {
+            return;
+        }
 
         console.log(e.key);
-        if (e.repeat === false) {
-            if (e.code === 'KeyD') {
+
+        switch (e.code) {
+            case `KeyD`:
                 this.judgeTiming(0);
-            } else if (e.code === 'KeyF') {
+                break
+            case 'KeyF':
                 this.judgeTiming(1);
-            } else if (e.code === 'KeyJ') {
+                break
+            case 'KeyJ':
                 this.judgeTiming(2);
-            } else if (e.code === 'KeyK') {
+                break
+            case 'KeyK':
                 this.judgeTiming(3);
-            }
+                break
         }
-        this.keypresscount += 1;
-        return false;
+        this.keyPressCount += 1;
+        return;
     }
 
-    judgeTiming(l : number) {
+    private judgeTiming(laneID: 0 | 1 | 2 | 3): void {
 
         //TODO クッソ雑に全ノーツを判定します。
 
+        type EZjudge = "GREAT" | "GOOD" | "BAD" | "POOR"
+        type conboStrategy = "keep" | "up" | "reset"
+
+        const sendJudge = (judge: EZjudge, howCountUpConbo: conboStrategy = "keep"): void => {
+
+            this.judgeView.judge = judge;
+            this.GAUGE?.setJudge(judge);
+
+            switch (howCountUpConbo) {
+                case "up":
+                    this.conboView.addConboCount();
+                    break;
+                case "reset":
+                    this.conboView.resetConboCount();
+                    break;
+                case "keep":
+                    break
+            }
+
+        }
+
         for (let i = 0; i < this.notes.length; i++) {
-            if (this.notes[i].no === l) {
+
+            if (this.notes[i].no === laneID) {
 
                 //bは短縮のためのインスタンスな変数です。
 
-                const b = this.notes[i].falltime + (globalThis.performance.now() - this.notes[i].getSTART_TIME())
+                const b = (globalThis.performance.now() - this.notes[i].getSTART_TIME()) - this.notes[i].perfectTiming;
 
-                if (50 > b && -50 < b) {
-                    console.log(`${l}is GREAT!, i think it is${b}`);
-                    this.judgeview.judge = "GREAT";
-                    this.GAUGE.judge = "GREAT";
-                    this.conboView.addConboCount();
-                    this.notes.splice(i, 1);
-                } else if (100 > b && -100 < b) {
-                    this.judgeview.judge = "GOOD";
-                    this.GAUGE.judge = "GOOD";
-                    this.conboView.addConboCount();
-                    this.notes.splice(i, 1);
-                } else if (200 > b && -200 < b) {
-                    this.judgeview.judge = "bad";
-                    this.GAUGE.judge = "BAD";
-                    this.conboView.resetConboCount();
-                    this.notes.splice(i, 1);
-                } else if (210 > b && -210 < b) {
-                    this.judgeview.judge = "POOR";
+                if (260 > b && -260 < b) {
+                    if (50 > b && -50 < b) {
+                        console.log(`${laneID}is GREAT!, i think it is${b}`);
+                        sendJudge("GREAT", "up")
+                    } else if (100 > b && -100 < b) {
+                        sendJudge("GOOD", "up")
+                    } else if (200 > b && -200 < b) {
+                        sendJudge("BAD", "reset")
+                    } else if (210 > b && -210 < b) {
+                        sendJudge("POOR", "keep");
+                    }
                     this.notes.splice(i, 1);
                 }
 
@@ -225,7 +257,7 @@ class Game {
 
         }
 
-        this.bombs[l].setbomblife(50);
+        this.bombs[laneID].setBombLife(50);
 
         return;
     }

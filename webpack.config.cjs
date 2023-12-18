@@ -12,11 +12,13 @@ const stylesHandler = 'style-loader';
 const config = {
     entry: './src/index.ts',
     output: {
+        assetModuleFilename: 'assets/[hash][ext][query]',
         path: path.resolve(__dirname, 'dist'),
     },
     plugins: [
         new HtmlWebpackPlugin({
             template: 'index.html',
+            favicon: './src/resource/demo/favicon.ico'
         }),
     ],
     module: {
@@ -31,9 +33,16 @@ const config = {
                 "exclude": /node_modules/
             },
             {
-                test: /\.(text|txt|bms|bme)$/i,
-                assetModuleFilename: 'assets/[hash][ext][query]',
+                test: /\.html$/i,
+                loader: "html-loader",
+            },
+            {
+                test: /\.(mp3|wav|ogg)$/i,
                 type: 'asset/resource'
+            },
+            {
+                test: /\.(text|txt|bms|bme)$/i,
+                type: 'asset/source'
             }
 
             // Add your rules for custom modules here
