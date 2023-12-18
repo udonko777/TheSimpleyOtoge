@@ -6,10 +6,10 @@ export type ConvertibleKeyChannel = 11 | 13 | 15 | 19;
  */
 export const bmsChannelToKeyStatement: Map<ConvertibleKeyChannel, number> = new Map(
     [
-        [11, 1],
-        [13, 2],
-        [15, 3],
-        [19, 4]
+        [11, 0],
+        [13, 1],
+        [15, 2],
+        [19, 3]
     ]
 )
 

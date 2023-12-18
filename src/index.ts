@@ -1,6 +1,7 @@
 import { ComboView } from "./js/components/ComboView";
 
 import { Note } from "./js/components/Note";
+import { generateNotes } from "./js/components/Notes";
 
 import { JudgeView } from "./js/components/JudgeView";
 
@@ -69,30 +70,15 @@ export class Game {
         this.backGround = new BackGround(this.render, canvas.height, canvas.width);
         this.barLine = new BarLine(this.render, 2, canvas.width, 4448, 120);
 
-        parse(bmeFile);
+        const chart = parse(bmeFile);
 
-        //console.info(BMEChart);
+        this.notes = generateNotes(this.render, chart);
 
-        this.notes = [];
-
-        // 譜面をもとに、ノーツを配置する
-
-        // まずChartPurserとTextSplitterを実体化する
-        // TextSplitterにimportしたファイルを渡して、帰ってきたものをChartPurserに渡す
-        // Notesが帰ってくる。NotesはNoteの集合を表現するクラス。
-
-        const NOTE_WIDTH = 80;
-
-        for (let i = 0; i < 4000; i++) {
-            this.notes.push(new Note(this.render, (i + 1) % 4, 4448 + (278 * i), 1, NOTE_WIDTH, 120));
-            this.notes.push(new Note(this.render, (i + 2) % 4, 4448 + (278 * i), 1, NOTE_WIDTH, 120));
-            this.notes.push(new Note(this.render, (i + 3) % 4, 4448 + (278 * i), 1, NOTE_WIDTH, 120));
-        }
-
+        const BOMB_WIDTH = 80
         this.bombs = [];
 
         for (let i = 0; i < 4; i++) {
-            this.bombs.push(new Bomb(this.render, i, 0, NOTE_WIDTH));
+            this.bombs.push(new Bomb(this.render, i, 0, BOMB_WIDTH));
         }
 
         this.startGame = () => { this._startGame() };

@@ -10,7 +10,7 @@ type BMSMainDefinition = {
     readonly notesPositions: ReadonlyArray<string>;
 }
 
-type Measure = {
+export type Measure = {
     /** その小節が始まる時刻(ms) */
     beginTime: number;
     /** 落ちてくるタイミング 降ってくる場所 */
@@ -35,9 +35,9 @@ const quarterNote: number = 240000 / BPM;
  * テキストから譜面データを読み込む
  * @param sourceText BMS形式の譜面テキスト。
  */
-export const parse = (sourceText: string): void => {
+export const parse = (sourceText: string): ReadonlyArray<Measure> => {
     const tokens = bmsTokenizer(sourceText);
-    bmsScanner(tokens);
+    return bmsScanner(tokens);
 }
 
 const getBMSMainDefinition = (measuresIndex: number, channel: number, notesPositions: ReadonlyArray<string> = []): BMSMainDefinition => {
