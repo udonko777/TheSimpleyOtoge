@@ -8,10 +8,10 @@ export class JudgeView implements GraphicComponent {
     private x: number;
     private y: number;
 
-    /** Judgeを実際に表示させるUI。実際にはcomboViewと組み合わせてつかうゾ
+    /** 
+     * Judgeを実際に表示させるUI。実際にはcomboViewと組み合わせてつかう
      */
     constructor(render: TomoyoRender) {
-        //judge == {N/A,poor,poor,good,great,great}
         this.render = render;
         this.judgeName = "N/A";
         this.x = 70;

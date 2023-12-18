@@ -11,7 +11,6 @@ export class BarLine implements GraphicComponent {
 
     private beginTime: number;
     private scrollSpeedForBPM: number;
-    private hiSpeed: number;
 
     constructor(render: TomoyoRender, height: number, width: number, perfectTiming: number, bpm: number) {
         this.render = render;
@@ -23,7 +22,6 @@ export class BarLine implements GraphicComponent {
 
         this.scrollSpeedForBPM = bpm / 120
 
-        this.hiSpeed = 1;
         this.beginTime = 0;
     }
 
@@ -36,7 +34,7 @@ export class BarLine implements GraphicComponent {
 
         const JUDGE_LINE_POSITION = 500;
 
-        const y = (((elapsedTime * this.scrollSpeedForBPM) - this.perfectTiming) / this.hiSpeed) + JUDGE_LINE_POSITION;
+        const y = ((elapsedTime * this.scrollSpeedForBPM) - this.perfectTiming) + JUDGE_LINE_POSITION;
         //判定位置生成
         this.render.drawBox(0, y, this.width, this.height, 'rgb( 100, 100, 100)');
     }

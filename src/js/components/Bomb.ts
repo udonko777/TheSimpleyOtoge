@@ -1,7 +1,7 @@
 import { TomoyoRender } from "TomoyoRender";
 import { GraphicComponent } from "./Component";
 
-export class Bomb implements GraphicComponent{
+export class Bomb implements GraphicComponent {
 
     private readonly render: TomoyoRender;
     private readonly no: number;
@@ -9,8 +9,8 @@ export class Bomb implements GraphicComponent{
     private readonly NOTE_WIDTH: number;
 
     /**
-     * @param ctx
-     * @param no - Left to right, 0 to 4
+     * @param render 
+     * @param no Left to right, 0 to 4
      * @param bombLife
      * @param NOTE_WIDTH
      */
@@ -34,7 +34,7 @@ export class Bomb implements GraphicComponent{
 
     }
 
-    public setBombLife(bombLife: number) {
+    public setBombLife(bombLife: number): void {
         this.bombLife = bombLife;
     }
 
