@@ -231,9 +231,9 @@ export class Game {
                         sendJudge("GREAT", "up")
                     } else if (100 > b && -100 < b) {
                         sendJudge("GOOD", "up")
-                    } else if (200 > b && -200 < b) {
+                    } else if (120 > b && -120 < b) {
                         sendJudge("BAD", "reset")
-                    } else if (210 > b && -210 < b) {
+                    } else if (140 > b && -140 < b) {
                         sendJudge("POOR", "keep");
                     }
                     this.notes.splice(i, 1);
