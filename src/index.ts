@@ -1,7 +1,7 @@
 import { ComboView } from "./js/components/ComboView";
 
 import { Note } from "./js/components/Note";
-import { generateNotes } from "./js/components/Notes";
+import { generateNotes } from "./js/components/generateNotes";
 
 import { JudgeView } from "./js/components/JudgeView";
 
@@ -98,7 +98,10 @@ export class Game {
         //ノーツの開始地点を記録
         //TODO performance.nowが使えなければDate.nowを取得
         const NOW = performance.now();
-        this.notes.forEach(note => note.begin(NOW));
+
+        for(const note of this.notes){
+            note.begin(NOW);
+        }
 
         this.barLine.begin(NOW);
 
