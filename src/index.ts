@@ -10,7 +10,7 @@ import { MusicPlayer } from "./js/MusicPlayer";
 
 import { TomoyoRender } from "./TomoyoRender";
 
-import { parse } from "./js/Parser/Chart";
+import { parse } from "./js/Parser/parser";
 
 import bmeFile from "./resource/demo/darksamba/_dark_sambaland_a.bme";
 
