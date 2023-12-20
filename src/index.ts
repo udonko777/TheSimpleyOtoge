@@ -124,7 +124,8 @@ export class Game {
     //gameが実際に始まる前までに表示し続ける表示
     private inputWaitingScreen() {
 
-        this.screen.directRender(...this.backGround.draw());
+        const backGrounds = this.backGround.draw();
+        this.screen.directRender(...backGrounds);
 
         this.screen.directRender(makeText("キーボード押すと音が鳴るよ", 50, 100, "21px serif", 'rgb( 255, 102, 102)'));
         this.screen.directRender(makeText("爆音なので注意", 50, 120, "21px serif", 'rgb( 255, 102, 102)'));
@@ -153,9 +154,10 @@ export class Game {
 
         for (const bomb of this.bombs) {
             const graph = bomb.draw();
-            //FIX ただしどちらにせよdirectRenderはnullを許容するはず
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-            this.screen.directRender(graph!);
+            //FIX 全然nullは許容してなかったけどとりあえず動くようにした
+            if (graph != null) {
+                this.screen.directRender(graph);
+            }
         }
 
         //this.judgeView.draw();
