@@ -1,8 +1,6 @@
-import { TomoyoRender, Color } from "TomoyoRender";
+import { Color, makeBox, renderableObject } from "TomoyoRender";
 
 export class Gauge {
-
-    protected readonly render: TomoyoRender;
 
     private readonly GAUGE_BOX_AS_GROOVE: number;
 
@@ -23,9 +21,7 @@ export class Gauge {
     private readonly BREAK: number;
     private readonly IS_TOLERANT: boolean;
 
-    constructor(render: TomoyoRender) {
-
-        this.render = render;
+    constructor() {
 
         //0 <= groove <= 65536
         this.MAX_GROOVE = 65536;
@@ -63,8 +59,12 @@ export class Gauge {
         const INVISIBLE_AREA = this.GAUGE_VOID_WIDTH / this.GAUGE_BOX_NUMBER;
         let usedArea = 0;
 
+        const boxes:renderableObject[] = []
+
         for (let i = 0; i < this.GAUGE_BOX_NUMBER; i++) {
-            this.writeBox(this.boxColor(i), usedArea + this.STATE_X, this.STATE_Y, VISIBLE_AREA, this.GAUGE_HEIGHT);
+            const box = this.writeBox(this.boxColor(i), usedArea + this.STATE_X, this.STATE_Y, VISIBLE_AREA, this.GAUGE_HEIGHT);
+            boxes.push(box);
+            
             usedArea = usedArea + VISIBLE_AREA + INVISIBLE_AREA;
         }
 
@@ -80,7 +80,7 @@ export class Gauge {
      */
     protected writeBox(color: Color, x: number, y: number, boxwidth: number, boxheight: number) {
         //ノーツの色の設定
-        this.render.drawBox(x, y, boxwidth, boxheight, color);
+        return makeBox(x, y, boxwidth, boxheight, color);
     }
 
     public setJudge(judgeName: string): void {

@@ -1,9 +1,7 @@
-import { TomoyoRender } from "TomoyoRender";
+import { makeBox, renderableObject } from "TomoyoRender";
 import { GraphicComponent } from "./Component";
 
 export class BarLine implements GraphicComponent {
-
-    private render: TomoyoRender;
 
     private readonly height: number;
     private width: number;
@@ -12,9 +10,7 @@ export class BarLine implements GraphicComponent {
     private beginTime: number;
     private scrollSpeedForBPM: number;
 
-    constructor(render: TomoyoRender, height: number, width: number, perfectTiming: number, bpm: number) {
-        this.render = render;
-
+    constructor(height: number, width: number, perfectTiming: number, bpm: number) {
         this.height = height;
         this.width = width;
 
@@ -29,19 +25,21 @@ export class BarLine implements GraphicComponent {
         this.beginTime = now;
     }
 
-    public draw(now: DOMHighResTimeStamp): void {
+    public draw(now: DOMHighResTimeStamp): renderableObject[] {
         const elapsedTime = now - this.beginTime;
 
         const JUDGE_LINE_POSITION = 500;
 
         const y = ((elapsedTime * this.scrollSpeedForBPM) - this.perfectTiming) + JUDGE_LINE_POSITION;
         //判定位置生成
-        this.render.drawBox(0, y, this.width, this.height, 'rgb( 100, 100, 100)');
+        return [
+            makeBox(0, y, this.width, this.height, 'rgb( 100, 100, 100)')
+        ];
     }
 
-   /**
-    * 親コンポーネントに変化があったときに親から呼ばれる
-    */
+    /**
+     * 親コンポーネントに変化があったときに親から呼ばれる
+     */
     public setSize(width: number) {
         this.width = width;
     }

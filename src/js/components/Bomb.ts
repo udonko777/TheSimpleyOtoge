@@ -1,9 +1,8 @@
-import { TomoyoRender } from "TomoyoRender";
+import { Box, makeBox} from "TomoyoRender";
 import { GraphicComponent } from "./Component";
 
 export class Bomb implements GraphicComponent {
 
-    private readonly render: TomoyoRender;
     private readonly no: number;
     private bombLife: number;
     private readonly NOTE_WIDTH: number;
@@ -14,8 +13,7 @@ export class Bomb implements GraphicComponent {
      * @param bombLife
      * @param NOTE_WIDTH
      */
-    constructor(render: TomoyoRender, no: number, bombLife: number, NOTE_WIDTH: number) {
-        this.render = render;
+    constructor(no: number, bombLife: number, NOTE_WIDTH: number) {
         this.no = no;
         this.bombLife = bombLife;
         this.NOTE_WIDTH = NOTE_WIDTH;
@@ -28,8 +26,10 @@ export class Bomb implements GraphicComponent {
             const x = this.no * this.NOTE_WIDTH
             const y = 480 + (this.bombLife / 4)
 
-            this.render.drawBox(x, y, this.NOTE_WIDTH, 5, `rgba( 100, 105, 200, ${this.bombLife / 50})`);
+            const bombGraphic: Box = makeBox(x, y, this.NOTE_WIDTH, 5, `rgba( 100, 105, 200, ${this.bombLife / 50})`);
+
             this.bombLife -= 1;
+            return bombGraphic;
         }
 
     }

@@ -9,9 +9,12 @@ import { Bomb } from "./js/components/Bomb";
 
 import { MusicPlayer } from "./js/MusicPlayer";
 
-import { TomoyoRender } from "./TomoyoRender";
+//FIX とりあえず動かすためのimport
+import { makeText } from "./TomoyoRender";
 
 import { parse } from "./js/Parser/parser";
+
+import { Screen } from "./js/components/Screen";
 
 import bmeFile from "./resource/demo/darksamba/_dark_sambaland_a.bme";
 
@@ -42,7 +45,7 @@ export class Game {
     notes: Note[];
     bombs: Bomb[];
 
-    render: TomoyoRender;
+    private screen: Screen;
 
     startGame: (e: KeyboardEvent) => void;
     GAUGE: Gauge | undefined;
@@ -62,23 +65,26 @@ export class Game {
 
         this.keyPressCount = 0;
 
-        this.render = new TomoyoRender(canvas);
+        //this.render = new TomoyoRender(canvas);
 
-        this.judgeView = new JudgeView(this.render);
-        this.conboView = new ComboView(this.render);
+        this.judgeView = new JudgeView();
+        this.conboView = new ComboView();
 
-        this.backGround = new BackGround(this.render, canvas.height, canvas.width);
-        this.barLine = new BarLine(this.render, 2, canvas.width, 4448, 120);
+        this.backGround = new BackGround(canvas.height, canvas.width);
+        this.barLine = new BarLine(2, canvas.width, 4448, 120);
 
         const chart = parse(bmeFile);
 
-        this.notes = generateNotes(this.render, chart);
+        this.notes = generateNotes(chart);
+
+        this.screen = new Screen(canvas);
+        this.screen.setComponents(this.judgeView, this.conboView, this.backGround, this.barLine)
 
         const BOMB_WIDTH = 80
         this.bombs = [];
 
         for (let i = 0; i < 4; i++) {
-            this.bombs.push(new Bomb(this.render, i, 0, BOMB_WIDTH));
+            this.bombs.push(new Bomb(i, 0, BOMB_WIDTH));
         }
 
         this.startGame = () => { this._startGame() };
@@ -91,7 +97,7 @@ export class Game {
     //実際にゲームが始まるタイミングで呼ばれる
     private _startGame() {
 
-        this.GAUGE = new Gauge(this.render);
+        this.GAUGE = new Gauge();
 
         document.removeEventListener('keydown', this.startGame);
 
@@ -99,7 +105,7 @@ export class Game {
         //TODO performance.nowが使えなければDate.nowを取得
         const NOW = performance.now();
 
-        for(const note of this.notes){
+        for (const note of this.notes) {
             note.begin(NOW);
         }
 
@@ -118,10 +124,10 @@ export class Game {
     //gameが実際に始まる前までに表示し続ける表示
     private inputWaitingScreen() {
 
-        this.backGround.draw();
+        this.screen.directRender(...this.backGround.draw());
 
-        this.render.drawText("キーボード押すと音が鳴るよ", 50, 100, "21px serif", 'rgb( 255, 102, 102)');
-        this.render.drawText("爆音なので注意", 50, 120, "21px serif", 'rgb( 255, 102, 102)');
+        this.screen.directRender(makeText("キーボード押すと音が鳴るよ", 50, 100, "21px serif", 'rgb( 255, 102, 102)'));
+        this.screen.directRender(makeText("爆音なので注意", 50, 120, "21px serif", 'rgb( 255, 102, 102)'));
 
     }
 
@@ -134,28 +140,34 @@ export class Game {
         const NOW = performance.now();
 
         //画面のリフレッシュ
-        this.render.clear();
+        this.screen.clear();
 
         //FIX 更新があってもなくても毎フレームリサイズしている。 canvasサイズの変更を受け取るハンドラから呼び出すべき
         this.backGround.setSize(this.canvasHeight(), this.canvasWidth());
-        this.backGround.draw();
+        //this.backGround.draw();
 
         this.barLine.setSize(this.canvasWidth());
 
         /// !?
-        this.GAUGE?.draw();
+        //this.GAUGE?.draw();
 
-        this.bombs.forEach(bomb => bomb.draw());
+        for (const bomb of this.bombs) {
+            const graph = bomb.draw();
+            //FIX ただしどちらにせよdirectRenderはnullを許容するはず
+            this.screen.directRender(graph!);
+        }
 
-        this.judgeView.draw();
-        this.conboView.draw();
+        //this.judgeView.draw();
+        //this.conboView.draw();
 
-        this.barLine.draw(NOW);
+        //this.barLine.draw(NOW);
 
         //存在するすべてのNoteオブジェクトの時を進める
 
         for (let i = 0; i < this.notes.length; i++) {
-            this.notes[i].draw(NOW);
+
+            this.screen.directRender(this.notes[i].draw(NOW));
+
             if (this.notes[i].isOVER(NOW)) {
 
                 this.judgeView.judge = "OVER";

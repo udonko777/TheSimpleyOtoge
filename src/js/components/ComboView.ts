@@ -1,4 +1,4 @@
-import { TomoyoRender } from 'TomoyoRender';
+import { makeText } from 'TomoyoRender';
 import { GraphicComponent } from './Component';
 
 /**
@@ -7,11 +7,9 @@ import { GraphicComponent } from './Component';
  */
 export class ComboView implements GraphicComponent {
 
-    private readonly render: TomoyoRender;
     private comboCount: number;
 
-    constructor(render: TomoyoRender) {
-        this.render = render;
+    constructor() {
         this.comboCount = 0;
     }
 
@@ -26,7 +24,7 @@ export class ComboView implements GraphicComponent {
 
     public draw() {
         if (this.comboCount > 0) {
-            this.render.drawText(String(this.comboCount), 10, 100, "48px serif", 'rgb( 255, 102, 102)');
+            return makeText(String(this.comboCount), 10, 100, "48px serif", 'rgb( 255, 102, 102)');
         } else {
             console.log("comboCount is zero");
         }

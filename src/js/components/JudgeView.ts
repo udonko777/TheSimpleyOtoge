@@ -1,9 +1,8 @@
-import { TomoyoRender } from 'TomoyoRender';
+import { makeText } from 'TomoyoRender';
 import { GraphicComponent } from './Component'
 
 export class JudgeView implements GraphicComponent {
 
-    readonly render: TomoyoRender;
     private judgeName: string;
     private x: number;
     private y: number;
@@ -11,8 +10,7 @@ export class JudgeView implements GraphicComponent {
     /** 
      * Judgeを実際に表示させるUI。実際にはcomboViewと組み合わせてつかう
      */
-    constructor(render: TomoyoRender) {
-        this.render = render;
+    constructor() {
         this.judgeName = "N/A";
         this.x = 70;
         this.y = 370;
@@ -46,20 +44,15 @@ export class JudgeView implements GraphicComponent {
             case "N/A":
                 break;
             case "OVER":
-                this.render.drawText("POOR", this.x, this.y, "48px serif", 'rgb( 255, 102, 102)');
-                break;
+                return makeText("POOR", this.x, this.y, "48px serif", 'rgb( 255, 102, 102)');
             case "POOR":
-                this.render.drawText("POOR", this.x, this.y, "48px serif", 'rgb( 255, 102, 102)');
-                break;
+                return makeText("POOR", this.x, this.y, "48px serif", 'rgb( 255, 102, 102)');
             case "BAD":
-                this.render.drawText("BAD", this.x, this.y, "48px serif", 'rgb( 255, 102, 102)');
-                break;
+                return makeText("BAD", this.x, this.y, "48px serif", 'rgb( 255, 102, 102)');
             case "GOOD":
-                this.render.drawText("GOOD", this.x, this.y, "48px serif", 'rgb( 255, 102, 102)');
-                break;
+                return makeText("GOOD", this.x, this.y, "48px serif", 'rgb( 255, 102, 102)');
             case "GREAT":
-                this.render.drawText("GREAT", this.x, this.y, "48px serif", 'rgb( 255, 102, 102)');
-                break;
+                return makeText("GREAT", this.x, this.y, "48px serif", 'rgb( 255, 102, 102)');
         }
     }
 }

@@ -1,9 +1,7 @@
-import { TomoyoRender } from 'TomoyoRender';
+import { makeBox } from 'TomoyoRender';
 import { GraphicComponent } from './Component';
 
 export class Note implements GraphicComponent {
-
-    private render: TomoyoRender;
 
     private NOTE_WIDTH: number;
     private scrollSpeedForBPM: number;
@@ -20,9 +18,7 @@ export class Note implements GraphicComponent {
      * @param NOTE_WIDTH
      * @param FIRST_BPM - BPM
      */
-    constructor(render: TomoyoRender, no: number, perfectTiming: number, NOTE_WIDTH: number, FIRST_BPM: number) {
-
-        this.render = render;
+    constructor(no: number, perfectTiming: number, NOTE_WIDTH: number, FIRST_BPM: number) {
 
         this.no = no;
         this.NOTE_WIDTH = NOTE_WIDTH;
@@ -60,7 +56,7 @@ export class Note implements GraphicComponent {
         const x = this.no * this.NOTE_WIDTH;
         const y = ((elapsedTime * this.scrollSpeedForBPM) - this.perfectTiming) + JUDGE_LINE_POSITION;
 
-        this.render.drawBox(x, y, this.NOTE_WIDTH, 10, '#DD7070');
+        return makeBox(x, y, this.NOTE_WIDTH, 10, '#DD7070');
     }
 
     public isOVER(now: DOMHighResTimeStamp): boolean {
