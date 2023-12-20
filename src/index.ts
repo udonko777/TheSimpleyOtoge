@@ -154,6 +154,7 @@ export class Game {
         for (const bomb of this.bombs) {
             const graph = bomb.draw();
             //FIX ただしどちらにせよdirectRenderはnullを許容するはず
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
             this.screen.directRender(graph!);
         }
 
