@@ -78,7 +78,7 @@ export class Game {
         this.notes = generateNotes(chart);
 
         this.screen = new Screen(canvas);
-        this.screen.setComponents(this.judgeView, this.conboView, this.backGround, this.barLine)
+        this.screen.setComponents(this.backGround, this.judgeView, this.conboView, this.barLine)
 
         const BOMB_WIDTH = 80
         this.bombs = [];
@@ -148,6 +148,8 @@ export class Game {
         //this.backGround.draw();
 
         this.barLine.setSize(this.canvasWidth());
+
+        this.screen.draw(NOW);
 
         /// !?
         //this.GAUGE?.draw();
