@@ -27,7 +27,9 @@ export class Screen implements GraphicComponent {
     }
 
     setComponents(...Component: GraphicComponent[]): void {
-        this.Components.push(...Component);
+        for(const component of Component){
+            this.Components.push(component);
+        }
     }
 
     /**
@@ -39,6 +41,7 @@ export class Screen implements GraphicComponent {
         const graphics: Array<renderableObject> = [];
 
         for (const component of this.Components) {
+
             const graph: renderableObject | renderableObject[] | void = component.draw(time);
 
             if (graph != null) {
