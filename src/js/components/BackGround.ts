@@ -1,4 +1,4 @@
-import { makeBox, renderableObject } from "TomoyoRender";
+import { makeBox, renderableObject } from "../TomoyoRender";
 import { GraphicComponent } from "./Component";
 
 export class BackGround implements GraphicComponent {
@@ -10,7 +10,7 @@ export class BackGround implements GraphicComponent {
 
         this.height = height;
         this.width = width;
-        
+
     }
 
     /**

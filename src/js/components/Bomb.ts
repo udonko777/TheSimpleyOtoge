@@ -1,4 +1,4 @@
-import { Box, makeBox} from "TomoyoRender";
+import { Box, makeBox } from "../TomoyoRender";
 import { GraphicComponent } from "./Component";
 
 export class Bomb implements GraphicComponent {

@@ -1,4 +1,4 @@
-import { clear, draw, renderableObject, ScreenModel } from "TomoyoRender";
+import { clear, draw, renderableObject, ScreenModel } from "../TomoyoRender";
 import { GraphicComponent } from "./Component";
 
 export class Screen implements GraphicComponent {
@@ -69,13 +69,13 @@ export class Screen implements GraphicComponent {
      * 本来ここにあるべきではないので、最終的に削ること。
      */
     public directRender(...graphs: renderableObject[]) {
-        
+
         const model: ScreenModel = {
             ctx: this.ctx,
             canvas_height: this.canvas_height,
             canvas_width: this.canvas_width
         }
-        
+
         for (const graph of graphs) {
             draw(model, graph);
         }

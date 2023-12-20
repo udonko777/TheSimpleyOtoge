@@ -10,7 +10,7 @@ import { Bomb } from "./js/components/Bomb";
 import { MusicPlayer } from "./js/MusicPlayer";
 
 //FIX とりあえず動かすためのimport
-import { makeText } from "./TomoyoRender";
+import { makeText } from "./js/TomoyoRender";
 
 import { parse } from "./js/Parser/parser";
 

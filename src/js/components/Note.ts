@@ -1,4 +1,4 @@
-import { makeBox } from 'TomoyoRender';
+import { makeBox } from '../TomoyoRender';
 import { GraphicComponent } from './Component';
 
 export class Note implements GraphicComponent {
@@ -42,7 +42,7 @@ export class Note implements GraphicComponent {
         return this.startTime;
     }
 
-    private getElapsedTime(now: DOMHighResTimeStamp) : number {
+    private getElapsedTime(now: DOMHighResTimeStamp): number {
         return now - this.startTime;
     }
 

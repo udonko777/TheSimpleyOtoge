@@ -1,4 +1,4 @@
-import { makeText } from 'TomoyoRender';
+import { makeText } from '../TomoyoRender';
 import { GraphicComponent } from './Component'
 
 export class JudgeView implements GraphicComponent {

@@ -1,4 +1,4 @@
-import { renderableObject } from "TomoyoRender";
+import { renderableObject } from "../TomoyoRender";
 
 export interface GraphicComponent {
 

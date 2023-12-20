@@ -1,4 +1,4 @@
-import { makeBox, renderableObject } from "TomoyoRender";
+import { makeBox, renderableObject } from "../TomoyoRender";
 import { GraphicComponent } from "./Component";
 
 export class BarLine implements GraphicComponent {

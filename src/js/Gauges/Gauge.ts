@@ -1,4 +1,4 @@
-import { Color, makeBox, renderableObject } from "TomoyoRender";
+import { Color, makeBox, renderableObject } from "../TomoyoRender";
 
 export class Gauge {
 
@@ -59,12 +59,12 @@ export class Gauge {
         const INVISIBLE_AREA = this.GAUGE_VOID_WIDTH / this.GAUGE_BOX_NUMBER;
         let usedArea = 0;
 
-        const boxes:renderableObject[] = []
+        const boxes: renderableObject[] = []
 
         for (let i = 0; i < this.GAUGE_BOX_NUMBER; i++) {
             const box = this.writeBox(this.boxColor(i), usedArea + this.STATE_X, this.STATE_Y, VISIBLE_AREA, this.GAUGE_HEIGHT);
             boxes.push(box);
-            
+
             usedArea = usedArea + VISIBLE_AREA + INVISIBLE_AREA;
         }
 
