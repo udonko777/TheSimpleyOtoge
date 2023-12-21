@@ -53,7 +53,7 @@ export class Gauge {
         this.OVER = -2000;
     }
 
-    public draw() {
+    public draw(): renderableObject[] {
 
         const VISIBLE_AREA = (this.GAUGE_WIDTH - this.GAUGE_VOID_WIDTH) / this.GAUGE_BOX_NUMBER;
         const INVISIBLE_AREA = this.GAUGE_VOID_WIDTH / this.GAUGE_BOX_NUMBER;
@@ -67,6 +67,8 @@ export class Gauge {
 
             usedArea = usedArea + VISIBLE_AREA + INVISIBLE_AREA;
         }
+
+        return boxes;
 
     }
 

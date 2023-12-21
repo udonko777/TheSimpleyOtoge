@@ -98,6 +98,7 @@ export class Game {
     private _startGame() {
 
         this.GAUGE = new Gauge();
+        this.screen.setComponents(this.GAUGE)
 
         document.removeEventListener('keydown', this.startGame);
 
