@@ -25,8 +25,7 @@ export class ComboView implements GraphicComponent {
     public draw() {
         if (this.comboCount > 0) {
             return makeText(String(this.comboCount), 10, 100, "48px serif", 'rgb( 255, 102, 102)');
-        } else {
-            console.log("comboCount is zero");
         }
+        console.log("comboCount is zero");
     }
 }
