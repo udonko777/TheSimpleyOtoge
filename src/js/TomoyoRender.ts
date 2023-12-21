@@ -59,6 +59,8 @@ export type ScreenModel = Readonly<{
  */
 export const rendering = (Screen: ScreenModel, graphics: renderableObject[]) => {
 
+    Screen.ctx.beginPath();
+
     for (const graph of graphics) {
 
         switch (graph.type) {
