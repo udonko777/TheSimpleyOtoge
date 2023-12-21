@@ -1,4 +1,4 @@
-import { clear, draw, renderableObject, ScreenModel } from "../TomoyoRender";
+import { clear, rendering, renderableObject, ScreenModel } from "../TomoyoRender";
 import { GraphicComponent } from "./Component";
 
 export class Screen implements GraphicComponent {
@@ -63,10 +63,7 @@ export class Screen implements GraphicComponent {
             canvas_width: this.canvas_width
         }
 
-        for (const graph of graphics) {
-            draw(model, graph);
-        }
-
+        rendering(model, graphics);
     }
 
     /**
@@ -74,7 +71,7 @@ export class Screen implements GraphicComponent {
      * とりあえず動かすために、viewを介さずにグラフィックを描画する関数。
      * 本来ここにあるべきではないので、最終的に削ること。
      */
-    public directRender(...graphs: renderableObject[]) {
+    public directRender(...graphics: renderableObject[]) {
 
         const model: ScreenModel = {
             ctx: this.ctx,
@@ -82,9 +79,7 @@ export class Screen implements GraphicComponent {
             canvas_width: this.canvas_width
         }
 
-        for (const graph of graphs) {
-            draw(model, graph);
-        }
+        rendering(model, graphics);
 
     }
 

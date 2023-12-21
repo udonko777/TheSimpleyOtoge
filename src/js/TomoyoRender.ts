@@ -52,14 +52,24 @@ export type ScreenModel = Readonly<{
     canvas_height: number;
 }>
 
-export const draw = (Screen: ScreenModel, graphic: renderableObject) => {
-    switch (graphic.type) {
-        case "Box":
-            drawBox(Screen, graphic);
-            break
-        case "Text":
-            drawText(Screen, graphic);
-            break
+/**
+ * 渡されたrenderableObjectを挿入順に書き出す
+ * @param Screen 
+ * @param graphics 
+ */
+export const rendering = (Screen: ScreenModel, graphics: renderableObject[]) => {
+
+    for (const graph of graphics) {
+
+        switch (graph.type) {
+            case "Box":
+                drawBox(Screen, graph);
+                break
+            case "Text":
+                drawText(Screen, graph);
+                break
+        }
+
     }
 }
 
