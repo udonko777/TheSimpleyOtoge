@@ -26,8 +26,11 @@ export class Screen implements GraphicComponent {
 
     }
 
-    setComponents(...Component: GraphicComponent[]): void {
-        for(const component of Component){
+    /**
+     * @param Components `draw()`が呼ばれたとき描画する子コンポーネント
+     */
+    public setComponents(...Components: ReadonlyArray<GraphicComponent>): void {
+        for (const component of Components) {
             this.Components.push(component);
         }
     }
@@ -36,7 +39,7 @@ export class Screen implements GraphicComponent {
      * セットされたすべてのrenderableObjectのdrawを呼んでrenderに描かせる
      * @param time 
      */
-    draw(time: number): void {
+    public draw(time: number): void {
 
         const graphics: Array<renderableObject> = [];
 
@@ -85,13 +88,14 @@ export class Screen implements GraphicComponent {
 
     }
 
-    clear() {
+    public clear() {
         const model: ScreenModel = {
             ctx: this.ctx,
             canvas_height: this.canvas_height,
             canvas_width: this.canvas_width
         }
 
+        //this.clear()では無い！
         clear(model);
     }
 
