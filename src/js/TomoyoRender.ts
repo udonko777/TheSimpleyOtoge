@@ -4,17 +4,6 @@ type HEX = `#${string}`;
 
 export type Color = RGB | RGBA | HEX;
 
-//const ctx: CanvasRenderingContext2D;
-
-//const ctx = canvas.getContext('2d');
-
-//this.ctx = ctx;
-
-//canvasの形は不定形
-//this.canvas_width = canvas.width;
-//this.canvas_height = canvas.height;
-
-
 export type Box = {
     readonly type: `Box`,
     x: number,
