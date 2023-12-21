@@ -146,14 +146,10 @@ export class Game {
 
         //FIX 更新があってもなくても毎フレームリサイズしている。 canvasサイズの変更を受け取るハンドラから呼び出すべき
         this.backGround.setSize(this.canvasHeight(), this.canvasWidth());
-        //this.backGround.draw();
 
         this.barLine.setSize(this.canvasWidth());
 
         this.screen.draw(NOW);
-
-        /// !?
-        //this.GAUGE?.draw();
 
         for (const bomb of this.bombs) {
             const graph = bomb.draw();
@@ -163,12 +159,6 @@ export class Game {
             }
         }
 
-        //this.judgeView.draw();
-        //this.conboView.draw();
-
-        //this.barLine.draw(NOW);
-
-        //存在するすべてのNoteオブジェクトの時を進める
 
         for (let i = 0; i < this.notes.length; i++) {
 
