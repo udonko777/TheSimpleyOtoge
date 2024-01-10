@@ -16,7 +16,7 @@ export class JudgeView implements GraphicComponent {
         this.y = 370;
     }
 
-    set judge(judgeName: string) {
+    public setJudge(judgeName: string) {
         switch (judgeName) {
             case "OVER":
                 this.judgeName = "OVER";

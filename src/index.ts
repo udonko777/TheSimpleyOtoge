@@ -162,7 +162,7 @@ export class Game {
 
             if (this.notes[i].isOVER(NOW)) {
 
-                this.judgeView.judge = "OVER";
+                this.judgeView.setJudge("OVER");
                 this.GAUGE?.setJudge("OVER");
                 this.conboView.resetConboCount();
                 this.notes.splice(i, 1);
@@ -207,7 +207,7 @@ export class Game {
 
         const sendJudge = (judge: EZjudge, howCountUpConbo: conboStrategy = "keep"): void => {
 
-            this.judgeView.judge = judge;
+            this.judgeView.setJudge(judge);
             this.GAUGE?.setJudge(judge);
 
             switch (howCountUpConbo) {
