@@ -34,8 +34,6 @@ window.startClock = () => {
 
 export class Game {
 
-    keyPressCount: number;
-
     judgeView: JudgeView;
     conboView: ComboView;
 
@@ -62,8 +60,6 @@ export class Game {
         //もっといい方法が思いつけばそれを採用する。
         this.canvasHeight = () => { return canvas.height };
         this.canvasWidth = () => { return canvas.width };
-
-        this.keyPressCount = 0;
 
         //this.render = new TomoyoRender(canvas);
 
@@ -199,7 +195,6 @@ export class Game {
                 this.judgeTiming(3);
                 break
         }
-        this.keyPressCount += 1;
         return;
     }
 
