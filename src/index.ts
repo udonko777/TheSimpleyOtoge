@@ -24,6 +24,8 @@ import { BarLine } from "./js/components/BarLine";
 
 import { Gauge } from "./js/Gauges/Gauge";
 
+import { JudgeableObjects } from "./js/components/JudgeableObjects";
+
 //import {JUDGES} from '/jsons/judge.json' 
 
 //HTML側BodyのonLordに書かれているので、この関数はBodyの読み込みが終わったら呼ばれるはず
@@ -44,6 +46,8 @@ export class Game {
     bombs: Bomb[];
 
     private screen: Screen;
+
+    judgeableObjects: JudgeableObjects;
 
     startGame: (e: KeyboardEvent) => void;
     GAUGE: Gauge | undefined;
@@ -72,9 +76,10 @@ export class Game {
         const chart = parse(bmeFile);
 
         this.notes = generateNotes(chart);
+        this.judgeableObjects = new JudgeableObjects(this.notes);
 
         this.screen = new Screen(canvas);
-        this.screen.setComponents(this.backGround, this.judgeView, this.conboView, this.barLine)
+        this.screen.setComponents(this.backGround, this.judgeView, this.conboView, this.barLine, this.judgeableObjects)
 
         const BOMB_WIDTH = 80
         this.bombs = [];
@@ -155,19 +160,12 @@ export class Game {
             }
         }
 
+        const exceededNotesCount = this.judgeableObjects.checkExceeded(NOW);
 
-        for (let i = 0; i < this.notes.length; i++) {
-
-            this.screen.directRender(this.notes[i].draw(NOW));
-
-            if (this.notes[i].isOVER(NOW)) {
-
-                this.judgeView.setJudge("OVER");
-                this.GAUGE?.setJudge("OVER");
-                this.conboView.resetConboCount();
-                this.notes.splice(i, 1);
-
-            }
+        for (let i = 0; i < exceededNotesCount; i++) {
+            this.judgeView.setJudge("OVER");
+            this.GAUGE?.setJudge("OVER");
+            this.conboView.resetConboCount();
         }
 
     }
@@ -205,6 +203,8 @@ export class Game {
         type EZjudge = "GREAT" | "GOOD" | "BAD" | "POOR"
         type conboStrategy = "keep" | "up" | "reset"
 
+        const judgeToStrategy: ReadonlyMap<EZjudge, conboStrategy> = new Map([["GREAT", "up"], ["GOOD", "up"], ["BAD", "reset"], ["POOR", "reset"]]);
+
         const sendJudge = (judge: EZjudge, howCountUpConbo: conboStrategy = "keep"): void => {
 
             this.judgeView.setJudge(judge);
@@ -223,31 +223,9 @@ export class Game {
 
         }
 
-        for (let i = 0; i < this.notes.length; i++) {
-
-            if (this.notes[i].no === laneID) {
-
-                //bは短縮のためのインスタンスな変数です。
-
-                const b = (globalThis.performance.now() - this.notes[i].getSTART_TIME()) - this.notes[i].perfectTiming;
-
-                if (260 > b && -260 < b) {
-                    if (50 > b && -50 < b) {
-                        console.log(`${laneID}is GREAT!, i think it is${b}`);
-                        sendJudge("GREAT", "up")
-                    } else if (100 > b && -100 < b) {
-                        sendJudge("GOOD", "up")
-                    } else if (120 > b && -120 < b) {
-                        sendJudge("BAD", "reset")
-                    } else if (140 > b && -140 < b) {
-                        sendJudge("POOR", "keep");
-                    }
-                    this.notes.splice(i, 1);
-                }
-
-            }
-
-        }
+        //一旦スタートタイム
+        const scoredJudge = this.judgeableObjects.getJudge(globalThis.performance.now() - this.notes[1].getSTART_TIME(), laneID) as EZjudge;//後でちゃんとjudge型を返す
+        sendJudge(scoredJudge, judgeToStrategy.get(scoredJudge));
 
         this.bombs[laneID].setBombLife(50);
 

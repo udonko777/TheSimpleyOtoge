@@ -2,5 +2,8 @@
     //なんかよくわからないけどここに書いても機能しないらしい？
     //jsonなのになんでコメントかけるんだ？
     "liveServer.settings.root": "/dist",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "cSpell.words": [
+        "JudgeableObjects"
+    ]
 }
