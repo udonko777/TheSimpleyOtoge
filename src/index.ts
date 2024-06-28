@@ -28,6 +28,11 @@ import { JudgeableObjects } from "./js/components/JudgeableObjects";
 
 //import {JUDGES} from '/jsons/judge.json' 
 
+type EZjudge = "GREAT" | "GOOD" | "BAD" | "POOR" | "OVER" | "NOTHING"
+type conboStrategy = "keep" | "up" | "reset"
+
+const judgeToStrategy: ReadonlyMap<EZjudge, conboStrategy> = new Map([["GREAT", "up"], ["GOOD", "up"], ["BAD", "reset"], ["POOR", "reset"] , ["OVER","reset"]]);
+
 //HTML側BodyのonLordに書かれているので、この関数はBodyの読み込みが終わったら呼ばれるはず
 window.startClock = () => {
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;
@@ -104,13 +109,11 @@ export class Game {
         document.removeEventListener('keydown', this.startGame);
 
         //ノーツの開始地点を記録
-        //TODO performance.nowが使えなければDate.nowを取得
-        const NOW = performance.now();
+        const NOW = performance.now() ?? Date.now();
 
-        for (const note of this.notes) {
-            note.begin(NOW);
-        }
+        console.log(`start at : ${NOW}`);
 
+        this.judgeableObjects.begin(NOW);
         this.barLine.begin(NOW);
 
         //アロー関数にしなくてもいいかも？静的な参照を持ちたい
@@ -163,9 +166,7 @@ export class Game {
         const exceededNotesCount = this.judgeableObjects.checkExceeded(NOW);
 
         for (let i = 0; i < exceededNotesCount; i++) {
-            this.judgeView.setJudge("OVER");
-            this.GAUGE?.setJudge("OVER");
-            this.conboView.resetConboCount();
+            this.sendJudge("OVER");
         }
 
     }
@@ -196,36 +197,32 @@ export class Game {
         return;
     }
 
-    private judgeTiming(laneID: 0 | 1 | 2 | 3): void {
+    private sendJudge = (judge: EZjudge): void => {
 
-        //TODO クッソ雑に全ノーツを判定します。
-
-        type EZjudge = "GREAT" | "GOOD" | "BAD" | "POOR"
-        type conboStrategy = "keep" | "up" | "reset"
-
-        const judgeToStrategy: ReadonlyMap<EZjudge, conboStrategy> = new Map([["GREAT", "up"], ["GOOD", "up"], ["BAD", "reset"], ["POOR", "reset"]]);
-
-        const sendJudge = (judge: EZjudge, howCountUpConbo: conboStrategy = "keep"): void => {
-
-            this.judgeView.setJudge(judge);
-            this.GAUGE?.setJudge(judge);
-
-            switch (howCountUpConbo) {
-                case "up":
-                    this.conboView.addConboCount();
-                    break;
-                case "reset":
-                    this.conboView.resetConboCount();
-                    break;
-                case "keep":
-                    break
-            }
-
+        if(judge === "NOTHING"){
+            return;
         }
 
-        //一旦スタートタイム
-        const scoredJudge = this.judgeableObjects.getJudge(globalThis.performance.now() - this.notes[1].getSTART_TIME(), laneID) as EZjudge;//後でちゃんとjudge型を返す
-        sendJudge(scoredJudge, judgeToStrategy.get(scoredJudge));
+        this.judgeView.setJudge(judge);
+        this.GAUGE?.setJudge(judge);
+
+        switch (judgeToStrategy.get(judge) ?? "keep") {
+            case "up":
+                this.conboView.addConboCount();
+                break;
+            case "reset":
+                this.conboView.resetConboCount();
+                break;
+            case "keep":
+                break
+        }
+
+    }
+
+    private judgeTiming(laneID: 0 | 1 | 2 | 3): void {
+
+        const scoredJudge = this.judgeableObjects.getJudge(globalThis.performance.now(), laneID) as EZjudge;//後でちゃんとjudge型を返す
+        this.sendJudge(scoredJudge);
 
         this.bombs[laneID].setBombLife(50);
 

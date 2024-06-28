@@ -60,17 +60,25 @@ export class JudgeableObjects implements GraphicComponent {
     public draw(time: number) {
         const graphics: renderableObject[] = [];
 
-        for (const note of this.noteIDToNotes.values()) {
-            for (let i = 0; i < note.length; i++) {
-                graphics.push(note[i].draw(time));
-            }
+        for (const notes of this.noteIDToNotes.values()) {
+            notes.forEach((note) => {
+                graphics.push(note.draw(time));
+            })
         }
 
         return graphics;
     }
 
+    public begin(time: number) {
+        for (const notes of this.noteIDToNotes.values()) {
+            notes.forEach((note) => {
+                note.begin(time);
+            })
+        }
+    }
+
     /**
-     * 超過した分のノーツの数を返す
+     * 超過した分のノーツの数を返す。超過した分は削除
      * @param time 
      */
     public checkExceeded(time: number) {
@@ -110,7 +118,7 @@ export class JudgeableObjects implements GraphicComponent {
 
         //押されたレーンに対して、そのレーンに配置された全ノーツを見ていき最も差が小さかったものを見つける
         for (const [i, note] of pushedLanesNotes.entries()) {
-            const difference = Math.abs(note.perfectTiming - timing);
+            const difference = Math.abs(note.perfectTiming + note.getSTART_TIME() - timing);
 
             if (difference < minimumDifference) {
                 minimumDifference = difference;
@@ -118,7 +126,6 @@ export class JudgeableObjects implements GraphicComponent {
             }
 
         }
-        console.log(minimumDifferenceNoteIndex);
 
         const result = this.judging(minimumDifference)
 
