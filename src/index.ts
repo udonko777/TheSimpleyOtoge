@@ -93,6 +93,7 @@ export class Game {
             this.bombs.push(new Bomb(i, 0, BOMB_WIDTH));
         }
 
+        //変な感じだけど、無名関数だとremoveEventListenerを呼ぶときに消すべきリスナーがわからない
         this.startGame = () => { this._startGame() };
         document.addEventListener('keydown', this.startGame);
 
