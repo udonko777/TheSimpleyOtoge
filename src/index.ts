@@ -26,208 +26,228 @@ import { Gauge } from "./js/Gauges/Gauge";
 
 import { JudgeableObjects } from "./js/components/JudgeableObjects";
 
-//import {JUDGES} from '/jsons/judge.json' 
+//import {JUDGES} from '/jsons/judge.json'
 
-type EZjudge = "GREAT" | "GOOD" | "BAD" | "POOR" | "OVER" | "NOTHING"
-type conboStrategy = "keep" | "up" | "reset"
+type EZjudge = "GREAT" | "GOOD" | "BAD" | "POOR" | "OVER" | "NOTHING";
+type conboStrategy = "keep" | "up" | "reset";
 
-const judgeToStrategy: ReadonlyMap<EZjudge, conboStrategy> = new Map([["GREAT", "up"], ["GOOD", "up"], ["BAD", "reset"], ["POOR", "reset"] , ["OVER","reset"]]);
+const judgeToStrategy: ReadonlyMap<EZjudge, conboStrategy> = new Map([
+  ["GREAT", "up"],
+  ["GOOD", "up"],
+  ["BAD", "reset"],
+  ["POOR", "reset"],
+  ["OVER", "reset"],
+]);
 
 //HTML側BodyのonLordに書かれているので、この関数はBodyの読み込みが終わったら呼ばれるはず
 window.startClock = () => {
-    const canvas = document.getElementById('canvas') as HTMLCanvasElement;
-    new Game(canvas);
-}
+  const canvas = document.getElementById("canvas") as HTMLCanvasElement;
+  new Game(canvas);
+};
 
 export class Game {
+  judgeView: JudgeView;
+  conboView: ComboView;
 
-    judgeView: JudgeView;
-    conboView: ComboView;
+  backGround: BackGround;
+  barLine: BarLine;
 
-    backGround: BackGround;
-    barLine: BarLine;
+  notes: Note[];
+  bombs: Bomb[];
 
-    notes: Note[];
-    bombs: Bomb[];
+  private screen: Screen;
 
-    private screen: Screen;
+  judgeableObjects: JudgeableObjects;
 
-    judgeableObjects: JudgeableObjects;
+  startGame: (e: KeyboardEvent) => void;
+  GAUGE: Gauge | undefined;
 
-    startGame: (e: KeyboardEvent) => void;
-    GAUGE: Gauge | undefined;
+  exitMain: number | undefined;
 
-    exitMain: number | undefined;
+  canvasHeight: () => number;
+  canvasWidth: () => number;
 
-    canvasHeight: () => number;
-    canvasWidth: () => number;
+  /** Game開始のための準備、いろいろ読み込んでstartGameを可能にする。*/
+  constructor(canvas: HTMLCanvasElement) {
+    //HACK canvasのサイズは実行中に変化する可能性がある為に、canvasのサイズを動的に入手する手段を持たせている。
+    //もっといい方法が思いつけばそれを採用する。
+    this.canvasHeight = () => {
+      return canvas.height;
+    };
+    this.canvasWidth = () => {
+      return canvas.width;
+    };
 
-    /** Game開始のための準備、いろいろ読み込んでstartGameを可能にする。*/
-    constructor(canvas: HTMLCanvasElement) {
+    //this.render = new TomoyoRender(canvas);
 
-        //HACK canvasのサイズは実行中に変化する可能性がある為に、canvasのサイズを動的に入手する手段を持たせている。
-        //もっといい方法が思いつけばそれを採用する。
-        this.canvasHeight = () => { return canvas.height };
-        this.canvasWidth = () => { return canvas.width };
+    this.judgeView = new JudgeView();
+    this.conboView = new ComboView();
 
-        //this.render = new TomoyoRender(canvas);
+    this.backGround = new BackGround(canvas.height, canvas.width);
+    this.barLine = new BarLine(2, canvas.width, 4448, 120);
 
-        this.judgeView = new JudgeView();
-        this.conboView = new ComboView();
+    const chart = parse(bmeFile);
 
-        this.backGround = new BackGround(canvas.height, canvas.width);
-        this.barLine = new BarLine(2, canvas.width, 4448, 120);
+    this.notes = generateNotes(chart);
+    this.judgeableObjects = new JudgeableObjects(this.notes);
 
-        const chart = parse(bmeFile);
+    this.screen = new Screen(canvas);
+    this.screen.setComponents(
+      this.backGround,
+      this.judgeView,
+      this.conboView,
+      this.barLine,
+      this.judgeableObjects,
+    );
 
-        this.notes = generateNotes(chart);
-        this.judgeableObjects = new JudgeableObjects(this.notes);
+    const BOMB_WIDTH = 80;
+    this.bombs = [];
 
-        this.screen = new Screen(canvas);
-        this.screen.setComponents(this.backGround, this.judgeView, this.conboView, this.barLine, this.judgeableObjects)
-
-        const BOMB_WIDTH = 80
-        this.bombs = [];
-
-        for (let i = 0; i < 4; i++) {
-            this.bombs.push(new Bomb(i, 0, BOMB_WIDTH));
-        }
-
-        //変な感じだけど、無名関数だとremoveEventListenerを呼ぶときに消すべきリスナーがわからない
-        this.startGame = () => { this._startGame() };
-        document.addEventListener('keydown', this.startGame);
-
-        //ゲームが実際に起動されるまで表示される待ち受け画面。
-        this.inputWaitingScreen();
+    for (let i = 0; i < 4; i++) {
+      this.bombs.push(new Bomb(i, 0, BOMB_WIDTH));
     }
 
-    //実際にゲームが始まるタイミングで呼ばれる
-    private _startGame() {
+    //変な感じだけど、無名関数だとremoveEventListenerを呼ぶときに消すべきリスナーがわからない
+    this.startGame = () => {
+      this._startGame();
+    };
+    document.addEventListener("keydown", this.startGame);
 
-        this.GAUGE = new Gauge();
-        this.screen.setComponents(this.GAUGE)
+    //ゲームが実際に起動されるまで表示される待ち受け画面。
+    this.inputWaitingScreen();
+  }
 
-        document.removeEventListener('keydown', this.startGame);
+  //実際にゲームが始まるタイミングで呼ばれる
+  private _startGame() {
+    this.GAUGE = new Gauge();
+    this.screen.setComponents(this.GAUGE);
 
-        //ノーツの開始地点を記録
-        const NOW = performance.now() ?? Date.now();
+    document.removeEventListener("keydown", this.startGame);
 
-        console.log(`start at : ${NOW}`);
+    //ノーツの開始地点を記録
+    const NOW = performance.now() ?? Date.now();
 
-        this.judgeableObjects.begin(NOW);
-        this.barLine.begin(NOW);
+    console.log(`start at : ${NOW}`);
 
-        //アロー関数にしなくてもいいかも？静的な参照を持ちたい
-        document.addEventListener('keydown', (e) => { this._keyPressed(e) });
+    this.judgeableObjects.begin(NOW);
+    this.barLine.begin(NOW);
 
-        const musicPlayer = new MusicPlayer();
-        musicPlayer.play();
+    //アロー関数にしなくてもいいかも？静的な参照を持ちたい
+    document.addEventListener("keydown", (e) => {
+      this._keyPressed(e);
+    });
 
-        this.frame();
+    const musicPlayer = new MusicPlayer();
+    musicPlayer.play();
 
+    this.frame();
+  }
+
+  //gameが実際に始まる前までに表示し続ける表示
+  private inputWaitingScreen() {
+    const backGrounds = this.backGround.draw();
+    this.screen.directRender(...backGrounds);
+
+    this.screen.directRender(
+      makeText(
+        "キーボード押すと音が鳴るよ",
+        50,
+        100,
+        "21px serif",
+        "rgb( 255, 102, 102)",
+      ),
+    );
+    this.screen.directRender(
+      makeText("爆音なので注意", 50, 120, "21px serif", "rgb( 255, 102, 102)"),
+    );
+  }
+
+  //再帰的なメインループ
+  private frame = () => {
+    //window.cancelAnimationFrame(this.exitMain)でメインループを抜けられる
+    this.exitMain = window.requestAnimationFrame(this.frame);
+
+    const NOW = performance.now();
+
+    //画面のリフレッシュ
+    this.screen.clear();
+
+    //FIX 更新があってもなくても毎フレームリサイズしている。 canvasサイズの変更を受け取るハンドラから呼び出すべき
+    this.backGround.setSize(this.canvasHeight(), this.canvasWidth());
+
+    this.barLine.setSize(this.canvasWidth());
+
+    this.screen.draw(NOW);
+
+    for (const bomb of this.bombs) {
+      const graph = bomb.draw();
+      //FIX 全然nullは許容してなかったけどとりあえず動くようにした
+      if (graph != null) {
+        this.screen.directRender(graph);
+      }
     }
 
-    //gameが実際に始まる前までに表示し続ける表示
-    private inputWaitingScreen() {
+    const exceededNotesCount = this.judgeableObjects.checkExceeded(NOW);
 
-        const backGrounds = this.backGround.draw();
-        this.screen.directRender(...backGrounds);
+    for (let i = 0; i < exceededNotesCount; i++) {
+      this.sendJudge("OVER");
+    }
+  };
 
-        this.screen.directRender(makeText("キーボード押すと音が鳴るよ", 50, 100, "21px serif", 'rgb( 255, 102, 102)'));
-        this.screen.directRender(makeText("爆音なので注意", 50, 120, "21px serif", 'rgb( 255, 102, 102)'));
-
+  //何らかのキーが押されている時呼ばれます
+  private _keyPressed(e: KeyboardEvent): void {
+    if (e.repeat) {
+      return;
     }
 
-    //再帰的なメインループ
-    private frame = () => {
+    console.log(e.key);
 
-        //window.cancelAnimationFrame(this.exitMain)でメインループを抜けられる
-        this.exitMain = window.requestAnimationFrame(this.frame);
+    switch (e.code) {
+      case `KeyD`:
+        this.judgeTiming(0);
+        break;
+      case "KeyF":
+        this.judgeTiming(1);
+        break;
+      case "KeyJ":
+        this.judgeTiming(2);
+        break;
+      case "KeyK":
+        this.judgeTiming(3);
+        break;
+    }
+    return;
+  }
 
-        const NOW = performance.now();
-
-        //画面のリフレッシュ
-        this.screen.clear();
-
-        //FIX 更新があってもなくても毎フレームリサイズしている。 canvasサイズの変更を受け取るハンドラから呼び出すべき
-        this.backGround.setSize(this.canvasHeight(), this.canvasWidth());
-
-        this.barLine.setSize(this.canvasWidth());
-
-        this.screen.draw(NOW);
-
-        for (const bomb of this.bombs) {
-            const graph = bomb.draw();
-            //FIX 全然nullは許容してなかったけどとりあえず動くようにした
-            if (graph != null) {
-                this.screen.directRender(graph);
-            }
-        }
-
-        const exceededNotesCount = this.judgeableObjects.checkExceeded(NOW);
-
-        for (let i = 0; i < exceededNotesCount; i++) {
-            this.sendJudge("OVER");
-        }
-
+  private sendJudge = (judge: EZjudge): void => {
+    if (judge === "NOTHING") {
+      return;
     }
 
-    //何らかのキーが押されている時呼ばれます
-    private _keyPressed(e: KeyboardEvent): void {
+    this.judgeView.setJudge(judge);
+    this.GAUGE?.setJudge(judge);
 
-        if (e.repeat) {
-            return;
-        }
-
-        console.log(e.key);
-
-        switch (e.code) {
-            case `KeyD`:
-                this.judgeTiming(0);
-                break
-            case 'KeyF':
-                this.judgeTiming(1);
-                break
-            case 'KeyJ':
-                this.judgeTiming(2);
-                break
-            case 'KeyK':
-                this.judgeTiming(3);
-                break
-        }
-        return;
+    switch (judgeToStrategy.get(judge) ?? "keep") {
+      case "up":
+        this.conboView.addConboCount();
+        break;
+      case "reset":
+        this.conboView.resetConboCount();
+        break;
+      case "keep":
+        break;
     }
+  };
 
-    private sendJudge = (judge: EZjudge): void => {
+  private judgeTiming(laneID: 0 | 1 | 2 | 3): void {
+    const scoredJudge = this.judgeableObjects.getJudge(
+      globalThis.performance.now(),
+      laneID,
+    ) as EZjudge; //後でちゃんとjudge型を返す
+    this.sendJudge(scoredJudge);
 
-        if(judge === "NOTHING"){
-            return;
-        }
+    this.bombs[laneID].setBombLife(50);
 
-        this.judgeView.setJudge(judge);
-        this.GAUGE?.setJudge(judge);
-
-        switch (judgeToStrategy.get(judge) ?? "keep") {
-            case "up":
-                this.conboView.addConboCount();
-                break;
-            case "reset":
-                this.conboView.resetConboCount();
-                break;
-            case "keep":
-                break
-        }
-
-    }
-
-    private judgeTiming(laneID: 0 | 1 | 2 | 3): void {
-
-        const scoredJudge = this.judgeableObjects.getJudge(globalThis.performance.now(), laneID) as EZjudge;//後でちゃんとjudge型を返す
-        this.sendJudge(scoredJudge);
-
-        this.bombs[laneID].setBombLife(50);
-
-        return;
-    }
-
+    return;
+  }
 }
