@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "AYAYA AYAYA",
   "type": "module",
-  "main": "src/js/script.js",
+  "main": "src/js/index.ts",
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
