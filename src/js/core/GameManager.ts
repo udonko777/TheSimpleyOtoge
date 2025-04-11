@@ -3,7 +3,7 @@ import { Game } from "./Game";
 type GamePhase = "waiting" | "playing" | "ended";
 
 /**
-  * ゲームの状態を管理するクラス
+  * ゲーム全体の状態を管理するクラス
   */
 export class GameManager {
   private state: GamePhase = "waiting";

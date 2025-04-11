@@ -14,7 +14,7 @@ import { makeText } from "../TomoyoRender";
 
 import { parse } from "../Parser/parser";
 
-import { Screen } from "../components/Screen";
+import { Screen as Scene } from "../components/Screen";
 
 import bmeFile from "../../resource/demo/darksamba/_dark_sambaland_a.bme";
 
@@ -39,7 +39,6 @@ const judgeToStrategy: ReadonlyMap<EZjudge, conboStrategy> = new Map([
   ["OVER", "reset"],
 ]);
 
-
 export class Game {
   judgeView: JudgeView;
   conboView: ComboView;
@@ -50,7 +49,7 @@ export class Game {
   notes: Note[];
   bombs: Bomb[];
 
-  private screen: Screen;
+  private scene: Scene;
 
   judgeableObjects: JudgeableObjects;
 
@@ -85,8 +84,8 @@ export class Game {
     this.notes = generateNotes(chart);
     this.judgeableObjects = new JudgeableObjects(this.notes);
 
-    this.screen = new Screen(canvas);
-    this.screen.setComponents(
+    this.scene = new Scene(canvas);
+    this.scene.setComponents(
       this.backGround,
       this.judgeView,
       this.conboView,
@@ -108,7 +107,7 @@ export class Game {
   //実際にゲームが始まるタイミングで呼ばれる
   public start() {
     this.GAUGE = new Gauge();
-    this.screen.setComponents(this.GAUGE);
+    this.scene.setComponents(this.GAUGE);
 
     //ノーツの開始地点を記録
     const NOW = performance.now() ?? Date.now();
@@ -127,9 +126,9 @@ export class Game {
   //gameが実際に始まる前までに表示し続ける表示
   private inputWaitingScreen() {
     const backGrounds = this.backGround.draw();
-    this.screen.directRender(...backGrounds);
+    this.scene.directRender(...backGrounds);
 
-    this.screen.directRender(
+    this.scene.directRender(
       makeText(
         "キーボード押すと音が鳴るよ",
         50,
@@ -138,7 +137,7 @@ export class Game {
         "rgb( 255, 102, 102)",
       ),
     );
-    this.screen.directRender(
+    this.scene.directRender(
       makeText("爆音なので注意", 50, 120, "21px serif", "rgb( 255, 102, 102)"),
     );
   }
@@ -151,20 +150,20 @@ export class Game {
     const NOW = performance.now();
 
     //画面のリフレッシュ
-    this.screen.clear();
+    this.scene.clear();
 
     //FIX 更新があってもなくても毎フレームリサイズしている。 canvasサイズの変更を受け取るハンドラから呼び出すべき
     this.backGround.setSize(this.canvasHeight(), this.canvasWidth());
 
     this.barLine.setSize(this.canvasWidth());
 
-    this.screen.draw(NOW);
+    this.scene.draw(NOW);
 
     for (const bomb of this.bombs) {
       const graph = bomb.draw();
       //FIX 全然nullは許容してなかったけどとりあえず動くようにした
       if (graph != null) {
-        this.screen.directRender(graph);
+        this.scene.directRender(graph);
       }
     }
 
