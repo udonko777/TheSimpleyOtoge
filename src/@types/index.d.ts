@@ -5,8 +5,6 @@ type Judge = {
   isCuttingCombo: boolean;
 };
 
-declare var startClock: any;
-
 declare module "*.text" {
   const src: string;
   export default src;
