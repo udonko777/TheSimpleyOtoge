@@ -2,7 +2,9 @@ import { Note } from "./Note";
 import { GraphicComponent } from "./Component";
 import { renderableObject } from "../TomoyoRender";
 
-// perfectTimingをプロパティに持つオブジェクトの集合
+/**
+perfectTimingをプロパティに持つオブジェクトの集合
+*/
 export class JudgeableObjects implements GraphicComponent {
   // NoteID == LaneID
   private noteIDToNotes: Map<number, Array<Readonly<Note>>>;
@@ -31,6 +33,10 @@ export class JudgeableObjects implements GraphicComponent {
     this.noteIDToNotes = noteIDToNotes;
 
     console.info(this.noteIDToNotes);
+  }
+
+  private static calculateDifference(note: Readonly<Note>, timing: number): number {
+    return Math.abs(note.perfectTiming + note.getSTART_TIME() - timing);
   }
 
   /**
@@ -113,9 +119,8 @@ export class JudgeableObjects implements GraphicComponent {
 
     //押されたレーンに対して、そのレーンに配置された全ノーツを見ていき最も差が小さかったものを見つける
     for (const [i, note] of pushedLanesNotes.entries()) {
-      const difference = Math.abs(
-        note.perfectTiming + note.getSTART_TIME() - timing,
-      );
+
+      const difference = JudgeableObjects.calculateDifference(note, timing);
 
       if (difference < minimumDifference) {
         minimumDifference = difference;
