@@ -64,28 +64,47 @@ export type ScreenModel = Readonly<{
   canvas_height: number;
 }>;
 
-/**
+
+export class TomoyoRender {
+  private readonly Screen: ScreenModel;
+  constructor(canvas: HTMLCanvasElement) {
+    this.Screen = {
+      ctx: canvas.getContext("2d") as CanvasRenderingContext2D,
+      canvas_width: canvas.width,
+      canvas_height: canvas.height,
+    };
+  }
+  /**
  * 渡されたrenderableObjectを挿入順に書き出す
  * @param Screen
  * @param graphics
  */
-export const rendering = (
-  Screen: ScreenModel,
-  graphics: renderableObject[],
-) => {
-  Screen.ctx.beginPath();
+  rendering(
+    graphics: renderableObject[],
+  ) {
+    this.Screen.ctx.beginPath();
 
-  for (const graph of graphics) {
-    switch (graph.type) {
-      case "Box":
-        drawBox(Screen, graph);
-        break;
-      case "Text":
-        drawText(Screen, graph);
-        break;
+    for (const graph of graphics) {
+      switch (graph.type) {
+        case "Box":
+          drawBox(this.Screen, graph);
+          break;
+        case "Text":
+          drawText(this.Screen, graph);
+          break;
+        default:
+          console.info(graph);
+          // @ts-expect-error 型ガードをすり抜けてきたオブジェクトについて、詳細なエラーログを残す
+          throw new Error(`Unknown type: ${graph.type}`);
+      }
     }
   }
-};
+
+  clear() {
+    this.Screen.ctx.clearRect(0, 0, this.Screen.canvas_width, this.Screen.canvas_height);
+  }
+
+}
 
 /** `ctx.fillRect`の代わりに用意された描画メソッド */
 const drawBox = (Screen: ScreenModel, box: Box) => {
@@ -100,6 +119,4 @@ const drawText = (Screen: ScreenModel, text: Text) => {
   Screen.ctx.fillText(text.text, text.x, text.y);
 };
 
-export const clear = (Screen: ScreenModel) => {
-  Screen.ctx.clearRect(0, 0, Screen.canvas_width, Screen.canvas_height);
-};
+

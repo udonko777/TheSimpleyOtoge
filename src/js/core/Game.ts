@@ -14,7 +14,8 @@ import { makeText } from "../TomoyoRender";
 
 import { parse } from "../Parser/parser";
 
-import { Screen as Scene } from "../components/Screen";
+import { Scene } from "../components/Scene";
+import { TomoyoRender } from "../TomoyoRender";
 
 import bmeFile from "../../resource/demo/darksamba/_dark_sambaland_a.bme";
 
@@ -49,11 +50,13 @@ export class Game {
   notes: Note[];
   bombs: Bomb[];
 
-  private scene: Scene;
+  private PlayScene: Scene;
 
   judgeableObjects: JudgeableObjects;
 
   GAUGE: Gauge | undefined;
+
+  render: TomoyoRender;
 
   exitMain: number | undefined;
 
@@ -71,7 +74,7 @@ export class Game {
       return canvas.width;
     };
 
-    //this.render = new TomoyoRender(canvas);
+    this.render = new TomoyoRender(canvas);
 
     this.judgeView = new JudgeView();
     this.conboView = new ComboView();
@@ -84,13 +87,14 @@ export class Game {
     this.notes = generateNotes(chart);
     this.judgeableObjects = new JudgeableObjects(this.notes);
 
-    this.scene = new Scene(canvas);
-    this.scene.setComponents(
+    this.PlayScene = new Scene();
+    this.PlayScene.setComponents(
       this.backGround,
       this.judgeView,
       this.conboView,
       this.barLine,
       this.judgeableObjects,
+      new Gauge(),
     );
 
     const BOMB_WIDTH = 80;
@@ -106,8 +110,6 @@ export class Game {
 
   //実際にゲームが始まるタイミングで呼ばれる
   public start() {
-    this.GAUGE = new Gauge();
-    this.scene.setComponents(this.GAUGE);
 
     //ノーツの開始地点を記録
     const NOW = performance.now() ?? Date.now();
@@ -126,9 +128,10 @@ export class Game {
   //gameが実際に始まる前までに表示し続ける表示
   private inputWaitingScreen() {
     const backGrounds = this.backGround.draw();
-    this.scene.directRender(...backGrounds);
 
-    this.scene.directRender(
+    const waitingScene = new Scene()
+    waitingScene.setComponents([
+      ...backGrounds,
       makeText(
         "キーボード押すと音が鳴るよ",
         50,
@@ -136,10 +139,10 @@ export class Game {
         "21px serif",
         "rgb( 255, 102, 102)",
       ),
-    );
-    this.scene.directRender(
       makeText("爆音なので注意", 50, 120, "21px serif", "rgb( 255, 102, 102)"),
-    );
+    ]);
+
+    this.render.rendering(waitingScene.draw(0));
   }
 
   //再帰的なメインループ
@@ -150,20 +153,21 @@ export class Game {
     const NOW = performance.now();
 
     //画面のリフレッシュ
-    this.scene.clear();
+    this.render.clear();
 
     //FIX 更新があってもなくても毎フレームリサイズしている。 canvasサイズの変更を受け取るハンドラから呼び出すべき
     this.backGround.setSize(this.canvasHeight(), this.canvasWidth());
 
     this.barLine.setSize(this.canvasWidth());
 
-    this.scene.draw(NOW);
+    this.render.rendering(this.PlayScene.draw(NOW));
 
     for (const bomb of this.bombs) {
       const graph = bomb.draw();
-      //FIX 全然nullは許容してなかったけどとりあえず動くようにした
       if (graph != null) {
-        this.scene.directRender(graph);
+        //FIX ここで描画しているのは爆弾のグラフィックだけ
+        //爆弾の状態管理の都合、いったん
+        this.render.rendering([graph]);
       }
     }
 
