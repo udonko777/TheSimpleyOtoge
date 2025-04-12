@@ -10,12 +10,12 @@ import { Bomb } from "../components/Bomb";
 import { MusicPlayer } from "../MusicPlayer";
 
 //FIX とりあえず動かすためのimport
-import { makeText } from "../TomoyoRender";
+import { makeText } from "../Render/TomoyoRender";
 
 import { parse } from "../Parser/parser";
 
 import { Scene } from "../components/Scene";
-import { TomoyoRender } from "../TomoyoRender";
+import { TomoyoRender } from "../Render/TomoyoRender";
 
 import bmeFile from "../../resource/demo/darksamba/_dark_sambaland_a.bme";
 

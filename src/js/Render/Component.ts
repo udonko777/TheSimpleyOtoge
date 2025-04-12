@@ -1,4 +1,4 @@
-import { renderableObject } from "../TomoyoRender";
+import { renderableObject } from "./TomoyoRender";
 
 /**
  * RenderableObjectを返すことのできるコンポーネント

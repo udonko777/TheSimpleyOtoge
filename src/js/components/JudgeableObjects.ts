@@ -1,6 +1,6 @@
 import { Note } from "./Note";
-import { GraphicComponent } from "./Component";
-import { renderableObject } from "../TomoyoRender";
+import { GraphicComponent } from "../Render/Component";
+import { renderableObject } from "../Render/TomoyoRender";
 
 /**
 perfectTimingをプロパティに持つオブジェクトの集合

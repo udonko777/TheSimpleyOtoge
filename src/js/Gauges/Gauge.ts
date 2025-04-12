@@ -1,4 +1,4 @@
-import { Color, makeBox, renderableObject } from "../TomoyoRender";
+import { Color, makeBox, renderableObject } from "../Render/TomoyoRender";
 
 export class Gauge {
   private readonly GAUGE_BOX_AS_GROOVE: number;

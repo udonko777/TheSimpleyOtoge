@@ -1,5 +1,5 @@
-import { Box, makeBox } from "../TomoyoRender";
-import { GraphicComponent } from "./Component";
+import { Box, makeBox } from "../Render/TomoyoRender";
+import { GraphicComponent } from "../Render/Component";
 
 export class Bomb implements GraphicComponent {
   private readonly no: number;

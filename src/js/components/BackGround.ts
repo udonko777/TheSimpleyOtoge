@@ -1,5 +1,5 @@
-import { makeBox, renderableObject } from "../TomoyoRender";
-import { GraphicComponent } from "./Component";
+import { makeBox, renderableObject } from "../Render/TomoyoRender";
+import { GraphicComponent } from "../Render/Component";
 
 export class BackGround implements GraphicComponent {
   height: number;

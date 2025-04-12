@@ -1,5 +1,5 @@
-import { makeText } from "../TomoyoRender";
-import { GraphicComponent } from "./Component";
+import { makeText } from "../Render/TomoyoRender";
+import { GraphicComponent } from "../Render/Component";
 
 export class JudgeView implements GraphicComponent {
   private judgeName: string;
