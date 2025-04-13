@@ -1,16 +1,18 @@
 import { Box, makeBox } from "../Render/TomoyoRender";
 import { GraphicComponent } from "../Render/Component";
 
+/**
+ * ユーザーが対応するキーを押した際に、そのキーが押されたことを強調するアニメーション
+ */
 export class Bomb implements GraphicComponent {
   private readonly no: number;
   private bombLife: number;
   private readonly NOTE_WIDTH: number;
 
   /**
-   * @param render
-   * @param no Left to right, 0 to 4
-   * @param bombLife
-   * @param NOTE_WIDTH
+   * @param no 左から何番目のレーンに表示するか、0から始まる
+   * @param bombLife 爆弾の表示時間(フレーム)、0になると消える
+   * @param NOTE_WIDTH 横幅を指定する、基本的にはノーツの横幅と同じにする
    */
   constructor(no: number, bombLife: number, NOTE_WIDTH: number) {
     this.no = no;
