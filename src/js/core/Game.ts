@@ -108,21 +108,14 @@ export class Game {
     this.inputWaitingScreen();
   }
 
-  //実際にゲームが始まるタイミングで呼ばれる
-  public start() {
-
-    //ノーツの開始地点を記録
-    const NOW = performance.now() ?? Date.now();
-
-    console.log(`start at : ${NOW}`);
-
-    this.judgeableObjects.begin(NOW);
-    this.barLine.begin(NOW);
-
-    const musicPlayer = new MusicPlayer();
-    musicPlayer.play();
-
-    this.frame();
+  /** ゲームを開始する */
+  public start(): void {
+    const now = this.getCurrentTime();
+    console.log(`Game started at: ${now}`);
+    this.judgeableObjects.begin(now);
+    this.barLine.begin(now);
+    this.playMusic();
+    this.startMainLoop();
   }
 
   //gameが実際に始まる前までに表示し続ける表示
@@ -145,12 +138,16 @@ export class Game {
     this.render.rendering(waitingScene.draw(0));
   }
 
-  //再帰的なメインループ
+  /** メインループを開始 */
+  private startMainLoop(): void {
+    this.exitMain = window.requestAnimationFrame(this.frame);
+  }
+
+  /** メインループ */
   private frame = () => {
     //window.cancelAnimationFrame(this.exitMain)でメインループを抜けられる
     this.exitMain = window.requestAnimationFrame(this.frame);
-
-    const NOW = performance.now();
+    const now = this.getCurrentTime();
 
     //画面のリフレッシュ
     this.render.clear();
@@ -160,7 +157,7 @@ export class Game {
 
     this.barLine.setSize(this.canvasWidth());
 
-    this.render.rendering(this.PlayScene.draw(NOW));
+    this.render.rendering(this.PlayScene.draw(now));
 
     for (const bomb of this.bombs) {
       const graph = bomb.draw();
@@ -171,42 +168,28 @@ export class Game {
       }
     }
 
-    const exceededNotesCount = this.judgeableObjects.checkExceeded(NOW);
-
-    for (let i = 0; i < exceededNotesCount; i++) {
-      this.sendJudge("OVER");
-    }
+    this.handleExceededNotes(now);
   };
 
-  //何らかのキーが押されている時呼ばれます
+  /** キー入力を処理する */
   public handleKeyPress(e: KeyboardEvent): void {
-    if (e.repeat) {
-      return;
-    }
+    if (e.repeat) return;
 
-    console.log(e.key);
+    const laneMap: Record<string, 0 | 1 | 2 | 3> = {
+      KeyD: 0,
+      KeyF: 1,
+      KeyJ: 2,
+      KeyK: 3,
+    };
 
-    switch (e.code) {
-      case `KeyD`:
-        this.judgeTiming(0);
-        break;
-      case "KeyF":
-        this.judgeTiming(1);
-        break;
-      case "KeyJ":
-        this.judgeTiming(2);
-        break;
-      case "KeyK":
-        this.judgeTiming(3);
-        break;
+    const laneID = laneMap[e.code];
+    if (laneID !== undefined) {
+      this.judgeTiming(laneID);
     }
-    return;
   }
 
   private sendJudge = (judge: EZjudge): void => {
-    if (judge === "NOTHING") {
-      return;
-    }
+    if (judge === "NOTHING") return;
 
     this.judgeView.setJudge(judge);
     this.GAUGE?.setJudge(judge);
@@ -231,7 +214,25 @@ export class Game {
     this.sendJudge(scoredJudge);
 
     this.bombs[laneID].setBombLife(50);
-
-    return;
   }
+
+  /** 現在時刻を取得 */
+  private getCurrentTime(): number {
+    return performance.now() ?? Date.now();
+  }
+
+  /** 判定を超えたノーツを処理 */
+  private handleExceededNotes(now: number): void {
+    const exceededNotesCount = this.judgeableObjects.checkExceeded(now);
+    for (let i = 0; i < exceededNotesCount; i++) {
+      this.sendJudge("OVER");
+    }
+  }
+
+  /** 音楽を再生 */
+  private playMusic(): void {
+    const musicPlayer = new MusicPlayer();
+    musicPlayer.play();
+  }
+
 }
