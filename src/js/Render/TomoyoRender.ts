@@ -1,8 +1,5 @@
-type RGB = `rgb(${number}, ${number}, ${number})`;
-type RGBA = `rgba(${number}, ${number}, ${number}, ${number})`;
-type HEX = `#${string}`;
-
-export type Color = RGB | RGBA | HEX;
+import { Color } from "./types/Color";
+export type { Color } from "./types/Color";
 
 export type Box = {
   readonly type: `Box`;
@@ -63,7 +60,6 @@ export type ScreenModel = Readonly<{
   canvas_width: number;
   canvas_height: number;
 }>;
-
 
 export class TomoyoRender {
   private readonly Screen: ScreenModel;
