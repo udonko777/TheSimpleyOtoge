@@ -30,9 +30,9 @@ import { JudgeableObjects } from "../components/JudgeableObjects";
 //import {JUDGES} from '/jsons/judge.json'
 
 type EZjudge = "GREAT" | "GOOD" | "BAD" | "POOR" | "OVER" | "NOTHING";
-type conboStrategy = "keep" | "up" | "reset";
+type comboStrategy = "keep" | "up" | "reset";
 
-const judgeToStrategy: ReadonlyMap<EZjudge, conboStrategy> = new Map([
+const judgeToStrategy: ReadonlyMap<EZjudge, comboStrategy> = new Map([
   ["GREAT", "up"],
   ["GOOD", "up"],
   ["BAD", "reset"],
@@ -42,7 +42,7 @@ const judgeToStrategy: ReadonlyMap<EZjudge, conboStrategy> = new Map([
 
 export class Game {
   judgeView: JudgeView;
-  conboView: ComboView;
+  comboView: ComboView;
 
   backGround: BackGround;
   barLine: BarLine;
@@ -77,7 +77,7 @@ export class Game {
     this.render = new TomoyoRender(canvas);
 
     this.judgeView = new JudgeView();
-    this.conboView = new ComboView();
+    this.comboView = new ComboView();
 
     this.backGround = new BackGround(canvas.height, canvas.width);
     this.barLine = new BarLine(2, canvas.width, 4448, 120);
@@ -91,7 +91,7 @@ export class Game {
     this.PlayScene.setComponents(
       this.backGround,
       this.judgeView,
-      this.conboView,
+      this.comboView,
       this.barLine,
       this.judgeableObjects,
       new Gauge(),
@@ -194,15 +194,11 @@ export class Game {
     this.judgeView.setJudge(judge);
     this.GAUGE?.setJudge(judge);
 
-    switch (judgeToStrategy.get(judge) ?? "keep") {
-      case "up":
-        this.conboView.addConboCount();
-        break;
-      case "reset":
-        this.conboView.resetConboCount();
-        break;
-      case "keep":
-        break;
+    const strategy = judgeToStrategy.get(judge) ?? "keep";
+    if (strategy === "up") {
+      this.comboView.addComboCount();
+    } else if (strategy === "reset") {
+      this.comboView.resetComboCount();
     }
   };
 

@@ -13,11 +13,11 @@ export class ComboView implements GraphicComponent {
   }
 
   //FIXME ViewなのにConboCountの論理的実装が行われている
-  public addConboCount() {
+  public addComboCount() {
     this.comboCount += 1;
   }
 
-  public resetConboCount() {
+  public resetComboCount() {
     this.comboCount = 0;
   }
 
