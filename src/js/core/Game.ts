@@ -41,27 +41,19 @@ const judgeToStrategy: ReadonlyMap<EZjudge, comboStrategy> = new Map([
 ]);
 
 export class Game {
-  judgeView: JudgeView;
-  comboView: ComboView;
-
-  backGround: BackGround;
-  barLine: BarLine;
-
-  notes: Note[];
-  bombs: Bomb[];
-
-  private PlayScene: Scene;
-
-  judgeableObjects: JudgeableObjects;
-
-  GAUGE: Gauge | undefined;
-
-  render: TomoyoRender;
-
-  exitMain: number | undefined;
-
-  canvasHeight: () => number;
-  canvasWidth: () => number;
+  private judgeView: JudgeView;
+  private comboView: ComboView;
+  private backGround: BackGround;
+  private barLine: BarLine;
+  private notes: Note[];
+  private bombs: Bomb[];
+  private playScene: Scene;
+  private judgeableObjects: JudgeableObjects;
+  private gauge: Gauge | undefined;
+  private render: TomoyoRender;
+  private exitMain: number | undefined;
+  private canvasHeight: () => number;
+  private canvasWidth: () => number;
 
   /** Game開始のための準備、いろいろ読み込んでstartGameを可能にする。*/
   constructor(canvas: HTMLCanvasElement) {
@@ -78,17 +70,15 @@ export class Game {
 
     this.judgeView = new JudgeView();
     this.comboView = new ComboView();
-
     this.backGround = new BackGround(canvas.height, canvas.width);
     this.barLine = new BarLine(2, canvas.width, 4448, 120);
 
     const chart = parse(bmeFile);
-
     this.notes = generateNotes(chart);
     this.judgeableObjects = new JudgeableObjects(this.notes);
 
-    this.PlayScene = new Scene();
-    this.PlayScene.setComponents(
+    this.playScene = new Scene();
+    this.playScene.setComponents(
       this.backGround,
       this.judgeView,
       this.comboView,
@@ -97,12 +87,7 @@ export class Game {
       new Gauge(),
     );
 
-    const BOMB_WIDTH = 80;
-    this.bombs = [];
-
-    for (let i = 0; i < 4; i++) {
-      this.bombs.push(new Bomb(i, 0, BOMB_WIDTH));
-    }
+    this.bombs = Array.from({ length: 4 }, (_, i) => new Bomb(i, 0, 80));
 
     //ゲームが実際に起動されるまで表示される待ち受け画面。
     this.inputWaitingScreen();
@@ -157,7 +142,7 @@ export class Game {
 
     this.barLine.setSize(this.canvasWidth());
 
-    this.render.rendering(this.PlayScene.draw(now));
+    this.render.rendering(this.playScene.draw(now));
 
     for (const bomb of this.bombs) {
       const graph = bomb.draw();
@@ -192,7 +177,7 @@ export class Game {
     if (judge === "NOTHING") return;
 
     this.judgeView.setJudge(judge);
-    this.GAUGE?.setJudge(judge);
+    this.gauge?.setJudge(judge);
 
     const strategy = judgeToStrategy.get(judge) ?? "keep";
     if (strategy === "up") {
