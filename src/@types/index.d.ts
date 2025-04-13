@@ -1,18 +1,16 @@
 type Judge = {
-    name:string;
-    score:number;
-    damage:number;
-    isCuttingCombo:boolean;
+  name: string;
+  score: number;
+  damage: number;
+  isCuttingCombo: boolean;
+};
+
+declare module "*.text" {
+  const src: string;
+  export default src;
 }
 
-declare var startClock: any;
-
-declare module '*.text' {
-    const src: string;
-    export default src;
-}
-
-declare module '*.bme' {
-    const src: string;
-    export default src;
+declare module "*.bme" {
+  const src: string;
+  export default src;
 }

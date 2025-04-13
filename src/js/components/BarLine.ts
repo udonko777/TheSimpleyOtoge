@@ -1,49 +1,51 @@
-import { TomoyoRender } from "TomoyoRender";
-import { GraphicComponent } from "./Component";
+import { makeBox, renderableObject } from "../Render/TomoyoRender";
+import { GraphicComponent } from "../Render/Component";
 
 export class BarLine implements GraphicComponent {
+  private readonly height: number;
+  private width: number;
+  private readonly perfectTiming: number;
 
-    private render: TomoyoRender;
+  private beginTime: number;
+  private scrollSpeedForBPM: number;
 
-    private readonly height: number;
-    private width: number;
-    private readonly perfectTiming: number;
+  constructor(
+    height: number,
+    width: number,
+    perfectTiming: number,
+    bpm: number,
+  ) {
+    this.height = height;
+    this.width = width;
 
-    private beginTime: number;
-    private scrollSpeedForBPM: number;
+    this.perfectTiming = perfectTiming;
 
-    constructor(render: TomoyoRender, height: number, width: number, perfectTiming: number, bpm: number) {
-        this.render = render;
+    this.scrollSpeedForBPM = bpm / 120;
 
-        this.height = height;
-        this.width = width;
+    this.beginTime = 0;
+  }
 
-        this.perfectTiming = perfectTiming;
+  public begin(now: DOMHighResTimeStamp): void {
+    this.beginTime = now;
+  }
 
-        this.scrollSpeedForBPM = bpm / 120
+  public draw(now: DOMHighResTimeStamp): renderableObject[] {
+    const elapsedTime = now - this.beginTime;
 
-        this.beginTime = 0;
-    }
+    const JUDGE_LINE_POSITION = 500;
 
-    public begin(now: DOMHighResTimeStamp): void {
-        this.beginTime = now;
-    }
+    const y =
+      elapsedTime * this.scrollSpeedForBPM -
+      this.perfectTiming +
+      JUDGE_LINE_POSITION;
+    //判定位置生成
+    return [makeBox(0, y, this.width, this.height, "rgb( 100, 100, 100)")];
+  }
 
-    public draw(now: DOMHighResTimeStamp): void {
-        const elapsedTime = now - this.beginTime;
-
-        const JUDGE_LINE_POSITION = 500;
-
-        const y = ((elapsedTime * this.scrollSpeedForBPM) - this.perfectTiming) + JUDGE_LINE_POSITION;
-        //判定位置生成
-        this.render.drawBox(0, y, this.width, this.height, 'rgb( 100, 100, 100)');
-    }
-
-   /**
-    * 親コンポーネントに変化があったときに親から呼ばれる
-    */
-    public setSize(width: number) {
-        this.width = width;
-    }
-
+  /**
+   * 親コンポーネントに変化があったときに親から呼ばれる
+   */
+  public setSize(width: number) {
+    this.width = width;
+  }
 }

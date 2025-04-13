@@ -17,7 +17,7 @@ const config = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: 'index.html',
+            template: './src/html/index.html',
             favicon: './src/resource/demo/favicon.ico'
         }),
     ],
@@ -25,7 +25,7 @@ const config = {
         rules: [
             {
                 test: /\.css$/i,
-                use: [stylesHandler,'css-loader'],
+                use: [stylesHandler, 'css-loader'],
             },
             {
                 "test": /\.ts$/,
@@ -57,8 +57,8 @@ const config = {
 module.exports = () => {
     if (isProduction) {
         config.mode = 'production';
-        
-        
+
+
     } else {
         config.mode = 'development';
     }
