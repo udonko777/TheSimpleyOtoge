@@ -94,7 +94,7 @@ export class Game {
   }
 
   /** ゲームを開始する */
-  public start(): void {
+  public start = (): void => {
     const now = getCurrentTime();
     console.log(`Game started at: ${now}`);
     this.judgeableObjects.begin(now);
@@ -104,7 +104,7 @@ export class Game {
   }
 
   //gameが実際に始まる前までに表示し続ける表示
-  private inputWaitingScreen() {
+  private inputWaitingScreen = (): void => {
     const backGrounds = this.backGround.draw();
 
     const waitingScene = new Scene()
@@ -124,7 +124,7 @@ export class Game {
   }
 
   /** メインループを開始 */
-  private startMainLoop(): void {
+  private startMainLoop = (): void => {
     this.exitMain = window.requestAnimationFrame(this.frame);
   }
 
@@ -157,7 +157,7 @@ export class Game {
   };
 
   /** キー入力を処理する */
-  public handleKeyPress(e: KeyboardEvent): void {
+  public handleKeyPress = (e: KeyboardEvent): void => {
     if (e.repeat) return;
 
     const laneMap: Record<string, 0 | 1 | 2 | 3> = {
@@ -187,7 +187,7 @@ export class Game {
     }
   };
 
-  private judgeTiming(laneID: 0 | 1 | 2 | 3): void {
+  private judgeTiming = (laneID: 0 | 1 | 2 | 3): void => {
     const scoredJudge = this.judgeableObjects.getJudge(
       globalThis.performance.now(),
       laneID,
@@ -198,7 +198,7 @@ export class Game {
   }
 
   /** 判定を超えたノーツを処理 */
-  private handleExceededNotes(now: number): void {
+  private handleExceededNotes = (now: number): void => {
     const exceededNotesCount = this.judgeableObjects.checkExceeded(now);
     for (let i = 0; i < exceededNotesCount; i++) {
       this.sendJudge("OVER");
