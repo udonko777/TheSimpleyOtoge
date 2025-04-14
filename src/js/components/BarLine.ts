@@ -1,6 +1,9 @@
 import { makeBox, renderableObject } from "../Render/TomoyoRender";
 import { GraphicComponent } from "../Render/Component";
 
+/**
+ * プレイ画面中の小節線を描画するクラス
+ */
 export class BarLine implements GraphicComponent {
   private readonly height: number;
   private width: number;

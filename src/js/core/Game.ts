@@ -45,8 +45,7 @@ export class Game {
   private comboView: ComboView;
   private backGround: BackGround;
   private barLine: BarLine;
-  private notes: Note[];
-  private bombs: Bomb[];
+  private bombs: Array<Bomb>;
   private playScene: Scene;
   private judgeableObjects: JudgeableObjects;
   private gauge: Gauge | undefined;
@@ -74,8 +73,8 @@ export class Game {
     this.barLine = new BarLine(2, canvas.width, 4448, 120);
 
     const chart = parse(bmeFile);
-    this.notes = generateNotes(chart);
-    this.judgeableObjects = new JudgeableObjects(this.notes);
+    const musicalElements: [Array<Note>, Array<BarLine>] = generateNotes(chart);
+    this.judgeableObjects = new JudgeableObjects(musicalElements[0]);
 
     this.playScene = new Scene();
     this.playScene.setComponents(
