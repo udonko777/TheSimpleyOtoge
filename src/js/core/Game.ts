@@ -9,7 +9,7 @@ import { Bomb } from "../components/Bomb";
 
 import { MusicPlayer } from "../MusicPlayer";
 
-//FIX とりあえず動かすためのimport
+import { getCurrentTime } from "../common/Time";
 import { makeText } from "../Render/TomoyoRender";
 
 import { parse } from "../Parser/parser";
@@ -95,11 +95,11 @@ export class Game {
 
   /** ゲームを開始する */
   public start(): void {
-    const now = this.getCurrentTime();
+    const now = getCurrentTime();
     console.log(`Game started at: ${now}`);
     this.judgeableObjects.begin(now);
     this.barLine.begin(now);
-    this.playMusic();
+    playMusic();
     this.startMainLoop();
   }
 
@@ -132,7 +132,7 @@ export class Game {
   private frame = () => {
     //window.cancelAnimationFrame(this.exitMain)でメインループを抜けられる
     this.exitMain = window.requestAnimationFrame(this.frame);
-    const now = this.getCurrentTime();
+    const now = getCurrentTime();
 
     //画面のリフレッシュ
     this.render.clear();
@@ -197,11 +197,6 @@ export class Game {
     this.bombs[laneID].setBombLife(50);
   }
 
-  /** 現在時刻を取得 */
-  private getCurrentTime(): number {
-    return performance.now() ?? Date.now();
-  }
-
   /** 判定を超えたノーツを処理 */
   private handleExceededNotes(now: number): void {
     const exceededNotesCount = this.judgeableObjects.checkExceeded(now);
@@ -209,11 +204,10 @@ export class Game {
       this.sendJudge("OVER");
     }
   }
+}
 
-  /** 音楽を再生 */
-  private playMusic(): void {
-    const musicPlayer = new MusicPlayer();
-    musicPlayer.play();
-  }
-
+/** 音楽を再生 */
+const playMusic = (): void => {
+  const musicPlayer = new MusicPlayer();
+  musicPlayer.play();
 }
