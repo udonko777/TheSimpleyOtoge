@@ -9,7 +9,7 @@ import { Bomb } from "../components/Bomb";
 
 import { MusicPlayer } from "../MusicPlayer";
 
-//FIX とりあえず動かすためのimport
+import { getCurrentTime } from "../common/Time";
 import { makeText } from "../Render/TomoyoRender";
 
 import { parse } from "../Parser/parser";
@@ -30,9 +30,9 @@ import { JudgeableObjects } from "../components/JudgeableObjects";
 //import {JUDGES} from '/jsons/judge.json'
 
 type EZjudge = "GREAT" | "GOOD" | "BAD" | "POOR" | "OVER" | "NOTHING";
-type conboStrategy = "keep" | "up" | "reset";
+type comboStrategy = "keep" | "up" | "reset";
 
-const judgeToStrategy: ReadonlyMap<EZjudge, conboStrategy> = new Map([
+const judgeToStrategy: ReadonlyMap<EZjudge, comboStrategy> = new Map([
   ["GREAT", "up"],
   ["GOOD", "up"],
   ["BAD", "reset"],
@@ -41,27 +41,19 @@ const judgeToStrategy: ReadonlyMap<EZjudge, conboStrategy> = new Map([
 ]);
 
 export class Game {
-  judgeView: JudgeView;
-  conboView: ComboView;
-
-  backGround: BackGround;
-  barLine: BarLine;
-
-  notes: Note[];
-  bombs: Bomb[];
-
-  private PlayScene: Scene;
-
-  judgeableObjects: JudgeableObjects;
-
-  GAUGE: Gauge | undefined;
-
-  render: TomoyoRender;
-
-  exitMain: number | undefined;
-
-  canvasHeight: () => number;
-  canvasWidth: () => number;
+  private judgeView: JudgeView;
+  private comboView: ComboView;
+  private backGround: BackGround;
+  private barLine: BarLine;
+  private notes: Note[];
+  private bombs: Bomb[];
+  private playScene: Scene;
+  private judgeableObjects: JudgeableObjects;
+  private gauge: Gauge | undefined;
+  private render: TomoyoRender;
+  private exitMain: number | undefined;
+  private canvasHeight: () => number;
+  private canvasWidth: () => number;
 
   /** Game開始のための準備、いろいろ読み込んでstartGameを可能にする。*/
   constructor(canvas: HTMLCanvasElement) {
@@ -77,56 +69,42 @@ export class Game {
     this.render = new TomoyoRender(canvas);
 
     this.judgeView = new JudgeView();
-    this.conboView = new ComboView();
-
+    this.comboView = new ComboView();
     this.backGround = new BackGround(canvas.height, canvas.width);
     this.barLine = new BarLine(2, canvas.width, 4448, 120);
 
     const chart = parse(bmeFile);
-
     this.notes = generateNotes(chart);
     this.judgeableObjects = new JudgeableObjects(this.notes);
 
-    this.PlayScene = new Scene();
-    this.PlayScene.setComponents(
+    this.playScene = new Scene();
+    this.playScene.setComponents(
       this.backGround,
       this.judgeView,
-      this.conboView,
+      this.comboView,
       this.barLine,
       this.judgeableObjects,
       new Gauge(),
     );
 
-    const BOMB_WIDTH = 80;
-    this.bombs = [];
-
-    for (let i = 0; i < 4; i++) {
-      this.bombs.push(new Bomb(i, 0, BOMB_WIDTH));
-    }
+    this.bombs = Array.from({ length: 4 }, (_, i) => new Bomb(i, 0, 80));
 
     //ゲームが実際に起動されるまで表示される待ち受け画面。
     this.inputWaitingScreen();
   }
 
-  //実際にゲームが始まるタイミングで呼ばれる
-  public start() {
-
-    //ノーツの開始地点を記録
-    const NOW = performance.now() ?? Date.now();
-
-    console.log(`start at : ${NOW}`);
-
-    this.judgeableObjects.begin(NOW);
-    this.barLine.begin(NOW);
-
-    const musicPlayer = new MusicPlayer();
-    musicPlayer.play();
-
-    this.frame();
+  /** ゲームを開始する */
+  public start = (): void => {
+    const now = getCurrentTime();
+    console.log(`Game started at: ${now}`);
+    this.judgeableObjects.begin(now);
+    this.barLine.begin(now);
+    playMusic();
+    this.startMainLoop();
   }
 
   //gameが実際に始まる前までに表示し続ける表示
-  private inputWaitingScreen() {
+  private inputWaitingScreen = (): void => {
     const backGrounds = this.backGround.draw();
 
     const waitingScene = new Scene()
@@ -145,12 +123,16 @@ export class Game {
     this.render.rendering(waitingScene.draw(0));
   }
 
-  //再帰的なメインループ
+  /** メインループを開始 */
+  private startMainLoop = (): void => {
+    this.exitMain = window.requestAnimationFrame(this.frame);
+  }
+
+  /** メインループ */
   private frame = () => {
     //window.cancelAnimationFrame(this.exitMain)でメインループを抜けられる
     this.exitMain = window.requestAnimationFrame(this.frame);
-
-    const NOW = performance.now();
+    const now = getCurrentTime();
 
     //画面のリフレッシュ
     this.render.clear();
@@ -160,7 +142,7 @@ export class Game {
 
     this.barLine.setSize(this.canvasWidth());
 
-    this.render.rendering(this.PlayScene.draw(NOW));
+    this.render.rendering(this.playScene.draw(now));
 
     for (const bomb of this.bombs) {
       const graph = bomb.draw();
@@ -171,59 +153,41 @@ export class Game {
       }
     }
 
-    const exceededNotesCount = this.judgeableObjects.checkExceeded(NOW);
-
-    for (let i = 0; i < exceededNotesCount; i++) {
-      this.sendJudge("OVER");
-    }
+    this.handleExceededNotes(now);
   };
 
-  //何らかのキーが押されている時呼ばれます
-  public handleKeyPress(e: KeyboardEvent): void {
-    if (e.repeat) {
-      return;
-    }
+  /** キー入力を処理する */
+  public handleKeyPress = (e: KeyboardEvent): void => {
+    if (e.repeat) return;
 
-    console.log(e.key);
+    const laneMap: Record<string, 0 | 1 | 2 | 3> = {
+      KeyD: 0,
+      KeyF: 1,
+      KeyJ: 2,
+      KeyK: 3,
+    };
 
-    switch (e.code) {
-      case `KeyD`:
-        this.judgeTiming(0);
-        break;
-      case "KeyF":
-        this.judgeTiming(1);
-        break;
-      case "KeyJ":
-        this.judgeTiming(2);
-        break;
-      case "KeyK":
-        this.judgeTiming(3);
-        break;
+    const laneID = laneMap[e.code];
+    if (laneID !== undefined) {
+      this.judgeTiming(laneID);
     }
-    return;
   }
 
   private sendJudge = (judge: EZjudge): void => {
-    if (judge === "NOTHING") {
-      return;
-    }
+    if (judge === "NOTHING") return;
 
     this.judgeView.setJudge(judge);
-    this.GAUGE?.setJudge(judge);
+    this.gauge?.setJudge(judge);
 
-    switch (judgeToStrategy.get(judge) ?? "keep") {
-      case "up":
-        this.conboView.addConboCount();
-        break;
-      case "reset":
-        this.conboView.resetConboCount();
-        break;
-      case "keep":
-        break;
+    const strategy = judgeToStrategy.get(judge) ?? "keep";
+    if (strategy === "up") {
+      this.comboView.addComboCount();
+    } else if (strategy === "reset") {
+      this.comboView.resetComboCount();
     }
   };
 
-  private judgeTiming(laneID: 0 | 1 | 2 | 3): void {
+  private judgeTiming = (laneID: 0 | 1 | 2 | 3): void => {
     const scoredJudge = this.judgeableObjects.getJudge(
       globalThis.performance.now(),
       laneID,
@@ -231,7 +195,19 @@ export class Game {
     this.sendJudge(scoredJudge);
 
     this.bombs[laneID].setBombLife(50);
-
-    return;
   }
+
+  /** 判定を超えたノーツを処理 */
+  private handleExceededNotes = (now: number): void => {
+    const exceededNotesCount = this.judgeableObjects.checkExceeded(now);
+    for (let i = 0; i < exceededNotesCount; i++) {
+      this.sendJudge("OVER");
+    }
+  }
+}
+
+/** 音楽を再生 */
+const playMusic = (): void => {
+  const musicPlayer = new MusicPlayer();
+  musicPlayer.play();
 }
