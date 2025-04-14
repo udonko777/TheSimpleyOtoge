@@ -23,7 +23,7 @@ import { BackGround } from "../components/BackGround";
 
 import { BarLine } from "../components/BarLine";
 
-import { Gauge } from "../Gauges/Gauge";
+import { Gauge } from "../components/Gauge";
 
 import { JudgeableObjects } from "../components/JudgeableObjects";
 

@@ -1,6 +1,7 @@
+import { GraphicComponent } from "../Render/Component";
 import { Color, makeBox, renderableObject } from "../Render/TomoyoRender";
 
-export class Gauge {
+export class Gauge implements GraphicComponent {
   private readonly GAUGE_BOX_AS_GROOVE: number;
 
   private groove: number;
