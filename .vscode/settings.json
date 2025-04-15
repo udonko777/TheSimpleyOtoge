@@ -4,7 +4,9 @@
     "liveServer.settings.root": "/dist",
     "editor.formatOnSave": true,
     "cSpell.words": [
-        "JudgeableObjects"
+        "Judgeable",
+        "Tomoyo", // 大道寺知世のこと
+        "bme", // 音楽ゲームのファイル形式
     ],
     "editor.tabSize": 2,
 }
