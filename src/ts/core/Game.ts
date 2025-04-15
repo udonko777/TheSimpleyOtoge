@@ -70,6 +70,7 @@ export class Game {
     this.judgeView = new JudgeView();
     this.comboView = new ComboView();
     this.backGround = new BackGround(canvas.height, canvas.width);
+    this.gauge = new Gauge();
 
     const chart = parse(bmeFile);
     const musicalElements: [Array<Note>, Array<BarLine>] = generateNotes(chart);
@@ -83,7 +84,7 @@ export class Game {
       this.comboView,
       this.barLines,
       this.Notes,
-      new Gauge(),
+      this.gauge
     );
 
     this.bombs = Array.from({ length: 4 }, (_, i) => new Bomb(i, 0, 80));
