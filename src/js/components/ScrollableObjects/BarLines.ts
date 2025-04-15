@@ -1,7 +1,10 @@
-import { BarLine } from "./BarLine";
-import { GraphicRequestHandler } from "../../Render/Component";
-import { renderableObject } from "../../Render/TomoyoRender";
+import type { BarLine } from "./BarLine";
+import type { GraphicRequestHandler } from "../../Render/Component";
+import type { renderableObject } from "../../Render/TomoyoRender";
 
+/**
+ * プレイ画面中の小節線の集合
+ */
 export class BarLines implements GraphicRequestHandler {
   private barLines: BarLine[];
 
