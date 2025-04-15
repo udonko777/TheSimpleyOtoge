@@ -1,6 +1,6 @@
 import type { BarLine } from "./BarLine";
-import type { GraphicRequestHandler } from "../../Render/Component";
-import type { renderableObject } from "../../Render/TomoyoRender";
+import type { GraphicRequestHandler } from "../../../Render/Component";
+import type { renderableObject } from "../../../Render/TomoyoRender";
 
 /**
  * プレイ画面中の小節線の集合

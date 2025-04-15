@@ -1,5 +1,5 @@
-import { Box, makeBox } from "../Render/TomoyoRender";
-import { GraphicRequestHandler } from "../Render/Component";
+import { Box, makeBox } from "../../Render/TomoyoRender";
+import { GraphicRequestHandler } from "../../Render/Component";
 
 /**
  * ユーザーが対応するキーを押した際に、そのキーが押されたことを強調するアニメーション

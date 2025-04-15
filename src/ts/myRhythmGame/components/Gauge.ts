@@ -1,5 +1,5 @@
-import { GraphicRequestHandler } from "../Render/Component";
-import { Color, makeBox, renderableObject } from "../Render/TomoyoRender";
+import { GraphicRequestHandler } from "../../Render/Component";
+import { Color, makeBox, renderableObject } from "../../Render/TomoyoRender";
 
 /**
  * 現在どの程度上手にプレイできているかを示すゲージ。

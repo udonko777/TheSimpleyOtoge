@@ -1,5 +1,5 @@
-import { makeBox, renderableObject } from "../../Render/TomoyoRender";
-import { GraphicRequestHandler } from "../../Render/Component";
+import { makeBox, renderableObject } from "../../../Render/TomoyoRender";
+import { GraphicRequestHandler } from "../../../Render/Component";
 
 /**
  * プレイ画面中の小節線を描画するクラス

@@ -1,32 +1,32 @@
-import { ComboView } from "../components/ComboView";
+import { ComboView } from "../myRhythmGame/components/ComboView";
 
-import { Note } from "../components/ScrollableObjects/Note";
-import { generateNotes } from "../components/generateNotes";
+import { Note } from "../myRhythmGame/components/ScrollableObjects/Note";
+import { generateNotes } from "../myRhythmGame/components/generateNotes";
 
-import { JudgeView } from "../components/JudgeView";
+import { JudgeView } from "../myRhythmGame/components/JudgeView";
 
-import { Bomb } from "../components/Bomb";
+import { Bomb } from "../myRhythmGame/components/Bomb";
 
 import { MusicPlayer } from "../MusicPlayer";
 
-import { getCurrentTime } from "../common/Time";
+import { getCurrentTime } from "../myRhythmGame/common/Time";
 import { makeText } from "../Render/TomoyoRender";
 
-import { parse } from "../Parser/parser";
+import { parse } from "../myRhythmGame/Parser/parser";
 
-import { Scene } from "../components/Scene";
+import { Scene } from "../myRhythmGame/components/Scene";
 import { TomoyoRender } from "../Render/TomoyoRender";
 
 import bmeFile from "../../resource/demo/darksamba/_dark_sambaland_a.bme";
 
-import { BackGround } from "../components/BackGround";
+import { BackGround } from "../myRhythmGame/components/BackGround";
 
-import { BarLine } from "../components/ScrollableObjects/BarLine";
+import { BarLine } from "../myRhythmGame/components/ScrollableObjects/BarLine";
 
-import { Gauge } from "../components/Gauge";
+import { Gauge } from "../myRhythmGame/components/Gauge";
 
-import { JudgeableNotes  } from "../components/ScrollableObjects/JudgeableNotes";
-import { BarLines } from "../components/ScrollableObjects/BarLines";
+import { JudgeableNotes } from "../myRhythmGame/components/ScrollableObjects/JudgeableNotes";
+import { BarLines } from "../myRhythmGame/components/ScrollableObjects/BarLines";
 
 //import {JUDGES} from '/jsons/judge.json'
 

@@ -1,5 +1,5 @@
-import { makeBox } from "../../Render/TomoyoRender";
-import { GraphicRequestHandler } from "../../Render/Component";
+import { makeBox } from "../../../Render/TomoyoRender";
+import { GraphicRequestHandler } from "../../../Render/Component";
 
 export class Note implements GraphicRequestHandler {
   private NOTE_WIDTH: number;

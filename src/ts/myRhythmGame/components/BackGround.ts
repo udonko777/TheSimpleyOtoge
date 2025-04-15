@@ -1,5 +1,5 @@
-import { makeBox, renderableObject } from "../Render/TomoyoRender";
-import { GraphicRequestHandler } from "../Render/Component";
+import { makeBox, renderableObject } from "../../Render/TomoyoRender";
+import { GraphicRequestHandler } from "../../Render/Component";
 
 export class BackGround implements GraphicRequestHandler {
   height: number;

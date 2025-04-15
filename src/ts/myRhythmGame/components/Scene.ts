@@ -1,7 +1,7 @@
 import {
   renderableObject,
-} from "../Render/TomoyoRender";
-import { GraphicRequestHandler, isGraphicComponent } from "../Render/Component";
+} from "../../Render/TomoyoRender";
+import { GraphicRequestHandler, isGraphicComponent } from "../../Render/Component";
 
 export class Scene implements GraphicRequestHandler {
 

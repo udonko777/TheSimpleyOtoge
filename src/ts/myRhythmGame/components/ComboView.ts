@@ -1,5 +1,5 @@
-import { makeText } from "../Render/TomoyoRender";
-import { GraphicRequestHandler } from "../Render/Component";
+import { makeText } from "../../Render/TomoyoRender";
+import { GraphicRequestHandler } from "../../Render/Component";
 
 /**
  * 現在のコンボ数を表示するView、実際にはJudgeViewと組み合わせて使う。

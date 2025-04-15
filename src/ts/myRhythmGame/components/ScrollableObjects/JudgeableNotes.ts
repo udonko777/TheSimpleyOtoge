@@ -1,6 +1,6 @@
 import type { Note } from "./Note";
-import type { GraphicRequestHandler } from "../../Render/Component";
-import type { renderableObject } from "../../Render/TomoyoRender";
+import type { GraphicRequestHandler } from "../../../Render/Component";
+import type { renderableObject } from "../../../Render/TomoyoRender";
 
 /**
  * ノートの集合を管理し、判定や描画を行うクラス
