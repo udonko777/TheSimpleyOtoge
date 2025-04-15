@@ -13,7 +13,7 @@ import { TomoyoRender } from "../Render/TomoyoRender";
 import { ComboView } from "../myRhythmGame/components/ComboView";
 import { JudgeView } from "../myRhythmGame/components/JudgeView";
 import { BackGround } from "../myRhythmGame/components/BackGround";
-import { Scene } from "../myRhythmGame/components/Scene";
+import { Scene } from "./Scene";
 import { Gauge } from "../myRhythmGame/components/Gauge";
 import { Bomb } from "../myRhythmGame/components/Bomb";
 
