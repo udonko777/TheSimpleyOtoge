@@ -1,7 +1,7 @@
 import { Measure } from "../Parser/parser";
 import { Note } from "./ScrollableObjects/Note";
 
-import { BarLine } from "./BarLine";
+import { BarLine } from "./ScrollableObjects/BarLine";
 
 /** プレイ中、レーンに流れてくる可能性のあるオブジェクト */
 type musicalElements = [

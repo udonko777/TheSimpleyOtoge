@@ -1,4 +1,4 @@
-import { BarLine } from "../BarLine";
+import { BarLine } from "./BarLine";
 import { GraphicComponent } from "../../Render/Component";
 import { renderableObject } from "../../Render/TomoyoRender";
 
@@ -27,7 +27,7 @@ export class BarLines implements GraphicComponent {
       barLine.begin(time);
     }
   }
-  
+
   public setSize(width: number): void {
     for (const barLine of this.barLines) {
       barLine.setSize(width);

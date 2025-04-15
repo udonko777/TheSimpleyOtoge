@@ -21,11 +21,11 @@ import bmeFile from "../../resource/demo/darksamba/_dark_sambaland_a.bme";
 
 import { BackGround } from "../components/BackGround";
 
-import { BarLine } from "../components/BarLine";
+import { BarLine } from "../components/ScrollableObjects/BarLine";
 
 import { Gauge } from "../components/Gauge";
 
-import { JudgeableObjects } from "../components/ScrollableObjects/JudgeableObjects";
+import { JudgeableNotes  } from "../components/ScrollableObjects/JudgeableNotes";
 import { BarLines } from "../components/ScrollableObjects/BarLines";
 
 //import {JUDGES} from '/jsons/judge.json'
@@ -48,7 +48,7 @@ export class Game {
   private barLines: BarLines;
   private bombs: Array<Bomb>;
   private playScene: Scene;
-  private judgeableObjects: JudgeableObjects;
+  private Notes: JudgeableNotes;
   private gauge: Gauge | undefined;
   private render: TomoyoRender;
   private exitMain: number | undefined;
@@ -74,7 +74,7 @@ export class Game {
 
     const chart = parse(bmeFile);
     const musicalElements: [Array<Note>, Array<BarLine>] = generateNotes(chart);
-    this.judgeableObjects = new JudgeableObjects(musicalElements[0]);
+    this.Notes = new JudgeableNotes(musicalElements[0]);
     this.barLines = new BarLines(musicalElements[1]);
 
     this.playScene = new Scene();
@@ -83,7 +83,7 @@ export class Game {
       this.judgeView,
       this.comboView,
       this.barLines,
-      this.judgeableObjects,
+      this.Notes,
       new Gauge(),
     );
 
@@ -97,7 +97,7 @@ export class Game {
   public start = (): void => {
     const now = getCurrentTime();
     console.log(`Game started at: ${now}`);
-    this.judgeableObjects.begin(now);
+    this.Notes.begin(now);
     this.barLines.begin(now);
     playMusic();
     this.startMainLoop();
@@ -188,7 +188,7 @@ export class Game {
   };
 
   private judgeTiming = (laneID: 0 | 1 | 2 | 3): void => {
-    const scoredJudge = this.judgeableObjects.getJudge(
+    const scoredJudge = this.Notes.getJudge(
       globalThis.performance.now(),
       laneID,
     ) as EZjudge; //後でちゃんとjudge型を返す
@@ -199,7 +199,7 @@ export class Game {
 
   /** 判定を超えたノーツを処理 */
   private handleExceededNotes = (now: number): void => {
-    const exceededNotesCount = this.judgeableObjects.checkExceeded(now);
+    const exceededNotesCount = this.Notes.checkExceeded(now);
     for (let i = 0; i < exceededNotesCount; i++) {
       this.sendJudge("OVER");
     }

@@ -5,7 +5,7 @@ import { renderableObject } from "../../Render/TomoyoRender";
 /**
 perfectTimingをプロパティに持つオブジェクトの集合
 */
-export class JudgeableObjects implements GraphicComponent {
+export class JudgeableNotes implements GraphicComponent {
   // NoteID == LaneID
   private noteIDToNotes: Map<number, Array<Readonly<Note>>>;
 
@@ -120,7 +120,7 @@ export class JudgeableObjects implements GraphicComponent {
     //押されたレーンに対して、そのレーンに配置された全ノーツを見ていき最も差が小さかったものを見つける
     for (const [i, note] of pushedLanesNotes.entries()) {
 
-      const difference = JudgeableObjects.calculateDifference(note, timing);
+      const difference = JudgeableNotes.calculateDifference(note, timing);
 
       if (difference < minimumDifference) {
         minimumDifference = difference;
