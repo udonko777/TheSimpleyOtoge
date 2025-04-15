@@ -1,4 +1,4 @@
-import { GameManager } from "./js/core/GameManager";
+import { GameManager } from "./ts/core/GameManager";
 
 window.addEventListener("DOMContentLoaded", () => {
   const canvas = document.getElementById("canvas") as HTMLCanvasElement;
