@@ -1,6 +1,6 @@
 import { ComboView } from "../components/ComboView";
 
-import { Note } from "../components/Note";
+import { Note } from "../components/ScrollableObjects/Note";
 import { generateNotes } from "../components/generateNotes";
 
 import { JudgeView } from "../components/JudgeView";
@@ -25,7 +25,8 @@ import { BarLine } from "../components/BarLine";
 
 import { Gauge } from "../components/Gauge";
 
-import { JudgeableObjects } from "../components/JudgeableObjects";
+import { JudgeableObjects } from "../components/ScrollableObjects/JudgeableObjects";
+import { BarLines } from "../components/ScrollableObjects/BarLines";
 
 //import {JUDGES} from '/jsons/judge.json'
 
@@ -44,7 +45,7 @@ export class Game {
   private judgeView: JudgeView;
   private comboView: ComboView;
   private backGround: BackGround;
-  private barLine: BarLine;
+  private barLines: BarLines;
   private bombs: Array<Bomb>;
   private playScene: Scene;
   private judgeableObjects: JudgeableObjects;
@@ -70,18 +71,18 @@ export class Game {
     this.judgeView = new JudgeView();
     this.comboView = new ComboView();
     this.backGround = new BackGround(canvas.height, canvas.width);
-    this.barLine = new BarLine(2, canvas.width, 4448, 120);
 
     const chart = parse(bmeFile);
     const musicalElements: [Array<Note>, Array<BarLine>] = generateNotes(chart);
     this.judgeableObjects = new JudgeableObjects(musicalElements[0]);
+    this.barLines = new BarLines(musicalElements[1]);
 
     this.playScene = new Scene();
     this.playScene.setComponents(
       this.backGround,
       this.judgeView,
       this.comboView,
-      this.barLine,
+      this.barLines,
       this.judgeableObjects,
       new Gauge(),
     );
@@ -97,7 +98,7 @@ export class Game {
     const now = getCurrentTime();
     console.log(`Game started at: ${now}`);
     this.judgeableObjects.begin(now);
-    this.barLine.begin(now);
+    this.barLines.begin(now);
     playMusic();
     this.startMainLoop();
   }
@@ -139,7 +140,7 @@ export class Game {
     //FIX 更新があってもなくても毎フレームリサイズしている。 canvasサイズの変更を受け取るハンドラから呼び出すべき
     this.backGround.setSize(this.canvasHeight(), this.canvasWidth());
 
-    this.barLine.setSize(this.canvasWidth());
+    this.barLines.setSize(this.canvasWidth());
 
     this.render.rendering(this.playScene.draw(now));
 

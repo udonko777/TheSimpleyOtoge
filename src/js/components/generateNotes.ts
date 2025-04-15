@@ -1,12 +1,12 @@
 import { Measure } from "../Parser/parser";
-import { Note } from "./Note";
+import { Note } from "./ScrollableObjects/Note";
 
 import { BarLine } from "./BarLine";
 
 /** プレイ中、レーンに流れてくる可能性のあるオブジェクト */
 type musicalElements = [
-  Note:Array<Note>,
-  BarLine:Array<BarLine>
+  Note: Array<Note>,
+  BarLine: Array<BarLine>
 ]
 
 /**
@@ -15,7 +15,7 @@ type musicalElements = [
  * @returns 
  */
 export const generateNotes = (Measures: ReadonlyArray<Measure>): musicalElements => {
-  const musicalElements: musicalElements = [[],[]];
+  const musicalElements: musicalElements = [[], []];
 
   const NOTE_WIDTH: number = 80;
 

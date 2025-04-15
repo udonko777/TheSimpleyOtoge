@@ -1,5 +1,5 @@
-import { makeBox } from "../Render/TomoyoRender";
-import { GraphicComponent } from "../Render/Component";
+import { makeBox } from "../../Render/TomoyoRender";
+import { GraphicComponent } from "../../Render/Component";
 
 export class Note implements GraphicComponent {
   private NOTE_WIDTH: number;
