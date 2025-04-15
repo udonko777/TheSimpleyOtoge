@@ -1,34 +1,33 @@
-import { ComboView } from "../myRhythmGame/components/ComboView";
-
-import { Note } from "../myRhythmGame/components/ScrollableObjects/Note";
-import { generateNotes } from "../myRhythmGame/components/generateNotes";
-
-import { JudgeView } from "../myRhythmGame/components/JudgeView";
-
-import { Bomb } from "../myRhythmGame/components/Bomb";
-
-import { MusicPlayer } from "../MusicPlayer";
-
+// 共通ユーティリティや関数
 import { getCurrentTime } from "../myRhythmGame/common/Time";
 import { makeText } from "../Render/TomoyoRender";
-
 import { parse } from "../myRhythmGame/Parser/parser";
 
-import { Scene } from "../myRhythmGame/components/Scene";
+// 音楽関連
+import { MusicPlayer } from "../MusicPlayer";
+
+// 描画関連
 import { TomoyoRender } from "../Render/TomoyoRender";
 
-import bmeFile from "../../resource/demo/darksamba/_dark_sambaland_a.bme";
-
+// コンポーネント
+import { ComboView } from "../myRhythmGame/components/ComboView";
+import { JudgeView } from "../myRhythmGame/components/JudgeView";
 import { BackGround } from "../myRhythmGame/components/BackGround";
-
-import { BarLine } from "../myRhythmGame/components/ScrollableObjects/BarLine";
-
+import { Scene } from "../myRhythmGame/components/Scene";
 import { Gauge } from "../myRhythmGame/components/Gauge";
+import { Bomb } from "../myRhythmGame/components/Bomb";
 
+// スクロール可能なオブジェクト
+import { Note } from "../myRhythmGame/components/ScrollableObjects/Note";
+import { BarLine } from "../myRhythmGame/components/ScrollableObjects/BarLine";
 import { JudgeableNotes } from "../myRhythmGame/components/ScrollableObjects/JudgeableNotes";
 import { BarLines } from "../myRhythmGame/components/ScrollableObjects/BarLines";
 
-//import {JUDGES} from '/jsons/judge.json'
+// ノート生成
+import { generateNotes } from "../myRhythmGame/components/generateNotes";
+
+// リソース
+import bmeFile from "../../resource/demo/darksamba/_dark_sambaland_a.bme";
 
 type EZjudge = "GREAT" | "GOOD" | "BAD" | "POOR" | "OVER" | "NOTHING";
 type comboStrategy = "keep" | "up" | "reset";
