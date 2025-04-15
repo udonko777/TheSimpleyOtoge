@@ -1,10 +1,10 @@
 import { Box, makeBox } from "../Render/TomoyoRender";
-import { GraphicComponent } from "../Render/Component";
+import { GraphicRequestHandler } from "../Render/Component";
 
 /**
  * ユーザーが対応するキーを押した際に、そのキーが押されたことを強調するアニメーション
  */
-export class Bomb implements GraphicComponent {
+export class Bomb implements GraphicRequestHandler {
   private readonly no: number;
   private bombLife: number;
   private readonly NOTE_WIDTH: number;

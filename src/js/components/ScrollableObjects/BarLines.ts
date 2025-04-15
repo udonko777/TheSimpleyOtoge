@@ -1,8 +1,8 @@
 import { BarLine } from "./BarLine";
-import { GraphicComponent } from "../../Render/Component";
+import { GraphicRequestHandler } from "../../Render/Component";
 import { renderableObject } from "../../Render/TomoyoRender";
 
-export class BarLines implements GraphicComponent {
+export class BarLines implements GraphicRequestHandler {
   private barLines: BarLine[];
 
   constructor(barLines: BarLine[]) {

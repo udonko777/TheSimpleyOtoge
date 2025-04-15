@@ -1,7 +1,7 @@
 import { makeText } from "../Render/TomoyoRender";
-import { GraphicComponent } from "../Render/Component";
+import { GraphicRequestHandler } from "../Render/Component";
 
-export class JudgeView implements GraphicComponent {
+export class JudgeView implements GraphicRequestHandler {
   private judgeName: string;
   private x: number;
   private y: number;

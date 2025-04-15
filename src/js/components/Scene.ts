@@ -1,11 +1,11 @@
 import {
   renderableObject,
 } from "../Render/TomoyoRender";
-import { GraphicComponent, isGraphicComponent } from "../Render/Component";
+import { GraphicRequestHandler, isGraphicComponent } from "../Render/Component";
 
-export class Scene implements GraphicComponent {
+export class Scene implements GraphicRequestHandler {
 
-  private Components: Array<GraphicComponent | renderableObject>;
+  private Components: Array<GraphicRequestHandler | renderableObject>;
 
   constructor() {
     this.Components = [];
@@ -14,7 +14,7 @@ export class Scene implements GraphicComponent {
   /**
    * @param Components `draw()`が呼ばれたとき描画する子コンポーネント
    */
-  public setComponents(...Components: ReadonlyArray<GraphicComponent | renderableObject | Array<renderableObject>>): void {
+  public setComponents(...Components: ReadonlyArray<GraphicRequestHandler | renderableObject | Array<renderableObject>>): void {
     this.Components.push(...Components.flat());
   }
 

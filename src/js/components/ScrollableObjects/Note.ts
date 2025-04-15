@@ -1,7 +1,7 @@
 import { makeBox } from "../../Render/TomoyoRender";
-import { GraphicComponent } from "../../Render/Component";
+import { GraphicRequestHandler } from "../../Render/Component";
 
-export class Note implements GraphicComponent {
+export class Note implements GraphicRequestHandler {
   private NOTE_WIDTH: number;
   private scrollSpeedForBPM: number;
 

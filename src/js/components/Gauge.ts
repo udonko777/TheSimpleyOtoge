@@ -1,11 +1,11 @@
-import { GraphicComponent } from "../Render/Component";
+import { GraphicRequestHandler } from "../Render/Component";
 import { Color, makeBox, renderableObject } from "../Render/TomoyoRender";
 
 /**
  * 現在どの程度上手にプレイできているかを示すゲージ。
  * ゲージは0から65536までの値を持ち、0が最悪、65536が最高を示す。
  */
-export class Gauge implements GraphicComponent {
+export class Gauge implements GraphicRequestHandler {
   private readonly MAX_GROOVE = 65536;
   private readonly GAUGE_BOX_NUMBER = 24;
   private readonly GAUGE_BOX_AS_GROOVE = this.MAX_GROOVE / this.GAUGE_BOX_NUMBER;

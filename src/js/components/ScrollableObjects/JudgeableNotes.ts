@@ -1,11 +1,11 @@
 import type { Note } from "./Note";
-import type { GraphicComponent } from "../../Render/Component";
+import type { GraphicRequestHandler } from "../../Render/Component";
 import type { renderableObject } from "../../Render/TomoyoRender";
 
 /**
  * ノートの集合を管理し、判定や描画を行うクラス
  */
-export class JudgeableNotes implements GraphicComponent {
+export class JudgeableNotes implements GraphicRequestHandler {
   // NoteID == LaneID
   private readonly noteIDToNotes: Map<number, Array<Readonly<Note>>>;
 
