@@ -3,6 +3,10 @@ import {
 } from "../Render/TomoyoRender";
 import { GraphicRequestHandler, isGraphicComponent } from "../Render/Component";
 
+/**
+ * ゲーム中の特定の場面を表す
+ * ローディング画面や、プレイするステージを選択する画面など
+ */
 export class Scene implements GraphicRequestHandler {
 
   private Components: Array<GraphicRequestHandler | renderableObject>;
