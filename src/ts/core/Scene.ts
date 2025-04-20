@@ -23,7 +23,7 @@ export class Scene implements GraphicRequestHandler {
   }
 
   /**
-   * セットされたすべてのrenderableObjectのdrawを呼んでrenderに描かせる
+   * セットされたすべてのrenderableObjectのdrawを呼び出す
    * @param time
    */
   public draw(time: number): renderableObject[] {
