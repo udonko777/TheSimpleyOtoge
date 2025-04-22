@@ -1,7 +1,8 @@
-import { Game } from "./Game";
 import { TomoyoRender } from "../Render/TomoyoRender";
 
 import { getCurrentTime } from "./common/Time";
+import { GameEventHub } from "./Event/GameEventHub";
+import { GameEventMap } from "./Event/GameEvents";
 
 type GamePhase = "waiting" | "playing" | "ended";
 
@@ -10,24 +11,34 @@ type GamePhase = "waiting" | "playing" | "ended";
   */
 export class GameRuntime {
   private state: GamePhase = "waiting";
-  private gameInstance: Game;
   private readonly render: TomoyoRender;
 
   private canvasWidth: number;
   private canvasHeight: number;
 
-  constructor(canvas: HTMLCanvasElement, game: Game) {
-    this.gameInstance = game;
+  private readonly hub: GameEventHub<GameEventMap>;
+
+  constructor(canvas: HTMLCanvasElement, game: (eventHub: GameEventHub<GameEventMap>) => void) {
+    this.hub = new GameEventHub<GameEventMap>()
+    game(this.hub);
     this.render = new TomoyoRender(canvas);
+
+    this.hub.on("render", (graphics) => {
+      this.render.rendering(graphics);
+    });
 
     // 更新処理未実装
     this.canvasWidth = canvas.width;
     this.canvasHeight = canvas.height;
 
     // 初期化
-    this.gameInstance.onResize(this.canvasWidth, this.canvasHeight);
+    this.hub.emit("resize", {
+      width: this.canvasWidth,
+      height: this.canvasHeight,
+    });
+    this.hub.emit("init", undefined);
 
-    this.render.rendering(this.gameInstance.onInitialized());
+    this.hub.on("firstFrame", () => { });
 
     this.bindInput();
   }
@@ -40,7 +51,7 @@ export class GameRuntime {
     if (this.state === "waiting") {
       this.startGame();
     } else if (this.state === "playing") {
-      this.gameInstance.onKeyInput(e);
+      this.hub.emit("keyInput", e);
     }
   }
 
@@ -48,10 +59,13 @@ export class GameRuntime {
     const now = getCurrentTime();
 
     // TODO: Canvasのサイズが変更されたときに、リサイズを行う
-    this.gameInstance.onResize(this.canvasWidth, this.canvasHeight);
+    this.hub.emit("resize", {
+      width: this.canvasWidth,
+      height: this.canvasHeight,
+    });
 
     this.render.clear();
-    this.render.rendering(this.gameInstance.onUpdateFrame(now));
+    this.hub.emit("updateFrame", now);
 
     if (this.state === "playing") {
       window.requestAnimationFrame(this.frame);
@@ -60,7 +74,7 @@ export class GameRuntime {
 
   private startGame() {
     this.state = "playing";
-    this.gameInstance.onFirstFrame();
+    this.hub.emit("firstFrame", undefined);
 
     window.requestAnimationFrame(this.frame); // メインループ開始
   }

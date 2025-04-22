@@ -1,6 +1,6 @@
 // 共通ユーティリティや関数
 import { getCurrentTime } from "../core/common/Time";
-import { makeText, renderableObject } from "../Render/TomoyoRender";
+import { makeText} from "../Render/TomoyoRender";
 import { parse } from "./Parser/parser";
 
 // 音楽関連
@@ -15,8 +15,6 @@ import { Gauge } from "./components/Gauge";
 import { Bomb } from "./components/Bomb";
 
 // スクロール可能なオブジェクト
-import { Note } from "./components/ScrollableObjects/Note";
-import { BarLine } from "./components/ScrollableObjects/BarLine";
 import { JudgeableNotes } from "./components/ScrollableObjects/JudgeableNotes";
 import { BarLines } from "./components/ScrollableObjects/BarLines";
 
@@ -25,7 +23,9 @@ import { generateNotes } from "./components/generateNotes";
 
 // リソース
 import bmeFile from "../../resource/demo/darksamba/_dark_sambaland_a.bme";
-import { Game } from "../core/Game";
+
+import { GameEventHub} from "../core/Event/GameEventHub";
+import { GameEventMap} from "../core/Event/GameEvents";
 
 type EZjudge = "GREAT" | "GOOD" | "BAD" | "POOR" | "OVER" | "NOTHING";
 type comboStrategy = "keep" | "up" | "reset";
@@ -45,144 +45,84 @@ const laneMap: Record<string, 0 | 1 | 2 | 3> = {
   KeyK: 3,
 };
 
-export class rhythmGame implements Game {
-  private judgeView: JudgeView;
-  private comboView: ComboView;
-  private backGround: BackGround;
-  private barLines: BarLines;
-  private bombs: Array<Bomb>;
-  private playScene: Scene;
-  private Notes: JudgeableNotes;
-  private gauge: Gauge | undefined;
-  private screenWidth: number = 0;
-  private screenHeight: number = 0;
+export const rhythmGame = (hub: GameEventHub<GameEventMap>) => {
+  const judgeView = new JudgeView();
+  const comboView = new ComboView();
+  const gauge = new Gauge();
+  const background = new BackGround(0, 0); // サイズは後でセット
+  let barLines = new BarLines([]);
+  const bombs = Array.from({ length: 4 }, (_, i) => new Bomb(i, 0, 80));
+  const chart = parse(bmeFile);
+  const [notesArray, barLinesArray] = generateNotes(chart);
+  const judgeableNotes = new JudgeableNotes(notesArray);
+  const playScene = new Scene();
 
-  /** Game開始のための準備、いろいろ読み込んでstartGameを可能にする。*/
-  constructor() {
-    this.judgeView = new JudgeView();
-    this.comboView = new ComboView();
-    this.backGround = new BackGround(this.screenHeight, this.screenWidth);
-    this.gauge = new Gauge();
+  barLines = new BarLines(barLinesArray);
+  playScene.setComponents(background, judgeView, comboView, barLines, judgeableNotes, gauge);
 
-    const chart = parse(bmeFile);
-    const musicalElements: [Array<Note>, Array<BarLine>] = generateNotes(chart);
-    this.Notes = new JudgeableNotes(musicalElements[0]);
-    this.barLines = new BarLines(musicalElements[1]);
+  let screenWidth = 0;
+  let screenHeight = 0;
 
-    this.playScene = new Scene();
-    this.playScene.setComponents(
-      this.backGround,
-      this.judgeView,
-      this.comboView,
-      this.barLines,
-      this.Notes,
-      this.gauge
-    );
-
-    this.bombs = Array.from({ length: 4 }, (_, i) => new Bomb(i, 0, 80));
-  }
-
-  /** ゲームを開始する */
-  public onFirstFrame = (): void => {
-    const now = getCurrentTime();
-    console.log(`Game started at: ${now}`);
-    this.Notes.begin(now);
-    this.barLines.begin(now);
-    playMusic();
-  }
-
-  //gameが実際に始まる前までに表示し続ける表示
-  public onInitialized = (): renderableObject[] => {
-    this.backGround.setSize(this.screenHeight, this.screenWidth);
-    const backGrounds = this.backGround.draw();
-
-    const waitingScene = new Scene()
-    waitingScene.setComponents([
-      ...backGrounds,
-      makeText(
-        "キーボード押すと音が鳴るよ",
-        50,
-        100,
-        "21px serif",
-        "rgb( 255, 102, 102)",
-      ),
-      makeText("爆音なので注意", 50, 120, "21px serif", "rgb( 255, 102, 102)"),
-    ]);
-
-    return waitingScene.draw(0);
-  }
-
-  /** メインループ */
-  public onUpdateFrame = (now: number): renderableObject[] => {
-    this.backGround.setSize(this.screenHeight, this.screenWidth);
-    this.barLines.setSize(this.screenWidth);
-
-    const graphics = this.playScene.draw(now);
-
-    for (const bomb of this.bombs) {
-      const graph = bomb.draw();
-      if (graph) graphics.push(graph);
-    }
-
-    this.handleExceededNotes(now);
-
-    return graphics;
-  }
-
-  /** キー入力を処理する */
-  public onKeyInput = (e: KeyboardEvent): void => {
-    if (e.repeat) return;
-
-    const laneID = laneMap[e.code];
-    if (laneID !== undefined) {
-      this.judgeTiming(laneID);
-    }
-  }
-
-  /*
-  HACK: ランタイムから呼ばれる。
-  ユーザー定義の関数としてはふさわしくないので、修正が必要
-  */
-  public onResize = (width: number, height: number): void => {
-    this.screenWidth = width;
-    this.screenHeight = height;
-  }
-
-  private sendJudge = (judge: EZjudge): void => {
+  const sendJudge = (judge: EZjudge) => {
     if (judge === "NOTHING") return;
-
-    this.judgeView.setJudge(judge);
-    this.gauge?.setJudge(judge);
-
+    judgeView.setJudge(judge);
+    gauge.setJudge(judge);
     const strategy = judgeToStrategy.get(judge) ?? "keep";
-    if (strategy === "up") {
-      this.comboView.addComboCount();
-    } else if (strategy === "reset") {
-      this.comboView.resetComboCount();
-    }
+    if (strategy === "up") comboView.addComboCount();
+    if (strategy === "reset") comboView.resetComboCount();
   };
 
-  private judgeTiming = (laneID: 0 | 1 | 2 | 3): void => {
-    const scoredJudge = this.Notes.getJudge(
-      globalThis.performance.now(),
-      laneID,
-    ) as EZjudge; //後でちゃんとjudge型を返す
-    this.sendJudge(scoredJudge);
+  const judgeTiming = (laneID: 0 | 1 | 2 | 3) => {
+    const scoredJudge = judgeableNotes.getJudge(performance.now(), laneID) as EZjudge;
+    sendJudge(scoredJudge);
+    bombs[laneID].setBombLife(50);
+  };
 
-    this.bombs[laneID].setBombLife(50);
-  }
+  // イベント登録
+  hub.on("resize", ({ width, height }) => {
+    screenWidth = width;
+    screenHeight = height;
+    background.setSize(height, width);
+    barLines.setSize(width);
+  });
 
-  /** 判定を超えたノーツを処理 */
-  private handleExceededNotes = (now: number): void => {
-    const exceededNotesCount = this.Notes.checkExceeded(now);
-    for (let i = 0; i < exceededNotesCount; i++) {
-      this.sendJudge("OVER");
+  hub.on("init", () => {
+    // 背景＋待機中メッセージ
+    const waitingScene = new Scene();
+    waitingScene.setComponents([
+      ...background.draw(),
+      makeText("キーボード押すと音が鳴るよ", 50, 100, "21px serif", "rgb( 255, 102, 102)"),
+      makeText("爆音なので注意", 50, 120, "21px serif", "rgb( 255, 102, 102)"),
+    ]);
+    hub.emit("render", waitingScene.draw(0));
+  });
+
+  hub.on("firstFrame", () => {
+    const now = getCurrentTime();
+    judgeableNotes.begin(now);
+    barLines.begin(now);
+    new MusicPlayer().play();
+  });
+
+  hub.on("keyInput", (e) => {
+    if (e.repeat) return;
+    const lane = laneMap[e.code];
+    if (lane !== undefined) judgeTiming(lane);
+  });
+
+  hub.on("updateFrame", (now) => {
+    background.setSize(screenHeight, screenWidth);
+    barLines.setSize(screenWidth);
+
+    const graphics = playScene.draw(now);
+    for (const bomb of bombs) {
+      const b = bomb.draw();
+      if (b) graphics.push(b);
     }
-  }
-}
 
-/** 音楽を再生 */
-const playMusic = (): void => {
-  const musicPlayer = new MusicPlayer();
-  musicPlayer.play();
+    const exceeded = judgeableNotes.checkExceeded(now);
+    for (let i = 0; i < exceeded; i++) sendJudge("OVER");
+
+    hub.emit("render", graphics); // 新たに追加：描画のトリガー
+  });
 }
