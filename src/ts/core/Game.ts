@@ -1,9 +1,9 @@
 import type { renderableObject } from "../Render/TomoyoRender";
 
 export interface Game {
-  start(): void;
-  handleKeyPress(e: KeyboardEvent): void;
-  initialized(): renderableObject[];
-  frame(time:number): renderableObject[];
-  resize(width: number, height: number): void; // 追加
+  onInitialized(): renderableObject[];
+  onFirstFrame(): void;
+  onUpdateFrame(time:number): renderableObject[];
+  onKeyInput(e: KeyboardEvent): void;
+  onResize(width: number, height: number): void;
 }

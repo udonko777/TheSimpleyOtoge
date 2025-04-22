@@ -25,9 +25,9 @@ export class GameRuntime {
     this.canvasHeight = canvas.height;
 
     // 初期化
-    this.gameInstance.resize(this.canvasWidth, this.canvasHeight);
+    this.gameInstance.onResize(this.canvasWidth, this.canvasHeight);
 
-    this.render.rendering(this.gameInstance.initialized());
+    this.render.rendering(this.gameInstance.onInitialized());
 
     this.bindInput();
   }
@@ -40,7 +40,7 @@ export class GameRuntime {
     if (this.state === "waiting") {
       this.startGame();
     } else if (this.state === "playing") {
-      this.gameInstance.handleKeyPress(e);
+      this.gameInstance.onKeyInput(e);
     }
   }
 
@@ -48,10 +48,10 @@ export class GameRuntime {
     const now = getCurrentTime();
 
     // TODO: Canvasのサイズが変更されたときに、リサイズを行う
-    this.gameInstance.resize(this.canvasWidth, this.canvasHeight);
+    this.gameInstance.onResize(this.canvasWidth, this.canvasHeight);
 
     this.render.clear();
-    this.render.rendering(this.gameInstance.frame(now));
+    this.render.rendering(this.gameInstance.onUpdateFrame(now));
 
     if (this.state === "playing") {
       window.requestAnimationFrame(this.frame);
@@ -60,7 +60,7 @@ export class GameRuntime {
 
   private startGame() {
     this.state = "playing";
-    this.gameInstance.start();
+    this.gameInstance.onFirstFrame();
 
     window.requestAnimationFrame(this.frame); // メインループ開始
   }

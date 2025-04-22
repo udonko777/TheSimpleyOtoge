@@ -38,6 +38,13 @@ const judgeToStrategy: ReadonlyMap<EZjudge, comboStrategy> = new Map([
   ["OVER", "reset"],
 ]);
 
+const laneMap: Record<string, 0 | 1 | 2 | 3> = {
+  KeyD: 0,
+  KeyF: 1,
+  KeyJ: 2,
+  KeyK: 3,
+};
+
 export class rhythmGame implements Game {
   private judgeView: JudgeView;
   private comboView: ComboView;
@@ -76,7 +83,7 @@ export class rhythmGame implements Game {
   }
 
   /** ゲームを開始する */
-  public start = (): void => {
+  public onFirstFrame = (): void => {
     const now = getCurrentTime();
     console.log(`Game started at: ${now}`);
     this.Notes.begin(now);
@@ -85,7 +92,7 @@ export class rhythmGame implements Game {
   }
 
   //gameが実際に始まる前までに表示し続ける表示
-  public initialized = (): renderableObject[] => {
+  public onInitialized = (): renderableObject[] => {
     this.backGround.setSize(this.screenHeight, this.screenWidth);
     const backGrounds = this.backGround.draw();
 
@@ -106,32 +113,25 @@ export class rhythmGame implements Game {
   }
 
   /** メインループ */
-  public frame = (now: number): renderableObject[] => {
+  public onUpdateFrame = (now: number): renderableObject[] => {
     this.backGround.setSize(this.screenHeight, this.screenWidth);
     this.barLines.setSize(this.screenWidth);
-  
+
     const graphics = this.playScene.draw(now);
-  
+
     for (const bomb of this.bombs) {
       const graph = bomb.draw();
       if (graph) graphics.push(graph);
     }
-  
+
     this.handleExceededNotes(now);
-  
+
     return graphics;
   }
 
   /** キー入力を処理する */
-  public handleKeyPress = (e: KeyboardEvent): void => {
+  public onKeyInput = (e: KeyboardEvent): void => {
     if (e.repeat) return;
-
-    const laneMap: Record<string, 0 | 1 | 2 | 3> = {
-      KeyD: 0,
-      KeyF: 1,
-      KeyJ: 2,
-      KeyK: 3,
-    };
 
     const laneID = laneMap[e.code];
     if (laneID !== undefined) {
@@ -143,7 +143,7 @@ export class rhythmGame implements Game {
   HACK: ランタイムから呼ばれる。
   ユーザー定義の関数としてはふさわしくないので、修正が必要
   */
-  public resize = (width: number, height: number): void => {
+  public onResize = (width: number, height: number): void => {
     this.screenWidth = width;
     this.screenHeight = height;
   }
