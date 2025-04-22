@@ -8,6 +8,7 @@ type GamePhase = "waiting" | "playing" | "ended";
 
 /**
   * ゲームの実行環境
+  * 所謂ゲームエンジンに相当する場面であるため、このクラスからゲームロジック部分に直接依存してはならない
   */
 export class GameRuntime {
   private state: GamePhase = "waiting";

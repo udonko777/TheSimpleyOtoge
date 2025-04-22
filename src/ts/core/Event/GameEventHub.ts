@@ -31,9 +31,8 @@ export class GameEventHub<TEventMap extends Record<string, unknown>> {
 
   /**
    * イベントを発火する
-   * @param event 
-   * @param payload 
-   * @returns 
+   * @param event 発生させたいイベント
+   * @param payload ハンドラに渡したいデータ
    */
   emit<K extends keyof TEventMap>(event: K, payload: TEventMap[K]) {
     if (!this.listeners[event]) {

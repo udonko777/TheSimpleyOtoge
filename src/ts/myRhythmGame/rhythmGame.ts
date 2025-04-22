@@ -1,6 +1,6 @@
 // 共通ユーティリティや関数
 import { getCurrentTime } from "../core/common/Time";
-import { makeText} from "../Render/TomoyoRender";
+import { makeText } from "../Render/TomoyoRender";
 import { parse } from "./Parser/parser";
 
 // 音楽関連
@@ -24,8 +24,8 @@ import { generateNotes } from "./components/generateNotes";
 // リソース
 import bmeFile from "../../resource/demo/darksamba/_dark_sambaland_a.bme";
 
-import { GameEventHub} from "../core/Event/GameEventHub";
-import { GameEventMap} from "../core/Event/GameEvents";
+import { GameEventHub } from "../core/Event/GameEventHub";
+import { GameEventMap } from "../core/Event/GameEvents";
 
 type EZjudge = "GREAT" | "GOOD" | "BAD" | "POOR" | "OVER" | "NOTHING";
 type comboStrategy = "keep" | "up" | "reset";
@@ -45,6 +45,9 @@ const laneMap: Record<string, 0 | 1 | 2 | 3> = {
   KeyK: 3,
 };
 
+/**
+ * ゲームロジック部分 
+ */
 export const rhythmGame = (hub: GameEventHub<GameEventMap>) => {
   const judgeView = new JudgeView();
   const comboView = new ComboView();
@@ -107,7 +110,7 @@ export const rhythmGame = (hub: GameEventHub<GameEventMap>) => {
   hub.on("keyInput", (e) => {
     if (e.repeat) return;
     const lane = laneMap[e.code];
-    if (lane !== undefined) judgeTiming(lane);
+    if (lane != null) judgeTiming(lane);
   });
 
   hub.on("updateFrame", (now) => {
