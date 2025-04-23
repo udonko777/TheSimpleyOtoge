@@ -1,7 +1,6 @@
 // 共通ユーティリティや関数
 import { getCurrentTime } from "../core/common/Time";
 import { makeText } from "../Render/TomoyoRender";
-import { makeText } from "../Render/TomoyoRender";
 import { parse } from "./Parser/parser";
 
 // 音楽関連
@@ -46,9 +45,6 @@ const laneMap: Record<string, 0 | 1 | 2 | 3> = {
   KeyK: 3,
 };
 
-/**
- * ゲームロジック部分 
- */
 /**
  * ゲームロジック部分 
  */
