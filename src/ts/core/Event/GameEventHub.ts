@@ -16,7 +16,7 @@ export class GameEventHub<TEventMap extends Record<string, unknown>> {
   } = {};
 
   /**
-   * イベントを登録する
+   * あるイベントに対してハンドラを登録する
    * @param event イベント名
    * @param handler イベントハンドラ
    */

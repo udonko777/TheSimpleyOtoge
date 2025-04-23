@@ -25,9 +25,8 @@ import { generateNotes } from "./components/generateNotes";
 // リソース
 import bmeFile from "../../resource/demo/darksamba/_dark_sambaland_a.bme";
 
-// イベント関連
-import { GameEventHub } from "../core/Event/GameEventHub";
-import { GameEventMap } from "../core/Event/GameEvents";
+// イベント
+import { hub as runtimeHub } from "../core/GameRuntime";
 
 type EZjudge = "GREAT" | "GOOD" | "BAD" | "POOR" | "OVER" | "NOTHING";
 type comboStrategy = "keep" | "up" | "reset";
@@ -53,7 +52,7 @@ const laneMap: Record<string, 0 | 1 | 2 | 3> = {
 /**
  * ゲームロジック部分 
  */
-export const rhythmGame = (hub: GameEventHub<GameEventMap>) => {
+export const rhythmGame = () => {
   const judgeView = new JudgeView();
   const comboView = new ComboView();
   const gauge = new Gauge();
@@ -87,14 +86,14 @@ export const rhythmGame = (hub: GameEventHub<GameEventMap>) => {
   };
 
   // イベント登録
-  hub.on("resize", ({ width, height }) => {
+  runtimeHub.on("resize", ({ width, height }) => {
     screenWidth = width;
     screenHeight = height;
     background.setSize(height, width);
     barLines.setSize(width);
   });
 
-  hub.on("init", () => {
+  runtimeHub.on("init", () => {
     // 背景＋待機中メッセージ
     const waitingScene = new Scene();
     waitingScene.setComponents([
@@ -102,24 +101,24 @@ export const rhythmGame = (hub: GameEventHub<GameEventMap>) => {
       makeText("キーボード押すと音が鳴るよ", 50, 100, "21px serif", "rgb( 255, 102, 102)"),
       makeText("爆音なので注意", 50, 120, "21px serif", "rgb( 255, 102, 102)"),
     ]);
-    hub.emit("render", waitingScene.draw(0));
+    runtimeHub.emit("render", waitingScene.draw(0));
   });
 
-  hub.on("firstFrame", () => {
+  runtimeHub.on("firstFrame", () => {
     const now = getCurrentTime();
     judgeableNotes.begin(now);
     barLines.begin(now);
     new MusicPlayer().play();
   });
 
-  hub.on("keyInput", (e) => {
+  runtimeHub.on("keyInput", (e) => {
     if (e.repeat) return;
     const lane = laneMap[e.code];
     if (lane != null) judgeTiming(lane);
     if (lane != null) judgeTiming(lane);
   });
 
-  hub.on("updateFrame", (now) => {
+  runtimeHub.on("updateFrame", (now) => {
     background.setSize(screenHeight, screenWidth);
     barLines.setSize(screenWidth);
 
@@ -132,6 +131,6 @@ export const rhythmGame = (hub: GameEventHub<GameEventMap>) => {
     const exceeded = judgeableNotes.checkExceeded(now);
     for (let i = 0; i < exceeded; i++) sendJudge("OVER");
 
-    hub.emit("render", graphics); // 新たに追加：描画のトリガー
+    runtimeHub.emit("render", graphics); // 新たに追加：描画のトリガー
   });
 }

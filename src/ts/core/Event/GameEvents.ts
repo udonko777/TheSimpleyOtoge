@@ -1,6 +1,6 @@
 import { renderableObject } from '../../Render/TomoyoRender';
 
-export type GameEventMap = {
+export type GameEventMap = {  
   init: void;
   firstFrame: void;
   updateFrame: number; // time

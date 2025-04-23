@@ -7,6 +7,12 @@ import { GameEventMap } from "./Event/GameEvents";
 type GamePhase = "waiting" | "playing" | "ended";
 
 /**
+ * ゲームの実行環境におけるイベントを管理
+ * ゲームロジック側でも利用している
+ */
+export const hub = new GameEventHub<GameEventMap>();
+
+/**
   * ゲームの実行環境
   * 所謂ゲームエンジンに相当する場面であるため、このクラスからゲームロジック部分に直接依存してはならない
   */
@@ -17,14 +23,11 @@ export class GameRuntime {
   private canvasWidth: number;
   private canvasHeight: number;
 
-  private readonly hub: GameEventHub<GameEventMap>;
-
   constructor(canvas: HTMLCanvasElement, game: (eventHub: GameEventHub<GameEventMap>) => void) {
-    this.hub = new GameEventHub<GameEventMap>()
-    game(this.hub);
+    game(hub);
     this.render = new TomoyoRender(canvas);
 
-    this.hub.on("render", (graphics) => {
+    hub.on("render", (graphics) => {
       this.render.rendering(graphics);
     });
 
@@ -33,13 +36,13 @@ export class GameRuntime {
     this.canvasHeight = canvas.height;
 
     // 初期化
-    this.hub.emit("resize", {
+    hub.emit("resize", {
       width: this.canvasWidth,
       height: this.canvasHeight,
     });
-    this.hub.emit("init", undefined);
+    hub.emit("init", undefined);
 
-    this.hub.on("firstFrame", () => { });
+    hub.on("firstFrame", () => { });
 
     this.bindInput();
   }
@@ -52,7 +55,7 @@ export class GameRuntime {
     if (this.state === "waiting") {
       this.startGame();
     } else if (this.state === "playing") {
-      this.hub.emit("keyInput", e);
+      hub.emit("keyInput", e);
     }
   }
 
@@ -60,14 +63,14 @@ export class GameRuntime {
     const now = getCurrentTime();
 
     // TODO: Canvasのサイズが変更されたときに、リサイズを行う
-    this.hub.emit("resize", {
+    hub.emit("resize", {
       width: this.canvasWidth,
       height: this.canvasHeight,
     });
 
     this.render.clear();
-    this.hub.emit("updateFrame", now);
 
+    hub.emit("updateFrame", now);
     if (this.state === "playing") {
       window.requestAnimationFrame(this.frame);
     }
@@ -75,9 +78,10 @@ export class GameRuntime {
 
   private startGame() {
     this.state = "playing";
-    this.hub.emit("firstFrame", undefined);
+    hub.emit("firstFrame", undefined);
 
-    window.requestAnimationFrame(this.frame); // メインループ開始
+    // メインループ開始
+    window.requestAnimationFrame(this.frame);
   }
 
   public stopGame() {
